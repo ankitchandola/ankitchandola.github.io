@@ -20,25 +20,6 @@ export type ProjectHighlight = readonly [
   body: string,
   icon: string,
 ];
-export type DiagramStep = readonly [
-  label: string,
-  note: string,
-  state?: string,
-];
-export type DiagramColumn = readonly [
-  heading: string,
-  items: readonly string[],
-];
-export type ProjectDiagram = { title: string } & (
-  | {
-      lanes: readonly {
-        title?: string;
-        steps: readonly DiagramStep[];
-      }[];
-      columns?: never;
-    }
-  | { columns: readonly DiagramColumn[]; lanes?: never }
-);
 export interface ProjectHome {
   anchor: string;
   label: string;
@@ -52,7 +33,21 @@ export interface ProjectDecision {
   implementation: string;
   boundary: string;
 }
+export interface ProjectDemonstration {
+  title: string;
+  intro: string;
+  boundary: string;
+  labels: Readonly<Partial<Record<string, string>>>;
+}
 export interface Project {
+  demonstration?: ProjectDemonstration;
+  detailHeadings?: {
+    problem: string;
+    contribution: string;
+    engineering: string;
+    result: string;
+    scope: string;
+  };
   slug: string;
   name: string;
   kind: string;
@@ -71,7 +66,6 @@ export interface Project {
   limits?: string;
   context?: readonly string[];
   result?: string;
-  diagram?: ProjectDiagram;
 }
 export interface Profile {
   name: string;

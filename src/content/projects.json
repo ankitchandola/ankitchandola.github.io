@@ -22,6 +22,10 @@
       [
         "Processing and sessions",
         "Workers hold the full datasets while the interface requests bounded result pages. Reconciliation decisions can be saved in IndexedDB or exported as a session backup. Source files are reread when restoring a session."
+      ],
+      [
+        "Decision identity and completion",
+        "Review events identify transactions by side, source-file fingerprint and record number. Replacing a source file cannot attach old decisions to different transactions. Completion records the files, mappings, rules and balances it was reviewed against; a later event or changed basis withdraws that completion."
       ]
     ],
     "images": [
@@ -124,7 +128,47 @@
     ],
     "limits": "No application server, accounts, bank feeds or accounting-system writes. Suggestions are never confirmed automatically, and reconciliation is labelled experimental in the tool.",
     "context": ["Personal project", "Designed and built alone"],
-    "result": "A publicly hosted tool with two local-file workflows: comparing exports and reconciling a bank statement against books. Review decisions survive reloads, unresolved items carry into the next month, and reports download in several formats."
+    "result": "A publicly hosted tool with two local-file workflows: comparing exports and reconciling a bank statement against books. Review decisions survive reloads, unresolved items carry into the next month, and reports download in several formats.",
+    "demonstration": {
+      "title": "A suggestion is not a decision.",
+      "intro": "Try two competing candidates for one bank entry. Confirm one, reject the suggestion, or leave it unresolved. The review decision changes the outcome.",
+      "boundary": "Interactive explanation with synthetic records. This illustrates manual review, not the full matching engine, date rules or candidate budget.",
+      "labels": {
+        "bank": "Bank entry",
+        "amount": "125.00",
+        "sample": "Synthetic sample \u00b7 same amount, competing candidates",
+        "candidateA": "Books entry A",
+        "candidateB": "Books entry B",
+        "review": "Choose a candidate to inspect",
+        "confirm": "Confirm selected match",
+        "reject": "Leave unmatched",
+        "reset": "Start over",
+        "pending": "Needs review",
+        "matched": "Match confirmed by reviewer",
+        "unmatched": "Unmatched \u00b7 investigate or classify",
+        "picked": "Candidate selected \u00b7 still unconfirmed",
+        "decision": "Reviewer decision",
+        "output": "Reconciliation record",
+        "idleNote": "Equal amounts alone cannot decide which record belongs to this bank entry.",
+        "pickedNote": "Selecting a candidate does not confirm it. The reviewer makes that decision explicitly.",
+        "matchedNote": "The chosen candidate is confirmed. The competing candidate remains unpaired.",
+        "unmatchedNote": "No candidate is confirmed. The entry remains available for investigation and classification.",
+        "leftover": "Competing candidate remains unpaired",
+        "audit": "Review decisions are stored separately from worker results.",
+        "worker": "Worker suggestions",
+        "reviewer": "Human review",
+        "outstanding": "Unresolved entry",
+        "confirmPath": "Confirmation path",
+        "unmatchedPath": "Unresolved path"
+      }
+    },
+    "detailHeadings": {
+      "problem": "When matching becomes ambiguous",
+      "contribution": "Comparison, review and recovery",
+      "engineering": "Correctness before convenience",
+      "result": "What the browser tool delivers",
+      "scope": "Where the engine stops"
+    }
   },
   {
     "slug": "operations",
@@ -156,6 +200,10 @@
       [
         "Backend contributions",
         "Work included bulk offline reads and saves, activity and comments APIs, session authentication changes, query optimisations and concurrency fixes. The backend uses Fastify, TypeBox, Drizzle and PostgreSQL."
+      ],
+      [
+        "Photos before the batch",
+        "Offline photo references are resolved to uploaded URLs before a bulk save is sent. Per-unit mutation scopes keep dependent edits in order, so a batch contains at most one save per unit. Each save settles with its own result; accepted server data replaces the optimistic view, while rejected saves roll back and refetch."
       ]
     ],
     "images": [
@@ -208,30 +256,6 @@
       ]
     ],
     "limits": "Offline support covers prepared survey and installation work, not the whole application. The server remains authoritative for permissions, workflow eligibility and confirmed records.",
-    "diagram": {
-      "title": "How an offline survey edit reaches the server",
-      "lanes": [
-        {
-          "steps": [
-            ["Surveyor edits a unit", "Works without a connection"],
-            ["IndexedDB queue", "Survives reloads", "Saved on device"],
-            ["Per-unit sequencer", "Keeps each unit's saves in order"],
-            ["Sync limiter", "At most three in flight"],
-            ["Bulk save API", "Fastify, one request per batch"],
-            [
-              "PostgreSQL",
-              "Rejected saves roll back and refetch",
-              "Confirmed by server"
-            ],
-            [
-              "Survey completion",
-              "Requires complete measurements",
-              "Marked surveyed"
-            ]
-          ]
-        }
-      ]
-    },
     "result": "Surveyors keep recording measurements, photos and installation progress without a connection, and queued work syncs in order on reconnect. Reconnect traffic is bounded, offline preparation uses batched reads instead of per-unit requests, and invalid scans are rejected on the device before a batch is sent. No before-and-after measurement of timeouts or lost saves has been taken yet.",
     "context": ["One of 4 developers", "4 months, ongoing"],
     "facts": [
@@ -245,7 +269,52 @@
         "surveyors recording site work",
         "Approximate, supplied by me."
       ]
-    ]
+    ],
+    "demonstration": {
+      "title": "Offline is a state, not a success message.",
+      "intro": "Save sample edits while disconnected, reconnect, then let the server accept or reject each save. Watch the device queue drain and the recovery path appear.",
+      "boundary": "Local simulation with four sample queue slots, not an application capacity limit. It does not persist or contact a backend. The real implementation batches saves, uploads local photos first and sequences dependent edits per unit.",
+      "labels": {
+        "device": "Surveyor\u2019s device",
+        "server": "Authoritative server",
+        "queue": "Local save queue",
+        "save": "Save a sample edit",
+        "connect": "Reconnect",
+        "disconnect": "Go offline",
+        "accept": "Accept next save",
+        "reject": "Reject next save",
+        "complete": "Complete survey",
+        "reset": "Reset simulation",
+        "offline": "Offline",
+        "online": "Connected",
+        "empty": "No queued edits",
+        "queued": "Saved on device \u00b7 awaiting server",
+        "syncing": "Ready to sync \u00b7 awaiting server response",
+        "accepted": "Confirmed by server",
+        "rejected": "Rejected \u00b7 rollback and refetch",
+        "done": "Survey marked complete",
+        "measurements": "Required measurements complete",
+        "incomplete": "Server confirmation and complete measurements are both required.",
+        "queueHelp": "Queued does not mean surveyed.",
+        "serverHelp": "The server checks permissions and workflow eligibility.",
+        "recovery": "Rejected saves return to authoritative data; they are not displayed as successful.",
+        "completion": "Survey completion gate",
+        "pending": "pending save(s)",
+        "confirmed": "confirmed save(s)",
+        "idleNote": "Save an edit on the device to begin.",
+        "queuedNote": "The edit is queued on the device. A server response is still required, even when connected.",
+        "acceptedNote": "A save was accepted and the server data replaces the optimistic view. That confirmation does not by itself complete the survey.",
+        "completeNote": "Confirmed work and complete measurements allow survey completion.",
+        "rejectedNote": "The failed save rolls back and refetches. Save a corrected edit to try again."
+      }
+    },
+    "detailHeadings": {
+      "problem": "One order, several realities",
+      "contribution": "Field work that survives disconnection",
+      "engineering": "Failure paths worth designing for",
+      "result": "What reaches the site team",
+      "scope": "Prepared work, not the whole platform"
+    }
   },
   {
     "slug": "sales-crm",
@@ -278,7 +347,7 @@
       ],
       [
         "Browser telephony",
-        "Built the Exotel browser calling interface and backend integration, including inbound and outbound calls, wrap-up notes, dispositions and recording playback. Call correlation, early-event buffering, tab ownership and scheduled reconciliation handle provider and browser lifecycle issues. Provider outcomes determine whether the customer answered; the browser connecting alone is not sufficient."
+        "Built the Exotel browser calling interface and backend integration, including inbound and outbound calls, wrap-up notes, dispositions and recording playback. Call correlation, early-event buffering, tab ownership and scheduled reconciliation handle provider and browser lifecycle issues. Provider outcomes determine whether the customer answered; the browser connecting alone is not sufficient. An early invitation is accepted as the outbound agent leg only when its call identifier exactly matches the successful dial response."
       ],
       [
         "Quotation review and revision",
@@ -320,21 +389,6 @@
       ]
     ],
     "limits": "Built on Frappe CRM: the platform, administration, standard lists and framework services predate my work. Browser calling targets Chrome and Edge.",
-    "diagram": {
-      "title": "From first call to operations handoff",
-      "lanes": [
-        {
-          "steps": [
-            ["Enquiry", "Website form or incoming call"],
-            ["Browser call", "Exotel softphone, outcome confirmed by webhook"],
-            ["Lead", "Qualified and moved through enforced stages"],
-            ["Quotation", "Requested, uploaded, reviewed and revised"],
-            ["Accepted", "Final quote fields lock on the lead"],
-            ["Handoff", "Creates the operations project and draft order", "Won"]
-          ]
-        }
-      ]
-    },
     "result": "Enquiries, calls, quotations and the operations handoff live in linked records with enforced stage rules. A confirmed lead creates its operations project and draft order from the CRM, and a failed handoff stays retryable instead of looking complete.",
     "context": ["One of 2 developers", "3 months of build, now in maintenance"],
     "facts": [
@@ -348,7 +402,47 @@
         "won leads transferred to the operations platform as projects",
         "Approximate total, supplied by me."
       ]
-    ]
+    ],
+    "demonstration": {
+      "title": "Two call legs. One trustworthy outcome.",
+      "intro": "Deliver the browser invitation before the API response, or connect the agent without a customer answer. Watch which signals are enough to update the call record.",
+      "boundary": "Event-order simulation, not a live call or Exotel integration. Correlation, buffered invitations and provider-confirmed outcomes are based on the documented implementation.",
+      "labels": {
+        "browser": "Agent / browser leg",
+        "provider": "Provider / customer leg",
+        "record": "CRM call record",
+        "invite": "Deliver early invitation",
+        "response": "Receive dial API response",
+        "connect": "Connect agent browser",
+        "answer": "Customer answered webhook",
+        "noAnswer": "Customer no-answer webhook",
+        "reset": "Reset call",
+        "empty": "No signal yet",
+        "buffered": "Invitation buffered",
+        "correlated": "Provider call ID correlated",
+        "connected": "Agent browser connected",
+        "waiting": "Customer outcome unknown",
+        "answered": "Customer answered",
+        "unanswered": "Customer did not answer",
+        "earlyNote": "The invitation is buffered until the API response supplies the call identifier.",
+        "linkedNote": "The invitation can now be correlated with the dial request.",
+        "connectedNote": "The agent leg is connected. This alone says nothing about whether the customer answered.",
+        "answerNote": "The provider webhook supplies the customer outcome.",
+        "idleNote": "Try the early invitation first to expose the event-order problem.",
+        "authority": "Outcome authority",
+        "authorityNote": "Provider webhooks and scheduled reconciliation determine the customer result.",
+        "correlation": "Call-ID correlation",
+        "known": "Call identifier known",
+        "unknown": "Waiting for call identifier"
+      }
+    },
+    "detailHeadings": {
+      "problem": "A sale is more than one status",
+      "contribution": "Custom workflows on Frappe",
+      "engineering": "Calls, ownership and uncertain events",
+      "result": "Linked sales records and handoff",
+      "scope": "Custom work versus the base platform"
+    }
   },
   {
     "slug": "visualization",
@@ -374,6 +468,10 @@
       [
         "Rendering and distribution",
         "The grid supports recursive hierarchy paths and virtualisation within expanded floors. The package builds ESM and CommonJS outputs with TypeScript declarations and supports React 18 and 19."
+      ],
+      [
+        "Late host data overrides restored selections",
+        "The selection panel filters restored selections against disabled units and repeats that pruning whenever the host\u2019s disabled set changes. A unit selected before an availability request finishes is removed if the later response makes it ineligible."
       ]
     ],
     "images": [
@@ -433,42 +531,54 @@
       ]
     ],
     "limits": "No authentication, database, persistence or offline queue. The package presents states supplied by its host, and the backend owns permissions and business rules. It is a data-driven progress view, not a 3D or CAD renderer.",
-    "diagram": {
-      "title": "What the package owns, and what it leaves to others",
-      "columns": [
-        [
-          "The package",
-          [
-            "Virtualised grids and hierarchy navigation",
-            "Unit selection and detail panels",
-            "Survey forms and photo interactions",
-            "Progress colours and legends"
-          ]
-        ],
-        [
-          "Each host application",
-          [
-            "Authentication and routing",
-            "API client, supplied as a fetcher",
-            "Persistence and the offline queue",
-            "Product-specific validation"
-          ]
-        ],
-        [
-          "The backend",
-          [
-            "Authoritative records",
-            "Permissions and transitions",
-            "Aggregate progress data"
-          ]
-        ]
-      ]
-    },
     "result": "The operations and customer applications render project hierarchies from one package instead of two separate implementations. It ships as versioned ESM and CommonJS builds with type declarations through a tag-triggered release workflow.",
     "context": [
       "Sole developer for the initial build",
       "1 month, now receiving updates"
-    ]
+    ],
+    "demonstration": {
+      "title": "One component. Two different jobs.",
+      "intro": "Switch the host application, select a unit, then change its eligibility after selection. The shared view reacts to host inputs; each host keeps control of its data and rules.",
+      "boundary": "Illustrative grid with synthetic units, not the production package. Customer and operations views demonstrate different host configurations; these controls do not represent a permissions check.",
+      "labels": {
+        "operations": "Operations host",
+        "customer": "Customer host",
+        "package": "Shared React package",
+        "host": "Host-owned inputs",
+        "backend": "Backend-owned authority",
+        "floor": "Sample floor",
+        "unitA": "Unit A",
+        "unitB": "Unit B",
+        "unitC": "Unit C",
+        "unitD": "Unit D",
+        "available": "Available",
+        "disabled": "Disabled by host",
+        "select": "Selected unit",
+        "none": "No unit selected",
+        "disable": "Disable selected unit from host",
+        "restore": "Restore eligible units",
+        "reset": "Reset example",
+        "data": "Data + typed props",
+        "callback": "Selection callback",
+        "opsNote": "The operations host supplies selection inputs and owns persistence, offline storage and queries.",
+        "customerNote": "The customer host supplies progress data and owns its own API access and routing.",
+        "packageNote": "Hierarchy, selection, detail panels and progress rendering live in the reusable package.",
+        "backendNote": "Permissions, authoritative records and business transitions stay on the backend.",
+        "selectionNote": "A selected unit can be rendered by the package while actions are handled by its host.",
+        "prunedNote": "The host changed eligibility after selection. The package re-pruned the selection.",
+        "emptyNote": "Select a sample unit to inspect the shared view.",
+        "customerDetail": "Progress detail",
+        "opsDetail": "Selection detail",
+        "pruned": "Selection cleared after host update"
+      }
+    },
+    "detailHeadings": {
+      "problem": "Shared information, different jobs",
+      "contribution": "The reusable interface I built",
+      "engineering": "Async inputs and host boundaries",
+      "result": "One package in two applications",
+      "scope": "UI ownership has a clear edge"
+    }
   },
   {
     "slug": "website-cms",
@@ -488,7 +598,7 @@
       ],
       [
         "Content publishing",
-        "Configured and extended Strapi with article, author, category, site and SEO models, reusable content blocks and S3 media. The SSR website renders published content with search, filtering and pagination. Strapi provides the administration interface and core publishing functionality."
+        "Configured and extended Strapi with article, author, category, site and SEO models, reusable content blocks and S3 media. The SSR website renders published content with search, filtering and pagination. Strapi provides the administration interface and core publishing functionality. The block renderer handles rich text, images, tables, information boxes, quotes, calls to action, FAQs and embedded video as distinct content types."
       ],
       [
         "Staging operations",
@@ -528,7 +638,7 @@
       [
         "Forms that understand CRM outcomes",
         "A submission can create a lead, match an existing one, reactivate it, reach a closed record or fail.",
-        "One server-side lead request maps each recognised outcome and error, including validation, rate limits and timeouts, to its own form state. Credentials stay on the server.",
+        "One server-side lead request recognises created, existing and reactivated leads as success, routes closed matches to a follow-up state, and maps validation, rate limits and service errors to failure states. Credentials stay on the server.",
         "The website stays coupled to the CRM\u2019s response contract."
       ],
       [
@@ -545,35 +655,60 @@
       ]
     ],
     "limits": "Enquiry forms submit a lead; they do not book a calendar slot. Strapi provides the administration interface and publishing; I configured and extended it. The infrastructure described is shared staging.",
-    "diagram": {
-      "title": "Two paths through one website",
-      "lanes": [
-        {
-          "title": "Enquiry",
-          "steps": [
-            ["Visitor submits a form", "Campaign context travels with it"],
-            [
-              "Server action",
-              "Validates with Zod; CRM credentials stay on the server"
-            ],
-            ["Frappe CRM", "Creates, matches or reactivates the lead"],
-            ["Outcome page", "Thank-you or closed-match follow-up"]
-          ]
-        },
-        {
-          "title": "Content",
-          "steps": [
-            ["Editor publishes in Strapi", "Article blocks, SEO fields"],
-            ["Media in S3", "Accessed through an instance role"],
-            ["SSR page", "Each block rendered by its own component"]
-          ]
-        }
-      ]
-    },
     "result": "Lead delivery moved from Freshworks to the company's Frappe CRM while keeping the website's form workflows and attribution payloads. Editors publish articles from Strapi without a code release.",
     "context": [
       "Sole developer for the initial build",
       "2 months, now receiving updates"
-    ]
+    ],
+    "demonstration": {
+      "title": "Publishing and lead delivery have different boundaries.",
+      "intro": "Explore the editor\u2019s publishing loop, or change a CRM response to see why an enquiry cannot always end with the same thank-you message.",
+      "boundary": "Browser-only demonstration with sample content and simulated CRM responses. It neither publishes content nor submits a real enquiry.",
+      "labels": {
+        "publishing": "Publishing loop",
+        "enquiries": "Enquiry outcomes",
+        "editor": "Strapi editor",
+        "renderer": "SSR website",
+        "draft": "Draft content",
+        "published": "Published content",
+        "edit": "Edit sample headline",
+        "publish": "Publish sample revision",
+        "reset": "Reset demonstration",
+        "firstTitle": "A sample product story",
+        "secondTitle": "A revised product story",
+        "draftNote": "Changing the draft does not change the published article.",
+        "publishNote": "Published CMS blocks are rendered by their corresponding React components.",
+        "article": "Article block",
+        "media": "S3 media",
+        "schema": "Configured content models",
+        "schemaNote": "Article, author, category, SEO and reusable body blocks. Strapi supplies the core editor and publishing system.",
+        "server": "Server-side lead request",
+        "response": "Simulated CRM response",
+        "new": "New lead",
+        "existing": "Existing match",
+        "reactivated": "Eligible reactivation",
+        "closed": "Closed record",
+        "failed": "Request failed",
+        "submit": "Simulate enquiry",
+        "initial": "Choose a CRM response, then submit the sample enquiry.",
+        "newNote": "CRM creates a lead; the form shows the successful outcome.",
+        "existingNote": "CRM recognises an existing record. Created, existing and eligible reactivated leads share the successful form state.",
+        "reactivatedNote": "CRM reactivates an eligible lead. The form shows the same success state used for new and existing leads.",
+        "closedNote": "A closed match receives its own follow-up state; the website does not silently reopen it.",
+        "failedNote": "The form shows a failure state rather than a successful submission.",
+        "attribution": "Campaign context stays attached",
+        "attributionNote": "First-touch and last-touch parameters travel with the enquiry. CRM credentials remain on the server.",
+        "visitor": "Visitor form",
+        "output": "Form outcome",
+        "idlePublish": "Edit the sample headline, then publish to update the public preview."
+      }
+    },
+    "detailHeadings": {
+      "problem": "Two audiences, two journeys",
+      "contribution": "Website, CMS and staging ownership",
+      "engineering": "Contracts across system boundaries",
+      "result": "Publishing and lead intake connected",
+      "scope": "Publishing is not infrastructure availability"
+    }
   }
 ]

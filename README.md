@@ -14,7 +14,7 @@ Project descriptions are based on the supplied project Markdown notes and direct
 
 Ricochet (`/play`) is a small mirror puzzle built for this site, linked from the homepage. It has five handcrafted levels, seeded random puzzles at three difficulties, a daily puzzle and shareable puzzle links. Its rules and level constraints are in the design guide; [docs/RICOCHET.md](docs/RICOCHET.md) explains the beam tracing, game state, solver and how to add levels.
 
-`src/content/projects.json` supplies the homepage project sections, engineering decisions, project detail pages and lite summaries. Homepage sections are React components in `src/home/`, rendered to static HTML at build time; `index.html` holds only the document head. No fictional role or payment model remains. Project details describe supplied implementation facts, not inferred business outcomes.
+`src/content/projects.json` supplies the homepage project sections, engineering decisions, project detail pages, interactive explanation copy and lite summaries. `src/projects/ProjectDemonstration.tsx` implements five separate browser-local explanations: reconciliation review, offline save recovery, call-event correlation, host-driven unit selection, and CMS publishing / enquiry routing. These use synthetic examples and never call the source applications. Homepage sections are React components in `src/home/`, rendered to static HTML at build time; `index.html` holds only the document head. No fictional role or payment model remains. Project details describe supplied implementation facts, not inferred business outcomes.
 
 ## Design and development
 
@@ -125,8 +125,8 @@ shot, evaluation and preference combinations.
 
 Shared content, all React components and both React entries are typed.
 `src/content/types.ts` defines the project, profile and experience contracts,
-including fixed-length image/challenge/scope tuples and mutually exclusive
-flow/ownership diagram variants. `src/content/projects.ts` adapts the JSON
+including fixed-length image/challenge/scope tuples and project-specific
+demonstration copy with explicit simulation boundaries. `src/content/projects.ts` adapts the JSON
 arrays to those tuples with checked lengths; `projects.json` remains the
 authoritative copy. `tests/content-types.ts` pins the content contracts.
 Full build-time content/link/asset validation remains a later delivery.

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Routes, Route } from 'react-router';
 import {
   ArrowUpRight,
@@ -13,10 +13,8 @@ import { profile, scope, year } from './content/profile';
 import { experience } from './content/experience';
 import HeaderNavigation from './components/HeaderNavigation';
 import projects from './content/projects';
-import type {
-  Project as ProjectContent,
-  ProjectDiagram,
-} from './content/types.ts';
+import type { Project as ProjectContent } from './content/types.ts';
+import ProjectDemonstration from './projects/ProjectDemonstration';
 import Ricochet from './play/Ricochet';
 function Header() {
   return (
@@ -235,42 +233,6 @@ function Gallery({ project }: { project: ProjectContent }) {
     </div>
   );
 }
-function Diagram({ diagram: d }: { diagram: ProjectDiagram }) {
-  return (
-    <figure className="case-diagram">
-      <figcaption>{d.title}</figcaption>
-      {d.lanes ? (
-        d.lanes.map((lane, i) => (
-          <div className="diagram-lane" key={i}>
-            {lane.title && <h3>{lane.title}</h3>}
-            <ol>
-              {lane.steps.map(([label, note, state]) => (
-                <li key={label}>
-                  <b>{label}</b>
-                  {note && <span>{note}</span>}
-                  {state && <em>{state}</em>}
-                </li>
-              ))}
-            </ol>
-          </div>
-        ))
-      ) : (
-        <div className="diagram-columns">
-          {d.columns.map(([heading, items]) => (
-            <div key={heading}>
-              <h3>{heading}</h3>
-              <ul>
-                {items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
-    </figure>
-  );
-}
 function ProjectNav({ index }: { index: number }) {
   const prev = projects[(index + projects.length - 1) % projects.length],
     next = projects[(index + 1) % projects.length];
@@ -294,10 +256,52 @@ function ProjectNav({ index }: { index: number }) {
     </nav>
   );
 }
+function CaseSection({
+  id,
+  number,
+  title,
+  children,
+  className = '',
+}: {
+  id: string;
+  number: string;
+  title: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section
+      className={'verified-notes ' + className}
+      id={id}
+      aria-labelledby={id + '-title'}
+    >
+      <header className="case-section-heading">
+        <span className="case-section-number" aria-hidden="true">
+          {number}
+        </span>
+        <h2 id={id + '-title'}>{title}</h2>
+      </header>
+      <div className="case-section-body">{children}</div>
+    </section>
+  );
+}
 function Project({ slug }: { slug: string }) {
   const index = projects.findIndex((p) => p.slug === slug),
     p = projects[index];
   if (!p) throw new Error(`Unknown project slug ${slug}`);
+  const chapters = [
+    { id: 'screens', label: 'Screens', show: p.images.length > 0 },
+    { id: 'workflow', label: 'Problem & workflow', show: !!p.problem },
+    { id: 'contribution', label: 'My contribution', show: true },
+    { id: 'engineering', label: 'Engineering', show: !!p.challenges },
+    { id: 'result', label: 'Result', show: !!(p.result || p.facts) },
+    { id: 'scope', label: 'Scope limits', show: !!p.limits },
+  ].filter((chapter) => chapter.show);
+  const number = (id: string) =>
+    String(chapters.findIndex((chapter) => chapter.id === id) + 1).padStart(
+      2,
+      '0',
+    );
   return (
     <section className="case-page shell">
       <a className="back-link" href="/#work">
@@ -305,37 +309,71 @@ function Project({ slug }: { slug: string }) {
         Back to selected work
       </a>
       <div className="case-page-heading">
-        <span className="kicker">{p.kind} / PROJECT DETAILS</span>
-        <h1>{p.name}</h1>
-        <p>{p.summary}</p>
-        {p.context && <p className="case-context">{p.context.join(' · ')}</p>}
-        <div className="tags">
-          {p.tags.map((t) => (
-            <span key={t}>{t}</span>
-          ))}
+        <div className="case-title-block">
+          <span className="kicker">{p.kind} / PROJECT DETAILS</span>
+          <h1>{p.name}</h1>
+        </div>
+        <div className="case-introduction">
+          <p>{p.summary}</p>
+          {p.context && (
+            <ul className="case-context">
+              {p.context.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          )}
+          <div className="tags">
+            {p.tags.map((t) => (
+              <span key={t}>{t}</span>
+            ))}
+          </div>
         </div>
       </div>
-      <Gallery project={p} />
-      {p.problem && (
-        <div className="verified-notes">
-          <h2>The problem</h2>
-          <p className="problem-note">{p.problem}</p>
-          {p.diagram && <Diagram diagram={p.diagram} />}
+      <nav className="case-index" aria-label="On this project">
+        {chapters.map(({ id, label }, i) => (
+          <a key={id} href={'#' + id}>
+            <span>{String(i + 1).padStart(2, '0')}</span>
+            {label}
+          </a>
+        ))}
+      </nav>
+      {p.images.length > 0 && (
+        <div id="screens" className="case-screens">
+          <Gallery project={p} />
         </div>
       )}
-      <div className="verified-notes">
-        <h2>My contribution</h2>
+      {p.problem && (
+        <CaseSection
+          id="workflow"
+          number={number('workflow')}
+          title={p.detailHeadings?.problem ?? 'The problem'}
+          className="case-workflow"
+        >
+          <p className="problem-note">{p.problem}</p>
+          {p.demonstration && <ProjectDemonstration project={p} />}
+        </CaseSection>
+      )}
+      <CaseSection
+        id="contribution"
+        number={number('contribution')}
+        title={p.detailHeadings?.contribution ?? 'My contribution'}
+      >
         <p className="ownership-note">{p.ownership}</p>
-        {p.sections.map(([title, body]) => (
-          <section key={title}>
-            <h3>{title}</h3>
-            <p>{body}</p>
-          </section>
-        ))}
-      </div>
+        <div className="contribution-grid">
+          {p.sections.map(([title, body]) => (
+            <section key={title}>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </section>
+          ))}
+        </div>
+      </CaseSection>
       {p.challenges && (
-        <div className="verified-notes">
-          <h2>Engineering challenges</h2>
+        <CaseSection
+          id="engineering"
+          number={number('engineering')}
+          title={p.detailHeadings?.engineering ?? 'Engineering challenges'}
+        >
           {p.challenges.map(([title, problem, decision, tradeoff], i) => (
             <section className="challenge" key={title}>
               <h3>
@@ -345,20 +383,30 @@ function Project({ slug }: { slug: string }) {
                 {title}
               </h3>
               <dl>
-                <dt>Problem</dt>
-                <dd>{problem}</dd>
-                <dt>Decision</dt>
-                <dd>{decision}</dd>
-                <dt>Trade-off</dt>
-                <dd>{tradeoff}</dd>
+                <div>
+                  <dt>Problem</dt>
+                  <dd>{problem}</dd>
+                </div>
+                <div className="challenge-decision">
+                  <dt>Decision</dt>
+                  <dd>{decision}</dd>
+                </div>
+                <div>
+                  <dt>Trade-off</dt>
+                  <dd>{tradeoff}</dd>
+                </div>
               </dl>
             </section>
           ))}
-        </div>
+        </CaseSection>
       )}
       {(p.result || p.facts) && (
-        <div className="verified-notes">
-          <h2>Result</h2>
+        <CaseSection
+          id="result"
+          number={number('result')}
+          title={p.detailHeadings?.result ?? 'Result'}
+          className="case-result"
+        >
           {p.result && <p>{p.result}</p>}
           {p.facts && (
             <ul className="fact-list">
@@ -371,11 +419,14 @@ function Project({ slug }: { slug: string }) {
               ))}
             </ul>
           )}
-        </div>
+        </CaseSection>
       )}
       {p.limits && (
-        <div className="verified-notes">
-          <h2>Scope limits</h2>
+        <CaseSection
+          id="scope"
+          number={number('scope')}
+          title={p.detailHeadings?.scope ?? 'Scope limits'}
+        >
           <p>{p.limits}</p>
           {p.url && (
             <a
@@ -384,11 +435,11 @@ function Project({ slug }: { slug: string }) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Open Recon Desk
+              Open {p.name}
               <ArrowUpRight size={24} />
             </a>
           )}
-        </div>
+        </CaseSection>
       )}
       <ProjectNav index={index} />
     </section>

@@ -1,5 +1,5 @@
 import raw from './projects.json';
-import type { DiagramColumn, DiagramStep, Project } from './types.ts';
+import type { Project } from './types.ts';
 
 type StringTuples = {
   2: readonly [string, string];
@@ -25,7 +25,6 @@ function tuple<Size extends keyof StringTuples>(
 // JSON imports infer arrays, not tuples. Check their arity without asserting the content's type.
 const projects: readonly Project[] = raw.map((project) => {
   const field = (name: string) => `${project.slug}.${name}`;
-  const diagram = project.diagram;
   return {
     ...project,
     images: project.images.map((v) => tuple(v, 3, field('images'))),
@@ -41,35 +40,6 @@ const projects: readonly Project[] = raw.map((project) => {
       ),
       notes: project.home.notes.map((v) => tuple(v, 2, field('home.notes'))),
     },
-    diagram:
-      diagram &&
-      (diagram.lanes
-        ? {
-            ...diagram,
-            lanes: diagram.lanes.map((lane) => ({
-              ...lane,
-              steps: lane.steps.map((v): DiagramStep =>
-                v.length === 2
-                  ? tuple(v, 2, field('diagram.steps'))
-                  : tuple(v, 3, field('diagram.steps')),
-              ),
-            })),
-          }
-        : {
-            ...diagram,
-            columns: diagram.columns.map((v): DiagramColumn => {
-              const [heading, items] = v;
-              if (
-                v.length !== 2 ||
-                typeof heading !== 'string' ||
-                !Array.isArray(items)
-              )
-                throw new Error(
-                  `${field('diagram.columns')}: expected a heading and list`,
-                );
-              return [heading, items];
-            }),
-          }),
   };
 });
 
