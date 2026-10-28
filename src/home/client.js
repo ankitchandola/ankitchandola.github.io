@@ -1,4 +1,62 @@
 import './interactions.js';
+import { mountSiteSearch } from '../components/site-search';
+
+document.querySelectorAll('[data-site-search]').forEach(mountSiteSearch);
+const world = document.getElementById('hero-world');
+if (world) {
+  const controls = document.querySelector('.world-landmarks');
+  const back = document.querySelector('[data-world-back]');
+  const selectLandmark = (slug) => {
+    controls.querySelectorAll('[data-landmark]').forEach((button) => {
+      const selected = button.dataset.landmark === slug;
+      button.setAttribute('aria-pressed', String(selected));
+      if (selected)
+        document.getElementById('world-status').textContent =
+          button.textContent + ' selected';
+    });
+    document.querySelectorAll('[data-landmark-panel]').forEach((panel) => {
+      panel.hidden = panel.dataset.landmarkPanel !== slug;
+    });
+    document.querySelector('[data-world-overview]').hidden =
+      slug !== 'overview';
+    back.hidden = slug === 'overview';
+    document.getElementById('world-hint').textContent =
+      slug === 'overview' ? 'Select a building' : 'Explore another project';
+    if (slug === 'overview')
+      document.getElementById('world-status').textContent = 'City overview';
+    world.dataset.selected = slug;
+  };
+  back.addEventListener('click', () => {
+    selectLandmark('overview');
+    controls.querySelector('button').focus();
+  });
+  controls.hidden = false;
+  controls
+    .querySelectorAll('[data-landmark]')
+    .forEach((button) =>
+      button.addEventListener('click', () =>
+        selectLandmark(button.dataset.landmark),
+      ),
+    );
+  const loadWorld = new IntersectionObserver(
+    ([entry], observer) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect();
+      import('./project-world')
+        .then(({ mountProjectWorld }) =>
+          mountProjectWorld(world, selectLandmark),
+        )
+        .catch((error) =>
+          console.warn(
+            '3D world could not load. Project links and static artwork remain available.',
+            error,
+          ),
+        );
+    },
+    { rootMargin: '100px' },
+  );
+  loadWorld.observe(world);
+}
 document.querySelectorAll('.evidence-gallery').forEach((gallery) => {
   gallery.querySelectorAll('[data-screen]').forEach((button) =>
     button.addEventListener('click', () => {
@@ -39,9 +97,7 @@ if (!motionOff && 'IntersectionObserver' in window) {
     { rootMargin: '0px 0px -10% 0px' },
   );
   document
-    .querySelectorAll(
-      '.section-intro,.integrated-project,.about-grid,.decision-list',
-    )
+    .querySelectorAll('.section-intro,.project-card,.about-grid,.decision-list')
     .forEach((group) => {
       if (group.getBoundingClientRect().top < innerHeight) return;
       [...group.children].forEach((child, i) =>

@@ -1,5 +1,6 @@
 import { ArrowUpRight, Menu, X } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
+import SiteSearch from './SiteSearch';
 
 export default function HeaderNavigation({ home = false }: { home?: boolean }) {
   const links = (
@@ -17,9 +18,11 @@ export default function HeaderNavigation({ home = false }: { home?: boolean }) {
     <>
       <nav className="desktop-navigation" aria-label="Main navigation">
         {links}
+        <SiteSearch />
         <ThemeToggle />
       </nav>
       <div className="mobile-header-tools">
+        <SiteSearch />
         <ThemeToggle />
         <details className="mobile-navigation">
           <summary aria-label="Navigation menu">

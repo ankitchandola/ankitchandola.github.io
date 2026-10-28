@@ -1,71 +1,13 @@
 import { LucideSvg } from '../components/ThemeToggle';
 import { profile } from '../content/profile';
 import { Icon } from './icons';
-function Sheet({
-  side,
-  file,
-  note,
-  number,
-  changed,
-}: {
-  side: 'back' | 'front';
-  file: string;
-  note: string;
-  number: string;
-  changed?: boolean;
-}) {
-  return (
-    <div className={'sheet sheet-' + side}>
-      <div className="sheet-header">
-        <span className="file-symbol">
-          <Icon name="sheet" />
-        </span>
-        <span>
-          {file}
-          <small>{note}</small>
-        </span>
-        <span>{number}</span>
-      </div>
-      <div className="sheet-table">
-        <div>
-          <b>SKU</b>
-          <b>AMOUNT</b>
-        </div>
-        <div>
-          <span>001</span>
-          <span>₹1,250</span>
-        </div>
-        {changed ? (
-          <div className="changed-cell">
-            <span>002</span>
-            <span>
-              ₹920{' '}
-              <b>
-                <Icon name="arrow-up-right" />
-              </b>
-            </span>
-          </div>
-        ) : (
-          <div>
-            <span>002</span>
-            <span>₹850</span>
-          </div>
-        )}
-        <div>
-          <span>003</span>
-          <span>₹640</span>
-        </div>
-      </div>
-    </div>
-  );
-}
+import projects from '../content/projects';
+
 export default function Hero() {
   return (
     <section aria-labelledby="hero-heading" className="hero wrap">
       <div className="hero-copy">
-        <p className="eyebrow">
-          <span className="live-dot"></span> HELLO, GOOD TO HAVE YOU HERE
-        </p>
+        <p className="eyebrow">FULL-STACK DEVELOPER</p>
         <h1 id="hero-heading">
           <span className="sr-only">Ankit Chandola. Full-stack developer.</span>
           <span aria-hidden="true" className="code-name">
@@ -84,11 +26,8 @@ export default function Hero() {
           the first click to the systems behind it.
         </p>
         <div className="hero-actions">
-          <a className="button dark" href="#playground">
-            Come try my work{' '}
-            <span aria-hidden="true">
-              <Icon name="arrow-down-right" />
-            </span>
+          <a className="button dark" href="#work">
+            Explore my work <Icon name="arrow-down-right" />
           </a>
           <a
             className="text-link"
@@ -104,7 +43,7 @@ export default function Hero() {
             <LucideSvg name="map-pin">
               <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
               <circle cx="12" cy="10" r="3" />
-            </LucideSvg>{' '}
+            </LucideSvg>
             BASED IN DELHI, INDIA
           </span>
           <a className="hero-lite-link" href="/lite">
@@ -112,47 +51,67 @@ export default function Hero() {
           </a>
         </div>
       </div>
-      <a className="hero-art" href="#playground">
-        <div className="orbit orbit-one"></div>
-        <div className="orbit orbit-two"></div>
-        <span className="art-tag">A LITTLE PREVIEW OF WHAT I BUILD</span>
-        <div aria-hidden="true" className="scene">
-          <Sheet
-            side="back"
-            file="yesterday.csv"
-            note="THE ORIGINAL"
-            number="01"
+      <div className="hero-world">
+        <div className="world-stage" aria-hidden="true">
+          <img
+            className="world-poster"
+            src="/assets/project-world.png"
+            alt=""
+            width="1236"
+            height="824"
           />
-          <Sheet
-            side="front"
-            file="today.xlsx"
-            note="THE LATEST"
-            number="02"
-            changed
-          />
-          <div className="match-token">
-            <Icon name="check" />
+          <canvas id="hero-world" />
+        </div>
+        <div className="world-heading">
+          <span id="world-hint">Select a building</span>
+          <button type="button" data-world-back="" hidden>
+            Back to overview
+          </button>
+        </div>
+        <div
+          className="world-landmarks"
+          role="group"
+          aria-label="Explore project landmarks"
+          hidden
+        >
+          {projects.map((project) => (
+            <button
+              key={project.slug}
+              type="button"
+              data-landmark={project.slug}
+              aria-pressed="false"
+              aria-controls={'landmark-' + project.slug}
+            >
+              {project.landmarkLabel ?? project.name}
+            </button>
+          ))}
+        </div>
+        <div className="world-projects">
+          <div data-world-overview="">
+            <p>
+              Five projects, from browser tools to connected business systems.
+            </p>
+            <a href="#work">
+              View selected work <Icon name="arrow-down-right" />
+            </a>
           </div>
-          <div className="floating-result">
-            <span className="result-icon">
-              <Icon name="arrow-up-right" />
-            </span>
-            <div>
-              <b>One change. Found.</b>
-              <span>Even when the rows move.</span>
+          {projects.map((project) => (
+            <div
+              key={project.slug}
+              id={'landmark-' + project.slug}
+              data-landmark-panel={project.slug}
+              hidden
+            >
+              <p>{project.indexSummary ?? project.summary}</p>
+              <a href={'/work/' + project.slug}>
+                Explore {project.landmarkLabel ?? project.name}{' '}
+                <Icon name="arrow-up-right" />
+              </a>
             </div>
-          </div>
+          ))}
         </div>
-        <div className="art-invitation">
-          <div>
-            <b>This one is yours to play with.</b>
-            <span>Try the live demo below</span>
-          </div>
-          <span className="curved-arrow">
-            <Icon name="arrow-down" />
-          </span>
-        </div>
-      </a>
+        <p className="sr-only" role="status" id="world-status" />
+      </div>
     </section>
   );
 }

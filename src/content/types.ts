@@ -52,6 +52,8 @@ export interface Project {
   name: string;
   kind: string;
   summary: string;
+  indexSummary?: string;
+  landmarkLabel?: string;
   tags: readonly string[];
   ownership: string;
   sections: readonly ProjectSection[];

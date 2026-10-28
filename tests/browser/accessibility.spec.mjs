@@ -23,7 +23,7 @@ test('keyboard skip link, visible focus and disclosure navigation', async ({
   await expect(page).toHaveURL('/#main');
   await page.keyboard.press('Tab');
   await expect(
-    page.getByRole('link', { name: 'Come try my work' }),
+    page.getByRole('link', { name: 'Explore my work' }),
   ).toBeFocused();
   const decision = page.locator('.decision').first();
   await decision.locator('summary').focus();
@@ -74,11 +74,9 @@ test.describe('without JavaScript', () => {
         page.getByRole('heading', { name: project.name, exact: true }),
       ).toBeVisible();
       if (!project.home)
-        await expect(
-          page.locator(`a[href="/work/${project.slug}"]`),
-        ).toBeVisible();
+        await expect(page.locator(`#${project.slug} .text-link`)).toBeVisible();
     }
-    await expect(page.locator('.noscript-note')).toBeVisible();
+    await expect(page.locator('.world-poster')).toBeVisible();
     await page.locator('a[href="/lite"]').first().click();
     await expect(page).toHaveURL(/\/lite\/?$/);
   });
@@ -110,6 +108,24 @@ test.describe('without JavaScript', () => {
       'Recon Desk',
     );
   });
+  test('Recon keeps sample tables and notes readable without JavaScript', async ({
+    page,
+  }) => {
+    await page.goto('/work/recon-desk#comparison-demo');
+    await expect(page.locator('.noscript-note')).toBeVisible();
+    await expect(page.locator('#comparison-result-title')).toHaveText(
+      '1 changed record',
+    );
+    await page.locator('.comparison-notes summary').click();
+    await expect(
+      page.locator('.comparison-notes section').first(),
+    ).toBeVisible();
+    const directory = page.locator('.site-search:visible');
+    await directory.locator('summary').click();
+    await expect(directory.getByRole('searchbox')).toBeHidden();
+    await directory.getByRole('link', { name: /Internal Operations/ }).click();
+    await expect(page).toHaveURL('/work/operations');
+  });
 });
 
 for (const theme of ['light', 'dark']) {
@@ -120,7 +136,7 @@ for (const theme of ['light', 'dark']) {
       await page.emulateMedia({ colorScheme: theme });
       await page.goto(route);
       if (route === '/') {
-        for (const selector of ['.case-notes', '.decision']) {
+        for (const selector of ['.decision']) {
           await page.locator(selector).first().locator('summary').focus();
           await page
             .locator(selector)

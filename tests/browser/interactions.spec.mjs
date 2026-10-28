@@ -1,5 +1,128 @@
 import { test, expect } from './fixtures.mjs';
 
+for (const route of ['/', '/work/operations']) {
+  test(`${route} header search filters locally and restores keyboard focus`, async ({
+    page,
+  }) => {
+    await page.goto(route);
+    const search = page.locator('.site-search:visible');
+    const trigger = search.locator('summary');
+    await trigger.click();
+    const input = search.getByRole('searchbox');
+    await expect(input).toBeFocused();
+    await input.fill('  REACT   offline  ');
+    const results = search.locator('.search-results li:visible');
+    await expect(results).toHaveCount(1);
+    await expect(results.first()).toContainText('Internal Operations Platform');
+    await input.fill('no-such-project');
+    await expect(results).toHaveCount(0);
+    await expect(search.locator('.search-empty')).toBeVisible();
+    await input.fill('');
+    await expect(results).toHaveCount(5);
+    await input.press('Escape');
+    await expect(trigger).toBeFocused();
+    await expect(input).toBeHidden();
+    await trigger.click();
+    await input.fill('telephony');
+    await search.getByRole('link', { name: /Sales CRM/ }).click();
+    await expect(page).toHaveURL('/work/sales-crm');
+  });
+}
+
+test('compact project index keeps complete narratives on detail pages', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await expect(page.locator('.project-card')).toHaveCount(5);
+  await expect(page.locator('#amount')).toHaveCount(0);
+  const project = page.locator('#operations');
+  await expect(project.locator('.project-summary')).toContainText(
+    'offline survey',
+  );
+  await project.getByRole('link', { name: 'Project details' }).click();
+  await expect(page.locator('.ownership-note')).toContainText(
+    'both frontend and backend',
+  );
+  await expect(page.locator('.evidence-gallery')).toBeVisible();
+});
+
+test('3D hero renders still under reduced motion and respects pause', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const canvas = page.locator('#hero-world');
+  await expect(canvas).toHaveAttribute('data-ready', 'true');
+  await expect(canvas).toHaveAttribute('data-view', 'overview');
+  await expect(canvas).toHaveAttribute('data-motion', 'paused');
+  await page.getByRole('button', { name: 'CRM', exact: true }).click();
+  await expect(canvas).toHaveAttribute('data-selected', 'sales-crm');
+  await expect(canvas).toHaveAttribute('data-view', 'sales-crm');
+  await expect(page.locator('#landmark-sales-crm')).toBeVisible();
+  await expect(canvas).toHaveAttribute('data-motion', 'paused');
+  await page.getByRole('button', { name: 'Back to overview' }).click();
+  await expect(canvas).toHaveAttribute('data-view', 'overview');
+  await expect(page.locator('[data-world-overview]')).toBeVisible();
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  // Clicking without scrolling the hero out of view isolates the global pause preference.
+  await page.locator('#motion').evaluate((button) => button.click());
+  await page.getByRole('button', { name: 'Operations', exact: true }).click();
+  await expect(canvas).toHaveAttribute('data-motion', 'paused');
+  await page.reload();
+  await expect(canvas).toHaveAttribute('data-ready', 'true');
+  await expect(canvas).toHaveAttribute('data-motion', 'paused');
+});
+
+test('unavailable WebGL keeps static hero artwork and navigation usable', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const getContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (type, ...args) {
+      return type === 'webgl2' ? null : getContext.call(this, type, ...args);
+    };
+  });
+  await page.goto('/');
+  await expect(page.locator('.world-poster')).toBeVisible();
+  await expect(page.locator('#hero-world')).not.toHaveAttribute(
+    'data-ready',
+    'true',
+  );
+  await page.getByRole('link', { name: 'Explore my work' }).click();
+  await expect(page).toHaveURL('/#work');
+});
+
+test('building selection replaces the city with distinct project models', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const canvas = page.locator('#hero-world');
+  await expect(canvas).toHaveAttribute('data-ready', 'true');
+  const overview = await canvas.screenshot();
+  const bounds = await canvas.boundingBox();
+  expect(bounds).not.toBeNull();
+  await canvas.click({
+    position: { x: bounds.width * 0.27, y: bounds.height * 0.52 },
+  });
+  await expect(canvas).toHaveAttribute('data-view', 'recon-desk');
+  const models = [];
+  for (const slug of [
+    'recon-desk',
+    'operations',
+    'sales-crm',
+    'visualization',
+    'website-cms',
+  ]) {
+    await page.locator(`[data-landmark="${slug}"]`).click();
+    await expect(canvas).toHaveAttribute('data-view', slug);
+    const image = await canvas.screenshot();
+    expect(image.equals(overview)).toBe(false);
+    for (const previous of models) expect(image.equals(previous)).toBe(false);
+    models.push(image);
+  }
+  await page.getByRole('button', { name: 'Back to overview' }).click();
+  await expect(canvas).toHaveAttribute('data-view', 'overview');
+});
+
 test('generated routes and custom 404 never use an SPA fallback', async ({
   page,
   request,
@@ -27,7 +150,7 @@ test('generated routes and custom 404 never use an SPA fallback', async ({
   await expect(page).toHaveURL('/');
 });
 
-for (const route of ['/', '/work/recon-desk']) {
+for (const route of ['/work/recon-desk']) {
   for (const variant of ['refined', 'original']) {
     test(`${route} gallery: ${variant}, keyboard selection and complete image`, async ({
       page,
@@ -74,12 +197,14 @@ for (const route of ['/', '/work/recon-desk']) {
 test('comparison scenarios, inclusive tolerance, invalid input and reset', async ({
   page,
 }) => {
-  await page.goto('/');
+  await page.goto('/work/recon-desk#comparison-demo');
   const amount = page.getByLabel('New amount for SKU 002');
   const tolerance = page.getByLabel('Allow a difference up to');
-  await expect(page.locator('#result-title')).toHaveText('1 changed record');
+  await expect(page.locator('#comparison-result-title')).toHaveText(
+    '1 changed record',
+  );
   await page.getByRole('button', { name: 'Rows shuffled' }).click();
-  await expect(page.locator('#result-title')).toHaveText(
+  await expect(page.locator('#comparison-result-title')).toHaveText(
     'Same records. Zero changes.',
   );
   await expect(amount).toBeDisabled();
@@ -87,15 +212,19 @@ test('comparison scenarios, inclusive tolerance, invalid input and reset', async
   await expect(page.locator('#after-rows tr').first()).toContainText('003');
   await page.getByRole('button', { name: 'A duplicate key' }).click();
   await expect(page.locator('#after-rows .row-problem')).toHaveCount(2);
-  await expect(page.locator('#result-title')).toContainText('ambiguous key');
+  await expect(page.locator('#comparison-result-title')).toContainText(
+    'ambiguous key',
+  );
   await page.getByRole('button', { name: 'A price changed' }).click();
   await amount.fill('950.01');
   await tolerance.focus();
   await tolerance.press('End');
   await expect(page.locator('#tolerance-value')).toHaveText('₹100');
-  await expect(page.locator('#result-title')).toHaveText('1 changed record');
+  await expect(page.locator('#comparison-result-title')).toHaveText(
+    '1 changed record',
+  );
   await amount.fill('950');
-  await expect(page.locator('#result-title')).toHaveText(
+  await expect(page.locator('#comparison-result-title')).toHaveText(
     'Within your rules. All clear.',
   );
   const lastValid = await page.locator('#after-rows').innerText();
@@ -109,7 +238,9 @@ test('comparison scenarios, inclusive tolerance, invalid input and reset', async
   await expect(amount).toHaveValue('920');
   await expect(amount).toHaveAttribute('aria-invalid', 'false');
   await expect(tolerance).toHaveValue('0');
-  await expect(page.locator('#result-title')).toHaveText('1 changed record');
+  await expect(page.locator('#comparison-result-title')).toHaveText(
+    '1 changed record',
+  );
   await expect(page.locator('#before-rows')).toContainText('850.00');
 });
 

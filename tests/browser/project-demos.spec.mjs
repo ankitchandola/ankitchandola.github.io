@@ -1,29 +1,18 @@
 import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from './fixtures.mjs';
 
-test('Recon review requires explicit confirmation and resets both branches', async ({
+test('Recon detail page hosts the complete comparison demo and build notes', async ({
   page,
 }) => {
   await page.goto('/work/recon-desk');
-  const demo = page.locator('.project-demonstration');
-  const confirm = demo.getByRole('button', { name: 'Confirm selected match' });
-  await expect(confirm).toBeDisabled();
-  await demo.getByRole('button', { name: /Books entry A/ }).press('Space');
-  await expect(demo.getByRole('status')).toContainText('does not confirm');
-  await confirm.click();
-  await expect(demo.getByRole('status')).toContainText(
-    'competing candidate remains unpaired',
-  );
+  const demo = page.locator('.recon-comparison');
+  await expect(demo.locator('.table-pair table')).toHaveCount(2);
   await expect(
-    demo.getByRole('button', { name: /Books entry B/ }),
-  ).toBeDisabled();
-  await demo.getByRole('button', { name: 'Start over' }).click();
-  await demo.getByRole('button', { name: 'Leave unmatched' }).click();
-  await expect(demo.getByRole('status')).toContainText(
-    'No candidate is confirmed',
-  );
-  await demo.getByRole('button', { name: 'Start over' }).click();
-  await expect(confirm).toBeDisabled();
+    demo.getByRole('button', { name: 'Rows shuffled' }),
+  ).toBeVisible();
+  await demo.locator('.comparison-notes summary').click();
+  await expect(demo.locator('.comparison-notes section').first()).toBeVisible();
+  await expect(page.locator('.project-demonstration')).toHaveCount(0);
 });
 
 test('Operations cannot confirm offline and rejected saves do not count as accepted', async ({
@@ -157,7 +146,11 @@ for (const theme of ['light', 'dark']) {
     ]) {
       await page.goto('/work/' + slug);
       const result = await new AxeBuilder({ page })
-        .include('.project-demonstration')
+        .include(
+          slug === 'recon-desk'
+            ? '.recon-comparison'
+            : '.project-demonstration',
+        )
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
       expect(result.violations, slug).toEqual([]);

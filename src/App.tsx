@@ -15,6 +15,7 @@ import HeaderNavigation from './components/HeaderNavigation';
 import projects from './content/projects';
 import type { Project as ProjectContent } from './content/types.ts';
 import ProjectDemonstration from './projects/ProjectDemonstration';
+import ReconDemo from './home/ReconDemo';
 import Ricochet from './play/Ricochet';
 function Header() {
   return (
@@ -350,7 +351,11 @@ function Project({ slug }: { slug: string }) {
           className="case-workflow"
         >
           <p className="problem-note">{p.problem}</p>
-          {p.demonstration && <ProjectDemonstration project={p} />}
+          {p.slug === 'recon-desk' && p.home ? (
+            <ReconDemo home={p.home} />
+          ) : p.demonstration ? (
+            <ProjectDemonstration project={p} />
+          ) : null}
         </CaseSection>
       )}
       <CaseSection

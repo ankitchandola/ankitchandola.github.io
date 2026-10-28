@@ -1,0 +1,326 @@
+.recon-comparison {
+  grid-column: 1 / -1;
+  min-width: 0;
+  --demo-paper: #fffdf7;
+  --demo-ink: #172f31;
+  --demo-line: #bdc8be;
+}
+.recon-comparison .playground-shell {
+  display: grid;
+  grid-template-columns: 265px minmax(0, 1fr);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.recon-comparison .icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.recon-comparison .demo-guide {
+  padding: 32px 24px;
+  background: #245e58;
+  color: #fffdf7;
+}
+.recon-comparison .demo-guide h3 {
+  margin: 24px 0 16px;
+  color: #fffdf7;
+  font: 700 32px/1.2 var(--display);
+}
+.recon-comparison .demo-guide p {
+  font: 400 17px/1.6 var(--body);
+  color: #fffdf7;
+}
+.recon-comparison .demo-guide .demo-label {
+  color: #fffdf7;
+}
+.recon-comparison .demo-label,
+.recon-comparison .small-label,
+.recon-comparison .key-note {
+  font: 700 13px/1.5 var(--label);
+}
+.recon-comparison .demo-steps {
+  padding: 0;
+  margin: 24px 0;
+  list-style: none;
+}
+.recon-comparison .demo-steps li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 10px;
+  font-size: 15px;
+}
+.recon-comparison .demo-steps li span,
+.recon-comparison .step-title b {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+.recon-comparison .guide-note {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0;
+}
+.recon-comparison .demo-main {
+  padding: 24px;
+  background: var(--surface);
+  color: var(--ink);
+  min-width: 0;
+}
+.recon-comparison .demo-toolbar,
+.recon-comparison .rules > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.recon-comparison .step-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 15px/1.4 var(--label);
+}
+.recon-comparison .reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  padding: 8px 0;
+  min-height: 44px;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: 14px;
+}
+.recon-comparison .scenarios {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 16px 0 24px;
+}
+.recon-comparison .scenario {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 14px/1.4 var(--label);
+}
+.recon-comparison .scenario.active {
+  background: #245e58;
+  border-color: #245e58;
+  color: #fffdf7;
+}
+.recon-comparison .table-pair,
+.recon-comparison .rule-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.recon-comparison .data-file {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.recon-comparison .file-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 12px;
+  gap: 8px;
+  background: var(--soft);
+  font: 700 14px/1.4 var(--label);
+}
+.recon-comparison .data-file table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font: 400 14px/1.5 var(--body);
+  background: var(--surface);
+}
+.recon-comparison .data-file :is(th, td) {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+.recon-comparison .data-file :is(th, td):first-child {
+  width: 18%;
+}
+.recon-comparison .data-file :is(th, td):last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.recon-comparison .data-file :is(.row-changed, .row-problem) {
+  background: #f7dec6;
+  color: #633710;
+}
+.recon-comparison .data-file .row-matched {
+  background: #e0ecde;
+  color: #172f31;
+}
+.recon-comparison .rules {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.recon-comparison .rule-controls {
+  margin-top: 20px;
+}
+.recon-comparison .rule-controls label {
+  font-size: 15px;
+}
+.recon-comparison .rule-controls label > span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  min-height: 48px;
+}
+.recon-comparison .amount-field > span {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+.recon-comparison input {
+  min-width: 0;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  accent-color: var(--accent);
+  font-size: 16px;
+}
+.recon-comparison input:disabled {
+  opacity: 0.6;
+}
+.recon-comparison output {
+  min-width: 42px;
+}
+.recon-comparison .input-error {
+  color: var(--accent);
+  font-size: 14px;
+}
+.recon-comparison .demo-result {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 4px;
+  background: #f7dec6;
+  color: #633710;
+}
+.recon-comparison .demo-result h5 {
+  font: 700 26px/1.2 var(--display);
+  margin: 8px 0;
+  color: inherit;
+}
+.recon-comparison .demo-result p {
+  color: inherit;
+  font-size: 16px;
+}
+.recon-comparison .result-badge {
+  grid-column: 2;
+  justify-self: start;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+.recon-comparison .demo-result.success {
+  background: #e0ecde;
+  color: #172f31;
+}
+.recon-comparison .big-result-icon .icon {
+  display: none;
+}
+.recon-comparison [data-icon='changed'] .icon-arrow-up-right,
+.recon-comparison [data-icon='problem'] .icon-circle-alert,
+.recon-comparison [data-icon='clear'] .icon-check {
+  display: block;
+}
+.recon-comparison .demo-tip {
+  margin-top: 16px;
+  font-size: 15px;
+}
+.comparison-benefits {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+  padding-block: 32px;
+}
+.comparison-benefits h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+}
+.comparison-benefits p,
+.comparison-notes p {
+  margin-top: 12px;
+  font-size: 17px;
+}
+.comparison-notes {
+  border-top: 1px solid var(--line);
+}
+.comparison-notes summary {
+  padding-block: 20px;
+  cursor: pointer;
+  font-weight: 700;
+}
+.comparison-notes > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+@media (max-width: 1100px) {
+  .recon-comparison .playground-shell {
+    grid-template-columns: 1fr;
+  }
+  .recon-comparison .demo-guide {
+    padding: 24px;
+  }
+  .recon-comparison .demo-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .recon-comparison .guide-note {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .recon-comparison .demo-main {
+    padding: 16px;
+  }
+  .recon-comparison .table-pair,
+  .recon-comparison .rule-controls,
+  .comparison-benefits,
+  .comparison-notes > div {
+    grid-template-columns: 1fr;
+  }
+  .recon-comparison .scenario {
+    flex-direction: column;
+  }
+  .recon-comparison .data-file table {
+    font-size: 15px;
+  }
+}

@@ -2476,10 +2476,10 @@ body.motion-paused .sheet {
 .button,
 .site-header nav .nav-contact {
   border-radius: 3px;
-  box-shadow: 4px 4px 0 #9bb8a7;
+  box-shadow: none;
   transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+    transform 140ms cubic-bezier(0.23, 1, 0.32, 1),
+    background 140ms;
   background: var(--ink);
   color: var(--white);
   border: 1px solid var(--ink);
@@ -2492,20 +2492,20 @@ body.motion-paused .sheet {
 .button.outline {
   background: var(--paper);
   color: var(--ink);
-  box-shadow: 4px 4px 0 #bdd0c0;
+  box-shadow: none;
 }
 @media (hover: hover) {
   .button:hover,
   .site-header nav .nav-contact:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 #9bb8a7;
+    transform: translateY(-2px);
+    box-shadow: none;
     text-decoration: none;
   }
 }
 .button:active,
 .site-header nav .nav-contact:active {
-  transform: translate(3px, 3px);
-  box-shadow: 1px 1px 0 #9bb8a7;
+  transform: scale(0.98);
+  box-shadow: none;
 }
 .button .icon,
 .site-header .nav-contact .icon {
