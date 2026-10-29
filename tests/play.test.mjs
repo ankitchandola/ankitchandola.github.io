@@ -1,6 +1,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  arcadeLevel,
+  initialArcadeState,
+  updateArcade,
+} from '../src/home/city-scenes/arcade-state.ts';
+import { beamPoints } from '../src/play/board-path.ts';
+
+test('Arcade rotates and resets the shared lesson without mutating its source', () => {
+  const initial = initialArcadeState();
+  const miss = updateArcade(initial, { type: 'fire' });
+  assert.equal(miss.shot.outcome, 'blocked');
+  const turned = updateArcade(miss, { type: 'rotate', key: '3,1' });
+  assert.equal(turned.shot, null);
+  const hit = updateArcade(turned, { type: 'fire' });
+  assert.equal(hit.shot.outcome, 'hit');
+  assert.equal(initial.mirrors['3,1'], '/');
+  assert.deepEqual(updateArcade(hit, { type: 'reset' }), initial);
+  assert.deepEqual(beamPoints(arcadeLevel, hit.shot).at(-1), [3.5, 3.16]);
+});
+import {
   parseLevel,
   reflect,
   rotate,

@@ -2,6 +2,7 @@ import type { Profile, Scope } from './types.ts';
 
 export const profile: Profile = {
   name: 'Ankit Chandola',
+  location: 'Delhi, India',
   email: 'chandolaankit027@gmail.com',
   github: 'https://github.com/ankitchandola',
   linkedin: 'https://www.linkedin.com/in/ankit-chandola-b53a54187/',

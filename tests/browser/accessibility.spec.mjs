@@ -76,7 +76,7 @@ test.describe('without JavaScript', () => {
       if (!project.home)
         await expect(page.locator(`#${project.slug} .text-link`)).toBeVisible();
     }
-    await expect(page.locator('.world-poster')).toBeVisible();
+    await expect(page.locator('.city-stage .city-poster')).toBeVisible();
     await page.locator('a[href="/lite"]').first().click();
     await expect(page).toHaveURL(/\/lite\/?$/);
   });
@@ -129,6 +129,24 @@ test.describe('without JavaScript', () => {
 });
 
 for (const theme of ['light', 'dark']) {
+  test(`City dialog accessibility: ${theme}`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: theme });
+    await page.goto('/');
+    await page
+      .getByRole('button', { name: 'Explore the city', exact: true })
+      .click();
+    const results = await new AxeBuilder({ page })
+      .include('#city-dialog')
+      .analyze();
+    expect(results.violations).toEqual([]);
+    for (const id of ['studio', 'journey', 'arcade', 'contact']) {
+      await page.locator(`[data-city-destination="${id}"]`).click();
+      const selected = await new AxeBuilder({ page })
+        .include('#city-dialog')
+        .analyze();
+      expect(selected.violations).toEqual([]);
+    }
+  });
   for (const route of ['/', '/work/recon-desk', '/lite', '/play']) {
     test(`WCAG axe: ${route} ${theme}, including expanded controls`, async ({
       page,

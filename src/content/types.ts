@@ -53,7 +53,6 @@ export interface Project {
   kind: string;
   summary: string;
   indexSummary?: string;
-  landmarkLabel?: string;
   tags: readonly string[];
   ownership: string;
   sections: readonly ProjectSection[];
@@ -71,6 +70,7 @@ export interface Project {
 }
 export interface Profile {
   name: string;
+  location: string;
   email: string;
   github: string;
   linkedin: string;

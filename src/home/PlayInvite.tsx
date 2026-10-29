@@ -1,4 +1,5 @@
 import { Icon } from './icons';
+import { ricochet } from '../content/ricochet';
 export default function PlayInvite() {
   return (
     <aside aria-labelledby="play-invite-title" className="play-invite wrap">
@@ -16,9 +17,9 @@ export default function PlayInvite() {
       <div>
         <p className="play-invite-label">SIDE PROJECT · PUZZLE</p>
         <h2 id="play-invite-title">Taking a break?</h2>
-        <p>Bounce a beam off some mirrors in Ricochet, a five-level puzzle.</p>
+        <p>{ricochet.invitation}</p>
       </div>
-      <a className="play-invite-link" href="/play">
+      <a className="play-invite-link" href={ricochet.href}>
         Play Ricochet <Icon name="arrow-right" />
       </a>
     </aside>

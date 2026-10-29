@@ -2,7 +2,6 @@
   {
     "slug": "recon-desk",
     "name": "Recon Desk",
-    "landmarkLabel": "Recon Desk",
     "kind": "Personal project",
     "summary": "Compare CSV and Excel exports, then review bank-to-books matches. File processing stays in the browser.",
     "tags": ["React", "TypeScript", "Web Workers", "IndexedDB"],
@@ -174,7 +173,6 @@
   {
     "slug": "operations",
     "name": "Internal Operations Platform",
-    "landmarkLabel": "Operations",
     "indexSummary": "Orders through installation, with offline survey workflows across frontend and backend.",
     "kind": "Professional work",
     "summary": "One platform connecting orders, site surveys, production, dispatch and installation. My work spans the frontend and selected backend services, including the complete offline implementation.",
@@ -322,7 +320,6 @@
   {
     "slug": "sales-crm",
     "name": "Sales CRM & Browser Telephony",
-    "landmarkLabel": "CRM",
     "indexSummary": "Custom Frappe CRM workflows, browser calling and a controlled handoff into operations.",
     "kind": "Professional work",
     "summary": "Company-specific development on an existing Frappe CRM: browser calling, lead qualification, quotation reviews, permissions and a controlled handoff into operations.",
@@ -452,7 +449,6 @@
   {
     "slug": "visualization",
     "name": "Project Visualization Library",
-    "landmarkLabel": "Visualization",
     "indexSummary": "A shared React package for project navigation and unit selection across two applications.",
     "kind": "Professional work \u00b7 shared package",
     "summary": "A reusable React package for navigating project hierarchies, reading unit progress and working with selected units. Used by the operations platform and a customer dashboard.",
@@ -590,7 +586,6 @@
   {
     "slug": "website-cms",
     "name": "Public Brand Website & CMS",
-    "landmarkLabel": "Website & CMS",
     "indexSummary": "An SSR website, Strapi publishing and enquiry flows, with shared EC2 staging.",
     "kind": "Professional work",
     "summary": "A public-facing SSR website, structured enquiry flows and a Strapi publishing platform, with staging deployment on AWS EC2.",

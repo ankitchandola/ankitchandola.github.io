@@ -1,5 +1,18 @@
 import type { ReactNode } from 'react';
 const shapes = {
+  maximize: (
+    <>
+      <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3" />
+    </>
+  ),
+  x: <path d="m18 6-12 12M6 6l12 12" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  minus: <path d="M5 12h14" />,
+  'rotate-cw': (
+    <>
+      <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5" />
+    </>
+  ),
   'arrow-up-right': (
     <>
       <path d="M7 7h10v10" />
