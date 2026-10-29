@@ -17,7 +17,7 @@ export default function Hero() {
         <h1 id="hero-heading">
           <span className="sr-only">Ankit Chandola. Full-stack developer.</span>
           <span aria-hidden="true" className="code-name">
-            <span id="morph">{'<ankit chandola>'}</span>
+            <span>{'<ankit chandola>'}</span>
             <span className="caret">_</span>
           </span>
         </h1>

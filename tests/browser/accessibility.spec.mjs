@@ -44,7 +44,7 @@ test('reduced motion stops ambient motion and puzzle animation', async ({
   await expect(page.locator('#motion')).toBeDisabled();
   await expect(page.locator('body')).toHaveClass(/motion-paused/);
   await page.clock.fastForward(4000);
-  await expect(page.locator('#morph')).toHaveText('<ankit chandola>');
+  await expect(page.locator('.code-name')).toContainText('<ankit chandola>');
   await page.goto('/play');
   await page.getByRole('button', { name: 'Fire', exact: true }).click();
   await expect(page.locator('.rc-beam')).toBeVisible();
