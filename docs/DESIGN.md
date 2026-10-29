@@ -115,6 +115,10 @@ On devices with a fine pointer, hovering for a moment (150ms) temporarily opens 
 
 Expanded content currently has two blocks: Implementation and Boundary. Use two equal columns on wide screens and one column on mobile. Align the content with the title text, leaving space for the summary number. Put the project link on its own full-width row.
 
+### How I Work
+
+The Frontend and Backend capability blocks use readable 16px detail text and end with a “Seen in” line linking the projects that show that work. The section introduction points to the engineering decisions instead of repeating their questions.
+
 Existing desktop alignment uses an 86px left inset (60px number plus 26px gap), 48px column gap and 24px row gap. Mobile removes the inset. Do not preserve an empty third column from an older accordion design. Check open and closed states with long content.
 
 ### Ricochet puzzle
@@ -144,11 +148,11 @@ Reuse existing teal primary actions, outlined secondary actions and small corner
 
 ### Header search
 
-Use a compact search icon beside the existing header controls, not a permanent search bar. Search is local and filters project names, summaries, ownership and technology tags from the shared project data. All query words must match, ignoring case and extra whitespace. Show an explicit empty state, an announced result count and links to project details. Opening focuses the input; Escape closes the disclosure and restores focus. Outside interaction closes it. Without JavaScript, including lite, the same native disclosure is a project directory: show working links and omit the inactive search field. Never add scripts to lite for search.
+Use a compact search icon beside the existing header controls, not a permanent search bar. Search is local and filters project names, summaries, ownership and technology tags from the shared project data. All query words must match, ignoring case and extra whitespace. Show an explicit empty state, an announced result count and links to project details. Opening focuses the input; Escape closes the disclosure and restores focus. Outside interaction closes it. Without JavaScript, including lite, the same native disclosure is a project directory: show working links and omit the inactive search field. Never add scripts to lite for search. Below the projects, a “Jump to” list links Selected work, How I work, Engineering decisions, Experience and Say hello, filtered by the same query; the project count ignores it. With script, Ctrl K or ⌘ K opens the visible search from anywhere, arrow keys move through visible results and a hint states both. The shortcut acts only on the rendered instance, since desktop and phone headers each mount one.
 
 ## Motion and interaction
 
-The hero eyebrow names the current role and employer, followed by the headline “Operations software, front to back.” The visible “Explore the city” button has a one-line caption naming what the city opens; it is hidden with the button when scripts are unavailable. The main hero cycles through `<ankit chandola>`, `</>`, `<full stack developer>`, `<problem solver>` and `<tool builder>`. Keep a stable accessible identity alongside decorative animation. The skills banner runs continuously with relevant technologies.
+The hero eyebrow names the current role and employer, followed by the headline “Operations software, front to back.” The visible “Explore the city” button has a one-line caption naming what the city opens; it is hidden with the button when scripts are unavailable. The hero shows a static `<ankit chandola>` code-style name with a blinking caret; it no longer cycles through phrases, so the headline stays the single dominant statement. Keep a stable accessible identity alongside the decorative name. The skills banner runs continuously with relevant technologies.
 
 Respect reduced-motion preferences. Place the pause control at the trailing edge of the skills banner, outside the hero copy. Centre the banner type optically within the band. Sections that start below the fold enter once with a short 70ms stagger, and only when motion is allowed and not paused. Content is visible without JavaScript. Pressable controls give press feedback; hover transforms apply only on devices that can hover. Gallery views crossfade in 180ms. Essential content must not depend on animation. Use short, restrained transitions for actions and expansion.
 

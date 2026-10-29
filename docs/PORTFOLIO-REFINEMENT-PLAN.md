@@ -1,6 +1,6 @@
 # Portfolio refinement plan
 
-Status: phases 1 and 2 first pass implemented 29 October 2026 (hero positioning, start-here links, card contribution lines and demo links). Phase 4 (contact prompt and homepage copy-email) implemented the same day. Phase 3 and detail/lite hero alignment remain proposals.
+Status: phases 1 and 2 first pass implemented 29 October 2026 (hero positioning, start-here links, card contribution lines and demo links). Phase 4 (contact prompt and homepage copy-email) implemented the same day. Phase 3 first pass (capability evidence links, readable capability text, tighter work-section spacing), lite alignment, a static hero name and a Ctrl/⌘ K section jump were added afterwards.
 
 ## Intent
 
