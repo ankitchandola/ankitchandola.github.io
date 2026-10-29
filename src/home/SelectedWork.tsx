@@ -45,22 +45,36 @@ export default function SelectedWork() {
                 <p className="project-summary">
                   {project.indexSummary ?? project.summary}
                 </p>
+                {project.contribution && (
+                  <p className="project-contribution">{project.contribution}</p>
+                )}
                 <div className="tags">
                   {project.tags.map((tag) => (
                     <span key={tag}>{tag}</span>
                   ))}
                 </div>
-                <a
-                  className="text-link"
-                  href={
-                    '/work/' +
-                    project.slug +
-                    (project.home ? '#comparison-demo' : '')
-                  }
-                >
-                  {project.home ? 'Try the comparison demo' : 'Project details'}{' '}
-                  <LinkArrow />
-                </a>
+                <div className="project-actions">
+                  <a className="text-link" href={'/work/' + project.slug}>
+                    Project details <LinkArrow />
+                  </a>
+                  {project.home ? (
+                    <a
+                      className="text-link"
+                      href={'/work/' + project.slug + '#comparison-demo'}
+                    >
+                      Try the comparison demo <LinkArrow />
+                    </a>
+                  ) : (
+                    project.demonstration && (
+                      <a
+                        className="text-link"
+                        href={'/work/' + project.slug + '#workflow'}
+                      >
+                        Demo: {project.demonstration.title} <LinkArrow />
+                      </a>
+                    )
+                  )}
+                </div>
               </div>
             </article>
           );

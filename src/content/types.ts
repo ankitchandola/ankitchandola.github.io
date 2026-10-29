@@ -57,6 +57,7 @@ export interface Project {
   };
   summary: string;
   indexSummary?: string;
+  contribution?: string;
   tags: readonly string[];
   ownership: string;
   sections: readonly ProjectSection[];

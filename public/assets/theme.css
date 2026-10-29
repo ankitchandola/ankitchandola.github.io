@@ -816,6 +816,9 @@ footer.wrap,
 footer a:focus-visible {
   outline-color: #245e58;
 }
+.hero .eyebrow {
+  max-width: none;
+}
 .hero-lite-link {
   font: 400 12px/1.5 var(--label);
   color: var(--muted);
@@ -873,8 +876,18 @@ footer a:focus-visible {
   justify-content: center;
   cursor: zoom-in;
 }
-.city-open[hidden] {
+.city-open[hidden],
+.city-open[hidden] ~ .city-invite {
   display: none;
+}
+.city-invite {
+  position: absolute;
+  top: 100%;
+  inset-inline: 0;
+  margin-top: 8px;
+  text-align: center;
+  font: 400 16px/1.5 var(--body);
+  color: var(--muted);
 }
 .city-open span {
   display: inline-flex;
@@ -1402,11 +1415,23 @@ footer a:focus-visible {
 .project-card-copy p {
   max-width: 65ch;
 }
+.project-card-copy .project-contribution {
+  margin-top: 12px;
+  padding-left: 12px;
+  border-left: 2px solid var(--teal);
+  font: 400 17px/1.55 var(--body);
+  color: var(--muted);
+}
 .project-card-copy .tags {
   margin-top: 16px;
 }
-.project-card-copy .text-link {
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 32px;
   margin-top: 16px;
+}
+.project-card-copy .text-link {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
@@ -1533,6 +1558,9 @@ footer a:focus-visible {
   .hero-city {
     max-width: 400px;
     margin-inline: auto;
+  }
+  .hero-city:has(> .city-open:not([hidden])) {
+    margin-bottom: 64px;
   }
   .project-card-copy h3 {
     font-size: 28px;

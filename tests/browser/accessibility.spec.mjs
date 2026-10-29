@@ -73,8 +73,11 @@ test.describe('without JavaScript', () => {
       await expect(
         page.getByRole('heading', { name: project.name, exact: true }),
       ).toBeVisible();
-      if (!project.home)
-        await expect(page.locator(`#${project.slug} .text-link`)).toBeVisible();
+      await expect(
+        page
+          .locator(`#${project.home?.anchor ?? project.slug}`)
+          .getByRole('link', { name: 'Project details' }),
+      ).toBeVisible();
     }
     await expect(page.locator('.city-stage .city-poster')).toBeVisible();
     await page.locator('a[href="/lite"]').first().click();

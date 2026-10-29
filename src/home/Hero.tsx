@@ -11,7 +11,9 @@ export default function Hero() {
   return (
     <section aria-labelledby="hero-heading" className="hero wrap">
       <div className="hero-copy">
-        <p className="eyebrow">FULL-STACK DEVELOPER</p>
+        <p className="eyebrow">
+          FULL-STACK DEVELOPER AT GREEN FORTUNE TECHNOLOGIES
+        </p>
         <h1 id="hero-heading">
           <span className="sr-only">Ankit Chandola. Full-stack developer.</span>
           <span aria-hidden="true" className="code-name">
@@ -20,14 +22,14 @@ export default function Hero() {
           </span>
         </h1>
         <p className="hero-title">
-          Web apps,
+          Operations software,
           <br />
           <span>front to back.</span>
         </p>
         <p className="hero-description">
-          I’m Ankit, a full-stack developer in Delhi. I build operations
-          software, CRM workflows and browser tools, including surveys that work
-          offline and a tool for comparing spreadsheets.
+          I’m Ankit, a full-stack developer in Delhi. I build CRM workflows,
+          operations tools with offline surveys, shared React components and a
+          browser tool for comparing spreadsheets.
         </p>
         <div className="hero-actions">
           <a className="button dark" href="#work">
@@ -51,7 +53,7 @@ export default function Hero() {
             BASED IN {profile.location.toUpperCase()}
           </span>
           <a className="hero-lite-link" href="/lite">
-            Lite version <Icon name="arrow-up-right" />
+            Quick overview <Icon name="arrow-up-right" />
           </a>
         </div>
       </div>
@@ -72,12 +74,16 @@ export default function Hero() {
           type="button"
           aria-haspopup="dialog"
           aria-controls="city-dialog"
+          aria-describedby="city-invite"
           hidden
         >
           <span>
             Explore the city <Icon name="maximize" />
           </span>
         </button>
+        <p id="city-invite" className="city-invite">
+          A map of my projects, career, a puzzle and contact.
+        </p>
         <dialog
           id="city-dialog"
           className="city-dialog"

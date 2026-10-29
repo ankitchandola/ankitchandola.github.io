@@ -1,4 +1,5 @@
 import { scope } from '../content/profile';
+import { LinkArrow } from './icons';
 export default function CurrentWork() {
   return (
     <section className="current-work wrap" id="today">
@@ -19,6 +20,15 @@ export default function CurrentWork() {
           <span className="current-role">
             Full-stack developer · 2025 — present
           </span>
+          <nav className="start-here" aria-label="Start here">
+            <span>Start here</span>
+            <a href="/work/recon-desk">
+              Recon Desk, built alone end to end <LinkArrow />
+            </a>
+            <a href="/work/operations">
+              Offline surveys across frontend and backend <LinkArrow />
+            </a>
+          </nav>
         </div>
         <div className="scope-numbers" aria-label="Current project scope">
           {scope.map(([n, label, detail]) => (

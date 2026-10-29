@@ -29,6 +29,26 @@
   margin-top: 20px;
   color: var(--teal);
 }
+.start-here {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 24px;
+}
+.start-here > span {
+  font: 700 15px/1.4 var(--label);
+  color: var(--ink);
+}
+.start-here a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font: 700 17px/1.4 var(--body);
+  color: var(--teal);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .scope-numbers {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
