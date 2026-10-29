@@ -2,6 +2,19 @@ import './interactions.js';
 import { mountSiteSearch } from '../components/site-search';
 
 document.querySelectorAll('[data-site-search]').forEach(mountSiteSearch);
+const copyEmail = document.getElementById('copy-email');
+const copyStatus = document.getElementById('copy-email-status');
+if (copyEmail && copyStatus && navigator.clipboard) {
+  copyEmail.hidden = false;
+  copyEmail.addEventListener('click', () =>
+    navigator.clipboard.writeText(copyEmail.dataset.email).then(
+      () => (copyStatus.textContent = 'Email copied.'),
+      () =>
+        (copyStatus.textContent =
+          'Could not copy. Select the address to copy it.'),
+    ),
+  );
+}
 const city = document.getElementById('hero-city');
 if (city) {
   const loadCity = new IntersectionObserver(

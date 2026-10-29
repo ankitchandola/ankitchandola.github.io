@@ -902,3 +902,18 @@ test('header navigation and phone menu close on Escape, outside click and select
   await page.getByRole('link', { name: 'Back to selected work' }).click();
   await expect(page).toHaveURL('/#work');
 });
+
+test('contact copies the email address and announces the result', async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/');
+  const copy = page.getByRole('button', { name: 'Copy email' });
+  await copy.scrollIntoViewIfNeeded();
+  await copy.click();
+  await expect(page.locator('#copy-email-status')).toHaveText('Email copied.');
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    'chandolaankit027@gmail.com',
+  );
+});

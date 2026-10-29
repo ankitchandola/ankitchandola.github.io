@@ -1,4 +1,4 @@
-import { profile } from '../content/profile';
+import { contactPrompt, profile } from '../content/profile';
 import { Icon } from './icons';
 export default function Contact() {
   return (
@@ -19,10 +19,27 @@ export default function Contact() {
             <Icon name="arrow-up-right" />
           </a>
         </div>
+        <p className="contact-prompt">{contactPrompt}</p>
         <div className="contact-bottom">
-          <a className="email" href={'mailto:' + profile.email}>
-            {profile.email} <Icon name="arrow-up-right" />
-          </a>
+          <div className="contact-email-row">
+            <a className="email" href={'mailto:' + profile.email}>
+              {profile.email} <Icon name="arrow-up-right" />
+            </a>
+            <button
+              id="copy-email"
+              className="copy-email"
+              type="button"
+              data-email={profile.email}
+              hidden
+            >
+              <Icon name="copy" /> Copy email
+            </button>
+            <span
+              id="copy-email-status"
+              className="copy-status"
+              role="status"
+            />
+          </div>
           <div>
             <a href={profile.github} rel="noopener noreferrer" target="_blank">
               <Icon name="github" />

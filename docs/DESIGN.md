@@ -30,6 +30,7 @@ Use semantic CSS variables instead of new isolated hex values where a role alrea
 - Footer means **only the final bar**, with its spaced content groups. Its background is `#E8E9DA`, edge to edge, with `#172F31` text in both themes and both editions. Do not apply this colour to the contact section above it.
 - Scope sequence numbers use three distinct accents: 01 `#245E58`, 02 `#86532B`, 03 `#626B3D` in light mode. Use existing theme adaptations for dark surfaces.
 - The contact section retains teal with apricot emphasis. Section numbering changes must not accidentally recolour it.
+- Every contact section shows the shared `contactPrompt` from `profile.ts` below its heading: what to write about and what helps a reply. It must not claim availability. The homepage adds an outlined Copy email button beside the address, hidden until script confirms clipboard support, with the outcome announced in a visible status line; lite stays script-free and keeps the plain mailto link.
 
 ## Typography
 

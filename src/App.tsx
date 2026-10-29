@@ -9,7 +9,7 @@ import {
   Linkedin,
   Accessibility,
 } from 'lucide-react';
-import { profile, scope, year } from './content/profile';
+import { contactPrompt, profile, scope, year } from './content/profile';
 import { experience } from './content/experience';
 import HeaderNavigation from './components/HeaderNavigation';
 import projects from './content/projects';
@@ -53,6 +53,7 @@ function Footer() {
             <ArrowUpRight size={70} strokeWidth={1.3} />
           </a>
         </div>
+        <p className="contact-prompt">{contactPrompt}</p>
         <a className="contact-email" href={'mailto:' + profile.email}>
           {profile.email}
           <ArrowUpRight size={28} />

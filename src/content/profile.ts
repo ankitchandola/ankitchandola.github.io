@@ -8,6 +8,8 @@ export const profile: Profile = {
   linkedin: 'https://www.linkedin.com/in/ankit-chandola-b53a54187/',
   resume: '/assets/docs/ankit-chandola-resume.pdf',
 };
+export const contactPrompt =
+  'Write about a role, a project or a technical question. A few lines on the problem, the team and the timeline help me reply usefully.';
 export const scope: readonly Scope[] = [
   ['01', 'CRM & operations', 'Frontend + backend'],
   ['02', 'Shared React package', 'Two applications'],

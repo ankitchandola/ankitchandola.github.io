@@ -687,6 +687,43 @@ footer.wrap,
 .footer a:hover {
   color: #f4c7a4;
 }
+.contact-prompt {
+  max-width: 60ch;
+  margin: 8px 0 32px;
+  font: 400 18px/1.6 var(--body);
+  color: inherit;
+}
+.contact-title + .contact-prompt {
+  margin-top: 24px;
+}
+.contact-email-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+}
+.copy-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: 700 16px/1.4 var(--label);
+  cursor: pointer;
+}
+.copy-email[hidden] {
+  display: none;
+}
+.copy-email:active {
+  transform: scale(0.97);
+}
+.copy-status {
+  font: 400 16px/1.5 var(--body);
+}
 [data-theme='dark'] .contact.shell,
 [data-theme='dark'] footer.wrap,
 [data-theme='dark'] .footer.shell {
