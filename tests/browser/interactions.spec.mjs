@@ -46,8 +46,10 @@ test('city Studio uses shared projects, building taps and accessible panel links
 for (const route of ['/', '/work/operations']) {
   test(`${route} header search filters locally and restores keyboard focus`, async ({
     page,
-  }) => {
+  }, testInfo) => {
     await page.goto(route);
+    if (testInfo.project.name === 'phone')
+      await page.locator('.mobile-navigation > summary').click();
     const search = page.locator('.site-search:visible');
     const trigger = search.locator('summary');
     await trigger.click();
@@ -65,6 +67,10 @@ for (const route of ['/', '/work/operations']) {
     await input.fill('');
     await expect(results).toHaveCount(5);
     await input.press('Escape');
+    await expect(trigger).toBeFocused();
+    await expect(input).toBeHidden();
+    await trigger.click();
+    await search.getByRole('button', { name: 'Close search' }).click();
     await expect(trigger).toBeFocused();
     await expect(input).toBeHidden();
     await trigger.click();
@@ -515,7 +521,7 @@ test('city scenery, reserved plots and occluded landmarks do not act as destinat
   );
   camera.position.set(12, 15, 17);
   camera.lookAt(0, 1, 0);
-  camera.zoom = rect.width > rect.height ? 1.12 : 1;
+  camera.zoom = 6.3 * rect.width > 8.7 * rect.height ? 1.12 : 1;
   camera.updateProjectionMatrix();
   camera.updateMatrixWorld();
   for (const [x, y, z] of [
@@ -876,14 +882,14 @@ test('header navigation and phone menu close on Escape, outside click and select
   await page.goto('/work/recon-desk');
   if (testInfo.project.name === 'phone') {
     const menu = page.locator('.mobile-navigation');
-    const summary = menu.locator('summary');
+    const summary = menu.locator(':scope > summary');
     await summary.click();
     await expect(menu).toHaveAttribute('open', '');
     await summary.press('Escape');
     await expect(menu).not.toHaveAttribute('open', '');
     await expect(summary).toBeFocused();
     await summary.click();
-    await page.getByRole('heading', { level: 1 }).click();
+    await page.mouse.click(20, page.viewportSize().height - 20);
     await expect(menu).not.toHaveAttribute('open', '');
     await summary.click();
     await menu.getByRole('link', { name: 'Say hello' }).click();
@@ -922,7 +928,11 @@ test('contact copies the email address and announces the result', async ({
 
 test('Ctrl+K opens search, sections filter and arrow keys move through results', async ({
   page,
-}) => {
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name === 'phone',
+    'Phone search lives inside the closed navigation menu.',
+  );
   await page.goto('/');
   const search = page.locator('.site-search:visible');
   const input = search.getByRole('searchbox');

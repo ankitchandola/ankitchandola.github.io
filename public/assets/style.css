@@ -1987,8 +1987,24 @@ body.motion-paused {
     font-size: 16px;
   }
   .capabilities {
-    gap: 18px;
+    grid-template-columns: 1fr;
+    gap: 0;
     margin-top: 28px;
+    padding-top: 0;
+  }
+  .capabilities > div {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 12px;
+    align-items: baseline;
+    padding-block: 20px;
+    border-top: 1px solid #658276;
+  }
+  .capabilities > div > :not(span, b) {
+    grid-column: 1 / -1;
+  }
+  .capabilities > div > span {
+    margin: 0;
   }
   .capabilities b {
     font-size: 17px;

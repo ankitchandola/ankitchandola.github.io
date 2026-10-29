@@ -11,7 +11,13 @@ const sections = [
   ['contact', 'Say hello'],
 ] as const;
 
-export default function SiteSearch({ home = false }: { home?: boolean }) {
+export default function SiteSearch({
+  home = false,
+  labelled = false,
+}: {
+  home?: boolean;
+  labelled?: boolean;
+}) {
   const root = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
     if (root.current) return mountSiteSearch(root.current);
@@ -23,6 +29,7 @@ export default function SiteSearch({ home = false }: { home?: boolean }) {
         aria-keyshortcuts="Control+K Meta+K"
       >
         <Search size={22} />
+        {labelled && <span aria-hidden="true">Search</span>}
       </summary>
       <div className="search-panel">
         <label className="search-field" hidden>
@@ -72,6 +79,9 @@ export default function SiteSearch({ home = false }: { home?: boolean }) {
         <a className="search-all" href="/#work">
           View all selected work
         </a>
+        <button className="search-close" type="button" hidden>
+          Close search
+        </button>
         <p className="search-hint" hidden>
           Press Ctrl K or ⌘ K to open search from anywhere. Arrow keys move
           through the results.

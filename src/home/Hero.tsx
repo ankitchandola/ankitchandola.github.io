@@ -11,8 +11,9 @@ export default function Hero() {
   return (
     <section aria-labelledby="hero-heading" className="hero wrap">
       <div className="hero-copy">
-        <p className="eyebrow">
-          FULL-STACK DEVELOPER AT GREEN FORTUNE TECHNOLOGIES
+        <p className="eyebrow hero-context">
+          <span>FULL-STACK DEVELOPER</span>{' '}
+          <span>AT GREEN FORTUNE TECHNOLOGIES</span>
         </p>
         <h1 id="hero-heading">
           <span className="sr-only">Ankit Chandola. Full-stack developer.</span>
@@ -27,9 +28,9 @@ export default function Hero() {
           <span>front to back.</span>
         </p>
         <p className="hero-description">
-          I’m Ankit, a full-stack developer in Delhi. I build CRM workflows,
-          operations tools with offline surveys, shared React components and a
-          browser tool for comparing spreadsheets.
+          I’m Ankit. I build CRM workflows, operations tools with offline
+          surveys, shared React components and a browser tool for comparing
+          spreadsheets.
         </p>
         <div className="hero-actions">
           <a className="button dark" href="#work">

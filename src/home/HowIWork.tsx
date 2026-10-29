@@ -28,11 +28,15 @@ export default function HowIWork() {
                 <br />
                 Forms, state and reusable UI
               </p>
-              <p className="capability-evidence">
-                Seen in{' '}
-                <a href="/work/visualization">the shared React package</a> and{' '}
-                <a href="/work/recon-desk">Recon Desk</a>
-              </p>
+              <p className="capability-evidence">Seen in</p>
+              <ul className="capability-links">
+                <li>
+                  <a href="/work/visualization">The shared React package</a>
+                </li>
+                <li>
+                  <a href="/work/recon-desk">Recon Desk</a>
+                </li>
+              </ul>
             </div>
             <div>
               <span>02</span>
@@ -42,10 +46,15 @@ export default function HowIWork() {
                 <br />
                 APIs, permissions and testing
               </p>
-              <p className="capability-evidence">
-                Seen in <a href="/work/operations">offline survey saves</a> and{' '}
-                <a href="/work/sales-crm">the CRM’s Python backend</a>
-              </p>
+              <p className="capability-evidence">Seen in</p>
+              <ul className="capability-links">
+                <li>
+                  <a href="/work/operations">Offline survey saves</a>
+                </li>
+                <li>
+                  <a href="/work/sales-crm">The CRM’s Python backend</a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>

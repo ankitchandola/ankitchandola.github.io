@@ -58,6 +58,7 @@ export interface Project {
   summary: string;
   indexSummary?: string;
   contribution?: string;
+  demoLink?: string;
   tags: readonly string[];
   ownership: string;
   sections: readonly ProjectSection[];

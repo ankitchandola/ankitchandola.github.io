@@ -33,6 +33,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: 12px;
   margin-top: 24px;
 }
 .start-here > span {
@@ -42,12 +43,20 @@
 .start-here a {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   min-height: 44px;
-  font: 700 17px/1.4 var(--body);
   color: var(--teal);
+}
+.start-here strong {
+  display: block;
+  font: 700 17px/1.4 var(--body);
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+.start-here small {
+  display: block;
+  font: 400 15px/1.4 var(--body);
+  color: var(--muted);
 }
 .scope-numbers {
   display: grid;

@@ -22,14 +22,16 @@ export default function HeaderNavigation({ home = false }: { home?: boolean }) {
         <ThemeToggle />
       </nav>
       <div className="mobile-header-tools">
-        <SiteSearch home={home} />
         <ThemeToggle />
         <details className="mobile-navigation">
           <summary aria-label="Navigation menu">
             <Menu className="menu-open" size={22} />
             <X className="menu-close" size={22} />
           </summary>
-          <nav aria-label="Mobile navigation">{links}</nav>
+          <nav aria-label="Mobile navigation">
+            <SiteSearch home={home} labelled />
+            {links}
+          </nav>
         </details>
       </div>
     </>

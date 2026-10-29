@@ -162,9 +162,8 @@ function Today() {
             and the web.
           </h2>
           <p>
-            I work on the sales CRM, operations platform, a shared React
-            visualization package and the public website, including its CMS and
-            staging environment.
+            I work across frontend development, backend services and staging
+            deployment.
           </p>
         </div>
         <div className="scope-stats" aria-label="Current project scope">

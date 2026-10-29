@@ -9,6 +9,7 @@
     },
     "summary": "Compare CSV and Excel exports, then review bank-to-books matches. File processing stays in the browser.",
     "contribution": "Designed and built alone, end to end.",
+    "demoLink": "Try the comparison demo",
     "tags": ["React", "TypeScript", "Web Workers", "IndexedDB"],
     "ownership": "I built the application end to end.",
     "sections": [
@@ -180,6 +181,7 @@
     "name": "Internal Operations Platform",
     "indexSummary": "Order tracking and offline survey work in one platform for orders, surveys, production, dispatch and installation.",
     "contribution": "One of 4 developers. I built most of the frontend and the offline functionality on both frontend and backend.",
+    "demoLink": "Offline save demo",
     "kind": "Professional work",
     "cover": {
       "src": "/assets/projects/covers/operations.svg",
@@ -334,6 +336,7 @@
     "name": "Sales CRM & Browser Telephony",
     "indexSummary": "Browser calls, quotations and sales workflows built on Frappe CRM, with a handoff to the operations platform.",
     "contribution": "One of 2 developers. I built most of the custom frontend and Python backend on an existing Frappe CRM installation.",
+    "demoLink": "Call outcome demo",
     "kind": "Professional work",
     "cover": {
       "src": "/assets/projects/covers/sales-crm.svg",
@@ -468,6 +471,7 @@
     "name": "Project Visualization Library",
     "indexSummary": "A shared React package for project navigation and unit selection across two applications.",
     "contribution": "I created and primarily maintain the package, and implemented its use in both applications.",
+    "demoLink": "Host views demo",
     "kind": "Professional work \u00b7 shared package",
     "cover": {
       "src": "/assets/projects/covers/visualization.svg",
@@ -610,6 +614,7 @@
     "name": "Public Brand Website & CMS",
     "indexSummary": "A server-rendered website with Strapi articles, enquiry forms connected to Frappe CRM and shared EC2 staging.",
     "contribution": "Sole developer for the initial build of the website, the CMS and their shared staging environment.",
+    "demoLink": "Article and enquiry demo",
     "kind": "Professional work",
     "cover": {
       "src": "/assets/projects/covers/website-cms.svg",

@@ -17,8 +17,14 @@ export function mountSiteSearch(element: Element) {
   ];
   const group = element.querySelector<HTMLElement>('.search-group');
   const hint = element.querySelector<HTMLElement>('.search-hint');
+  const close = element.querySelector<HTMLButtonElement>('.search-close');
   field.hidden = false;
   if (hint) hint.hidden = false;
+  if (close) close.hidden = false;
+  const dismiss = () => {
+    element.open = false;
+    element.querySelector('summary')?.focus();
+  };
   const matches = (row: HTMLElement, terms: string[]) =>
     terms.every((term) =>
       row.dataset.searchText?.toLocaleLowerCase().includes(term),
@@ -78,8 +84,7 @@ export function mountSiteSearch(element: Element) {
     }
     if (event.key === 'Escape' && element.open) {
       event.stopPropagation();
-      element.open = false;
-      element.querySelector('summary')?.focus();
+      dismiss();
     }
   };
   const focusout = (event: FocusEvent) => {
@@ -102,6 +107,7 @@ export function mountSiteSearch(element: Element) {
     else element.open = true;
   };
   input.addEventListener('input', filter);
+  close?.addEventListener('click', dismiss);
   document.addEventListener('keydown', shortcut);
   element.addEventListener('toggle', toggle);
   element.addEventListener('keydown', keydown);
@@ -109,6 +115,7 @@ export function mountSiteSearch(element: Element) {
   document.addEventListener('pointerdown', outside);
   return () => {
     input.removeEventListener('input', filter);
+    close?.removeEventListener('click', dismiss);
     element.removeEventListener('toggle', toggle);
     element.removeEventListener('keydown', keydown);
     element.removeEventListener('focusout', focusout);

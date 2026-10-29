@@ -57,22 +57,17 @@ export default function SelectedWork() {
                   <a className="text-link" href={'/work/' + project.slug}>
                     Project details <LinkArrow />
                   </a>
-                  {project.home ? (
+                  {project.demoLink && (
                     <a
                       className="text-link"
-                      href={'/work/' + project.slug + '#comparison-demo'}
+                      href={
+                        '/work/' +
+                        project.slug +
+                        (project.home ? '#comparison-demo' : '#workflow')
+                      }
                     >
-                      Try the comparison demo <LinkArrow />
+                      {project.demoLink} <LinkArrow />
                     </a>
-                  ) : (
-                    project.demonstration && (
-                      <a
-                        className="text-link"
-                        href={'/work/' + project.slug + '#workflow'}
-                      >
-                        Demo: {project.demonstration.title} <LinkArrow />
-                      </a>
-                    )
                   )}
                 </div>
               </div>

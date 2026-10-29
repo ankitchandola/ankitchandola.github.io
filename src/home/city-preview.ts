@@ -205,9 +205,13 @@ export function createCityView(
   const invalidate = () => {
     if (host.isActive(cityView)) host.invalidate();
   };
+  const minHalfWidth = 8.7;
+  const minHalfHeight = 6.3;
   const resize = (width = canvas.clientWidth, height = canvas.clientHeight) => {
     if (!width || !height) return;
-    const halfWidth = expanded ? Math.max(8.7, (6.3 * width) / height) : 8.7;
+    const halfWidth = expanded
+      ? Math.max(minHalfWidth, (minHalfHeight * width) / height)
+      : minHalfWidth;
     camera.left = -halfWidth;
     camera.right = halfWidth;
     camera.top = (halfWidth * height) / width;
@@ -257,7 +261,11 @@ export function createCityView(
         : overview,
       zoom:
         preset?.zoom ??
-        (expanded && canvas.clientWidth > canvas.clientHeight ? 1.12 : 1),
+        // Zooming in only once height limits the frame, so the city's width is never cropped.
+        (expanded &&
+        minHalfHeight * canvas.clientWidth > minHalfWidth * canvas.clientHeight
+          ? 1.12
+          : 1),
     };
     const from = currentPose();
     to.orbit.theta =

@@ -100,7 +100,7 @@ test.describe('without JavaScript', () => {
     await expect(project.locator('p')).toBeVisible();
     if (testInfo.project.name === 'phone') {
       const menu = page.locator('.mobile-navigation');
-      await menu.locator('summary').click();
+      await menu.locator(':scope > summary').click();
       await expect(
         menu.getByRole('link', { name: 'Work', exact: true }),
       ).toBeVisible();
@@ -113,7 +113,7 @@ test.describe('without JavaScript', () => {
   });
   test('Recon keeps sample tables and notes readable without JavaScript', async ({
     page,
-  }) => {
+  }, testInfo) => {
     await page.goto('/work/recon-desk#comparison-demo');
     await expect(page.locator('.noscript-note')).toBeVisible();
     await expect(page.locator('#comparison-result-title')).toHaveText(
@@ -123,6 +123,8 @@ test.describe('without JavaScript', () => {
     await expect(
       page.locator('.comparison-notes section').first(),
     ).toBeVisible();
+    if (testInfo.project.name === 'phone')
+      await page.locator('.mobile-navigation > summary').click();
     const directory = page.locator('.site-search:visible');
     await directory.locator('summary').click();
     await expect(directory.getByRole('searchbox')).toBeHidden();
@@ -169,7 +171,7 @@ for (const theme of ['light', 'dark']) {
       if (route === '/play')
         await page.getByRole('button', { name: 'Fire', exact: true }).click();
       if (testInfo.project.name === 'phone')
-        await page.locator('.mobile-navigation summary').click();
+        await page.locator('.mobile-navigation > summary').click();
       const result = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
