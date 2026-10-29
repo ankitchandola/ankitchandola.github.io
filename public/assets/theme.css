@@ -161,8 +161,20 @@ body {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+.search-group {
+  margin-block: 20px 8px;
+  font: 700 14px/1.4 var(--label);
+  color: var(--muted);
+}
+.search-hint {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--muted);
+}
 .search-field[hidden],
 .search-results [hidden],
+.search-group[hidden],
+.search-hint[hidden],
 .search-empty[hidden] {
   display: none;
 }

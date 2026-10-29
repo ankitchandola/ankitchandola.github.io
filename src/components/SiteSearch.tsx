@@ -3,14 +3,25 @@ import { Search } from 'lucide-react';
 import projects from '../content/projects';
 import { mountSiteSearch } from './site-search';
 
-export default function SiteSearch() {
+const sections = [
+  ['work', 'Selected work'],
+  ['about', 'How I work'],
+  ['decisions', 'Engineering decisions'],
+  ['experience', 'Experience'],
+  ['contact', 'Say hello'],
+] as const;
+
+export default function SiteSearch({ home = false }: { home?: boolean }) {
   const root = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
     if (root.current) return mountSiteSearch(root.current);
   }, []);
   return (
     <details className="site-search" data-site-search="" ref={root}>
-      <summary aria-label="Search portfolio">
+      <summary
+        aria-label="Search portfolio"
+        aria-keyshortcuts="Control+K Meta+K"
+      >
         <Search size={22} />
       </summary>
       <div className="search-panel">
@@ -45,12 +56,26 @@ export default function SiteSearch() {
             </li>
           ))}
         </ul>
+        <p className="search-group">Jump to</p>
+        <ul className="search-results search-sections">
+          {sections.map(([id, label]) => (
+            <li key={id} data-search-text={label}>
+              <a href={(home || id === 'contact' ? '#' : '/#') + id}>
+                <strong>{label}</strong>
+              </a>
+            </li>
+          ))}
+        </ul>
         <p className="search-empty" hidden>
           No matches. Try a technology or project name.
         </p>
         <a className="search-all" href="/#work">
           View all selected work
         </a>
+        <p className="search-hint" hidden>
+          Press Ctrl K or ⌘ K to open search from anywhere. Arrow keys move
+          through the results.
+        </p>
       </div>
     </details>
   );

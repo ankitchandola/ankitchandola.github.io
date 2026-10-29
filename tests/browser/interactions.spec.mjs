@@ -54,7 +54,9 @@ for (const route of ['/', '/work/operations']) {
     const input = search.getByRole('searchbox');
     await expect(input).toBeFocused();
     await input.fill('  REACT   offline  ');
-    const results = search.locator('.search-results li:visible');
+    const results = search.locator(
+      '.search-results:not(.search-sections) li:visible',
+    );
     await expect(results).toHaveCount(1);
     await expect(results.first()).toContainText('Internal Operations Platform');
     await input.fill('no-such-project');
@@ -916,4 +918,22 @@ test('contact copies the email address and announces the result', async ({
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     'chandolaankit027@gmail.com',
   );
+});
+
+test('Ctrl+K opens search, sections filter and arrow keys move through results', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const search = page.locator('.site-search:visible');
+  const input = search.getByRole('searchbox');
+  await page.keyboard.press('Control+k');
+  await expect(input).toBeFocused();
+  await input.fill('experience');
+  await expect(search.locator('.search-sections li:visible')).toHaveCount(1);
+  await input.press('ArrowDown');
+  await expect(
+    search.getByRole('link', { name: 'Experience', exact: true }),
+  ).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/#experience$/);
 });

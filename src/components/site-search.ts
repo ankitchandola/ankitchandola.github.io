@@ -5,8 +5,24 @@ export function mountSiteSearch(element: Element) {
   const status = element.querySelector('.search-status');
   const empty = element.querySelector<HTMLElement>('.search-empty');
   if (!input || !field || !status || !empty) return;
-  const rows = [...element.querySelectorAll<HTMLElement>('[data-search-text]')];
+  const rows = [
+    ...element.querySelectorAll<HTMLElement>(
+      '.search-results:not(.search-sections) [data-search-text]',
+    ),
+  ];
+  const sectionRows = [
+    ...element.querySelectorAll<HTMLElement>(
+      '.search-sections [data-search-text]',
+    ),
+  ];
+  const group = element.querySelector<HTMLElement>('.search-group');
+  const hint = element.querySelector<HTMLElement>('.search-hint');
   field.hidden = false;
+  if (hint) hint.hidden = false;
+  const matches = (row: HTMLElement, terms: string[]) =>
+    terms.every((term) =>
+      row.dataset.searchText?.toLocaleLowerCase().includes(term),
+    );
   const filter = () => {
     const terms = input.value
       .toLocaleLowerCase()
@@ -15,13 +31,17 @@ export function mountSiteSearch(element: Element) {
       .filter(Boolean);
     let count = 0;
     for (const row of rows) {
-      row.hidden = !terms.every((term) =>
-        row.dataset.searchText?.toLocaleLowerCase().includes(term),
-      );
+      row.hidden = !matches(row, terms);
       if (!row.hidden) count++;
     }
+    let sectionCount = 0;
+    for (const row of sectionRows) {
+      row.hidden = !matches(row, terms);
+      if (!row.hidden) sectionCount++;
+    }
+    if (group) group.hidden = sectionCount === 0;
     status.textContent = `${count} ${count === 1 ? 'project' : 'projects'}${terms.length ? ' found' : ' to explore'}`;
-    empty.hidden = count > 0;
+    empty.hidden = count + sectionCount > 0;
   };
   const toggle = () => {
     if (element.open) {
@@ -34,6 +54,28 @@ export function mountSiteSearch(element: Element) {
       element.open = false;
   };
   const keydown = (event: KeyboardEvent) => {
+    if (
+      element.open &&
+      (event.key === 'ArrowDown' || event.key === 'ArrowUp')
+    ) {
+      const links = [
+        ...element.querySelectorAll<HTMLElement>(
+          '.search-results li:not([hidden]) a',
+        ),
+      ];
+      if (!links.length) return;
+      event.preventDefault();
+      const current = links.indexOf(document.activeElement as HTMLElement);
+      const step = event.key === 'ArrowDown' ? 1 : -1;
+      const next =
+        current === -1
+          ? step === 1
+            ? 0
+            : links.length - 1
+          : (current + step + links.length) % links.length;
+      links[next]?.focus();
+      return;
+    }
     if (event.key === 'Escape' && element.open) {
       event.stopPropagation();
       element.open = false;
@@ -47,7 +89,20 @@ export function mountSiteSearch(element: Element) {
     )
       element.open = false;
   };
+  // Both the desktop and phone headers mount a search; only the rendered one answers the shortcut.
+  const shortcut = (event: KeyboardEvent) => {
+    if (
+      event.key.toLowerCase() !== 'k' ||
+      !(event.metaKey || event.ctrlKey) ||
+      !element.getClientRects().length
+    )
+      return;
+    event.preventDefault();
+    if (element.open) input.focus();
+    else element.open = true;
+  };
   input.addEventListener('input', filter);
+  document.addEventListener('keydown', shortcut);
   element.addEventListener('toggle', toggle);
   element.addEventListener('keydown', keydown);
   element.addEventListener('focusout', focusout);
@@ -58,5 +113,6 @@ export function mountSiteSearch(element: Element) {
     element.removeEventListener('keydown', keydown);
     element.removeEventListener('focusout', focusout);
     document.removeEventListener('pointerdown', outside);
+    document.removeEventListener('keydown', shortcut);
   };
 }

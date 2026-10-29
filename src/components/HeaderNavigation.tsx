@@ -18,11 +18,11 @@ export default function HeaderNavigation({ home = false }: { home?: boolean }) {
     <>
       <nav className="desktop-navigation" aria-label="Main navigation">
         {links}
-        <SiteSearch />
+        <SiteSearch home={home} />
         <ThemeToggle />
       </nav>
       <div className="mobile-header-tools">
-        <SiteSearch />
+        <SiteSearch home={home} />
         <ThemeToggle />
         <details className="mobile-navigation">
           <summary aria-label="Navigation menu">

@@ -188,7 +188,7 @@ p {
   text-decoration: underline;
   text-underline-offset: 6px;
 }
-.site-header nav a > span {
+.site-header nav > a > span {
   font: 11px var(--mono);
   margin-left: 4px;
 }
@@ -1667,7 +1667,7 @@ body.motion-paused {
     font-size: 16px;
     margin-left: 4px;
   }
-  .site-header nav a > span {
+  .site-header nav > a > span {
     font-size: 8px;
     margin-left: 1px;
   }
