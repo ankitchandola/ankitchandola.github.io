@@ -687,6 +687,15 @@ footer.wrap,
 .footer a:hover {
   color: #f4c7a4;
 }
+.capabilities .capability-evidence {
+  margin-top: 12px;
+  color: inherit;
+}
+.capability-evidence a {
+  color: var(--peach);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .contact-prompt {
   max-width: 60ch;
   margin: 8px 0 32px;
@@ -2026,7 +2035,6 @@ html:not([data-gallery='original']) .gallery-invite {
     .career-role,
     .step-title,
     .art-invitation b,
-    .capabilities p,
     .feature-heading .button,
     .hero-actions .button,
     .hero-actions .text-link

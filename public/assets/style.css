@@ -517,7 +517,7 @@ p {
   font-style: normal;
 }
 .work-section {
-  padding-top: 92px;
+  padding-top: 64px;
   padding-bottom: 90px;
 }
 .section-intro {
@@ -1057,15 +1057,15 @@ p {
 }
 .capabilities > div > span {
   display: block;
-  font: 10px var(--mono);
+  font: 700 13px var(--label);
   color: var(--peach);
   margin-bottom: 8px;
 }
 .capabilities b {
-  font-size: 15px;
+  font-size: 18px;
 }
 .capabilities p {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.6;
   margin-top: 8px;
   color: #d1e0d8;
@@ -1991,10 +1991,10 @@ body.motion-paused {
     margin-top: 28px;
   }
   .capabilities b {
-    font-size: 13px;
+    font-size: 17px;
   }
   .capabilities p {
-    font-size: 12px;
+    font-size: 16px;
   }
   .experience-section {
     padding: 59px 0;

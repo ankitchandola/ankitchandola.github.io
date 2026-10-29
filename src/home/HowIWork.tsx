@@ -16,9 +16,8 @@ export default function HowIWork() {
             them.
           </p>
           <p>
-            Much of it comes down to specific questions: what happens to a
-            survey when the connection drops? Does a connected browser mean the
-            customer answered? The project pages explain those decisions.
+            Much of it comes down to specific questions about state, ownership
+            and failure. The engineering decisions below show three of them.
           </p>
           <div className="capabilities">
             <div>
@@ -29,6 +28,11 @@ export default function HowIWork() {
                 <br />
                 Forms, state and reusable UI
               </p>
+              <p className="capability-evidence">
+                Seen in{' '}
+                <a href="/work/visualization">the shared React package</a> and{' '}
+                <a href="/work/recon-desk">Recon Desk</a>
+              </p>
             </div>
             <div>
               <span>02</span>
@@ -37,6 +41,10 @@ export default function HowIWork() {
                 Node.js, PostgreSQL, Fastify
                 <br />
                 APIs, permissions and testing
+              </p>
+              <p className="capability-evidence">
+                Seen in <a href="/work/operations">offline survey saves</a> and{' '}
+                <a href="/work/sales-crm">the CRM’s Python backend</a>
               </p>
             </div>
           </div>
