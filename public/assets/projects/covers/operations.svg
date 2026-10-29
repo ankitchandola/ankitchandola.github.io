@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" fill="none">
+  <rect width="960" height="600" fill="#C6DFD4"/>
+  <path d="M0 473H960" stroke="#A3C5B7" stroke-width="2"/>
+  <g transform="translate(111 66) rotate(-6 183 220)">
+    <rect x="11" y="14" width="366" height="448" rx="14" fill="#A3C5B7"/>
+    <rect width="366" height="448" rx="14" fill="#245E58"/>
+    <rect x="18" y="22" width="330" height="408" rx="5" fill="#F5F2E9"/>
+    <path d="M119 0H247V40H119Z" fill="#172F31"/>
+    <rect x="150" y="-10" width="66" height="22" rx="11" fill="#172F31"/>
+    <text x="44" y="98" fill="#245E58" font-family="Arial, sans-serif" font-size="32" font-weight="700">Site survey</text>
+    <path d="M48 143H315V302H48Z" fill="#DCE9DF"/>
+    <path d="M48 143H315V302H48ZM48 223H315M158 143V302M247 143V223M221 223V302" stroke="#739989" stroke-width="3"/>
+    <path d="M73 174H130M185 174H220M185 254H198" stroke="#245E58" stroke-width="9" stroke-linecap="round"/>
+    <path d="M48 345H72V369H48Z" fill="#245E58"/>
+    <path d="M53 356L59 362L68 351" stroke="#F5F2E9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M90 350H299M90 367H250" stroke="#A3B5A7" stroke-width="5"/>
+  </g>
+  <g transform="translate(449 138) rotate(8 111 168)">
+    <rect x="9" y="13" width="222" height="348" rx="29" fill="#A3C5B7"/>
+    <rect width="222" height="348" rx="29" fill="#172F31"/>
+    <rect x="10" y="12" width="202" height="324" rx="20" fill="#F5F2E9"/>
+    <rect x="74" y="11" width="74" height="15" rx="7" fill="#172F31"/>
+    <path d="M88 61Q111 42 134 61M98 73Q111 62 124 73M84 43L138 91" stroke="#245E58" stroke-width="4" stroke-linecap="round"/>
+    <rect x="27" y="111" width="168" height="94" rx="8" fill="#C6DFD4"/>
+    <path d="M45 145L60 160L85 132" stroke="#245E58" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M104 141H172M104 160H152" stroke="#739989" stroke-width="6"/>
+    <text x="111" y="244" text-anchor="middle" fill="#245E58" font-family="Arial, sans-serif" font-size="25" font-weight="700">Saved locally</text>
+    <rect x="28" y="269" width="166" height="39" rx="5" fill="#F4C7A4"/>
+    <text x="111" y="296" text-anchor="middle" fill="#172F31" font-family="Arial, sans-serif" font-size="22">Waiting to sync</text>
+  </g>
+  <path d="M688 333H735V265H775" stroke="#245E58" stroke-width="4" stroke-dasharray="7 9" stroke-linecap="round"/>
+  <g transform="translate(763 159)">
+    <path d="M0 28C0 13 25 0 56 0C87 0 112 13 112 28V133C112 149 87 161 56 161C25 161 0 149 0 133Z" fill="#245E58"/>
+    <ellipse cx="56" cy="28" rx="56" ry="28" fill="#739989"/>
+    <path d="M0 79C0 95 25 107 56 107C87 107 112 95 112 79" stroke="#9AD9C7" stroke-width="3"/>
+    <text x="56" y="208" text-anchor="middle" fill="#245E58" font-family="Arial, sans-serif" font-size="28" font-weight="700">Server</text>
+  </g>
+</svg>

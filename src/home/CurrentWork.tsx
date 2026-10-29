@@ -6,14 +6,15 @@ export default function CurrentWork() {
       <div className="current-grid">
         <div>
           <h2>
-            From the first click
+            CRM, field work
             <br />
-            <span>to the systems behind it.</span>
+            <span>and the web.</span>
           </h2>
           <p>
-            My current work connects a sales CRM, an operations platform, a
-            shared React package and a public brand website with its CMS. I work
-            across interfaces, backend services and staging deployment.
+            At Green Fortune Technologies, I work on the sales CRM, operations
+            platform, a shared React package and the public website. That
+            includes frontend development, backend services and staging
+            deployment.
           </p>
           <span className="current-role">
             Full-stack developer · 2025 — present

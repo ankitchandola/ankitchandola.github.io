@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" fill="none">
+  <rect width="960" height="600" fill="#F4C7A4"/>
+  <path d="M0 473H960" stroke="#D8AD8D" stroke-width="2"/>
+  <g transform="translate(70 128) rotate(-7 143 163)">
+    <rect x="10" y="12" width="286" height="326" rx="8" fill="#D8AD8D"/>
+    <rect width="286" height="326" rx="8" fill="#F5F2E9"/>
+    <rect width="286" height="64" rx="8" fill="#245E58"/>
+    <path d="M0 52H286V64H0Z" fill="#245E58"/>
+    <text x="26" y="43" fill="#F5F2E9" font-family="Arial, sans-serif" font-size="30" font-weight="700">Quotation</text>
+    <path d="M27 109H173M27 132H218" stroke="#A4B8A7" stroke-width="6"/>
+    <path d="M27 182H259M27 227H259M27 272H259M198 163V288" stroke="#C9D1BF" stroke-width="2"/>
+    <path d="M27 165H112M216 165H259M27 210H145M216 210H259M27 255H123M216 255H259" stroke="#739989" stroke-width="7"/>
+  </g>
+  <g transform="translate(369 89)">
+    <path d="M13 180V130C13 58 68 0 137 0C206 0 261 58 261 130V180" stroke="#D8AD8D" stroke-width="34" stroke-linecap="round" transform="translate(8 12)"/>
+    <path d="M13 180V130C13 58 68 0 137 0C206 0 261 58 261 130V180" stroke="#245E58" stroke-width="32" stroke-linecap="round"/>
+    <path d="M13 123C13 56 68 0 137 0" stroke="#9AD9C7" stroke-width="7" stroke-linecap="round"/>
+    <rect x="-7" y="133" width="55" height="103" rx="23" fill="#172F31"/>
+    <rect x="226" y="133" width="55" height="103" rx="23" fill="#172F31"/>
+    <rect x="2" y="146" width="24" height="77" rx="12" fill="#739989"/>
+    <rect x="250" y="146" width="22" height="77" rx="11" fill="#739989"/>
+    <path d="M252 237V261C252 281 236 297 216 297H178" stroke="#245E58" stroke-width="9" stroke-linecap="round"/>
+    <rect x="144" y="285" width="46" height="24" rx="12" fill="#172F31"/>
+  </g>
+  <g transform="translate(709 178) rotate(7 87 114)">
+    <rect x="9" y="12" width="174" height="228" rx="9" fill="#D8AD8D"/>
+    <rect width="174" height="228" rx="9" fill="#245E58"/>
+    <circle cx="87" cy="58" r="25" fill="#C6DFD4"/>
+    <path d="M41 122C41 96 62 81 87 81C112 81 133 96 133 122V134H41Z" fill="#C6DFD4"/>
+    <path d="M32 170H142M51 193H123" stroke="#9AD9C7" stroke-width="7"/>
+  </g>
+  <path d="M420 422V461H246M606 422V461H780" stroke="#245E58" stroke-width="3"/>
+  <circle cx="246" cy="461" r="6" fill="#245E58"/>
+  <circle cx="780" cy="461" r="6" fill="#245E58"/>
+  <g fill="#172F31" font-family="Arial, sans-serif" font-size="30" font-weight="700" text-anchor="middle">
+    <text x="246" y="507">Agent</text>
+    <text x="780" y="507">Customer</text>
+  </g>
+</svg>

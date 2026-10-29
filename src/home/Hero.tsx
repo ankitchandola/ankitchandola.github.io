@@ -20,14 +20,14 @@ export default function Hero() {
           </span>
         </h1>
         <p className="hero-title">
-          Beyond the
+          Web apps,
           <br />
-          <span>happy path.</span>
+          <span>front to back.</span>
         </p>
         <p className="hero-description">
-          A duplicated row. A survey saved without a connection. A file full of
-          ambiguous matches. I build web apps and tools that handle them, from
-          the first click to the systems behind it.
+          I’m Ankit, a full-stack developer in Delhi. I build operations
+          software, CRM workflows and browser tools, including surveys that work
+          offline and a tool for comparing spreadsheets.
         </p>
         <div className="hero-actions">
           <a className="button dark" href="#work">

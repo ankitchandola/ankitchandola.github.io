@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" fill="none">
+  <rect width="960" height="600" fill="#20473F"/>
+  <path d="M0 470H960" stroke="#396157" stroke-width="2"/>
+  <g transform="translate(85 97) rotate(-7 175 190)">
+    <path d="M16 20H350V410H16Z" fill="#173B34"/>
+    <path d="M0 0H280L334 54V390H0Z" fill="#DCE9DF"/>
+    <path d="M280 0V54H334" fill="#A8C6B7"/>
+    <text x="30" y="65" fill="#245E58" font-family="Arial, sans-serif" font-size="34" font-weight="700">CSV</text>
+    <path d="M30 98H304" stroke="#9CB8A9" stroke-width="2"/>
+    <g fill="#245E58" font-family="Arial, sans-serif" font-size="30">
+      <text x="30" y="151">001</text>
+      <text x="204" y="151">1,250</text>
+      <text x="30" y="223">002</text>
+      <text x="220" y="223">850</text>
+      <text x="30" y="295">003</text>
+      <text x="220" y="295">640</text>
+    </g>
+    <path d="M30 169H304M30 241H304M30 313H304" stroke="#B5CDBF" stroke-width="2"/>
+  </g>
+  <g transform="translate(543 91) rotate(7 168 195)">
+    <path d="M16 20H350V410H16Z" fill="#173B34"/>
+    <path d="M0 0H280L334 54V390H0Z" fill="#F5F2E9"/>
+    <path d="M280 0V54H334" fill="#D5DAC7"/>
+    <text x="30" y="65" fill="#245E58" font-family="Arial, sans-serif" font-size="34" font-weight="700">XLSX</text>
+    <path d="M30 98H304" stroke="#BBC9B9" stroke-width="2"/>
+    <rect x="17" y="184" width="300" height="56" rx="4" fill="#F4C7A4"/>
+    <g fill="#245E58" font-family="Arial, sans-serif" font-size="30">
+      <text x="30" y="151">001</text>
+      <text x="204" y="151">1,250</text>
+      <text x="30" y="223">002</text>
+      <text x="220" y="223">920</text>
+      <text x="30" y="295">003</text>
+      <text x="220" y="295">640</text>
+    </g>
+    <path d="M30 169H304M30 313H304" stroke="#C9D1BF" stroke-width="2"/>
+  </g>
+  <path d="M403 232C453 232 463 237 538 237M407 304C467 304 470 313 529 313M401 377C456 377 467 383 521 383" stroke="#9AD9C7" stroke-width="4" stroke-dasharray="6 10"/>
+  <circle cx="473" cy="307" r="34" fill="#F4C7A4"/>
+  <path d="M461 307H485M478 299L486 307L478 315" stroke="#20473F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="338" y="492" width="284" height="58" rx="29" fill="#9AD9C7"/>
+  <text x="480" y="531" text-anchor="middle" fill="#173B34" font-family="Arial, sans-serif" font-size="30" font-weight="700">Match by key</text>
+</svg>

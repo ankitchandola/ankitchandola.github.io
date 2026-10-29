@@ -6,6 +6,10 @@ This checkout is the updated interactive portfolio; the original interactive Sit
 
 Project descriptions are based on the supplied project Markdown notes and direct ownership clarifications. Screenshots use the supplied dummy records. Internal project identities are anonymised.
 
+Homepage project covers are original vector illustrations, with paths and alt
+text in `src/content/projects.json`. Real screenshots remain in project-detail
+galleries; cover artwork is not a representation of the shipped interface.
+
 - Recon Desk: documented comparison demo, actual comparison and reconciliation screenshots.
 - Internal Operations Platform: frontend/backend combined; offline ownership described explicitly.
 - Project Visualization Library: shared package used by operations and customer applications.

@@ -41,9 +41,9 @@ function Footer() {
         </div>
         <div className="contact-title">
           <h2>
-            Let’s make
+            Want to
             <br />
-            <span>something work.</span>
+            <span>talk?</span>
           </h2>
           <a
             className="contact-arrow"
@@ -89,17 +89,17 @@ function Experience() {
     <section className="experience shell" id="experience">
       <div className="section-label">
         <span className="section-number">03</span>
-        <span>Today, and what came before.</span>
+        <span>Experience</span>
       </div>
       <div className="experience-intro">
         <h2>
-          The perspective
+          Where I’ve
           <br />
-          <span>came from building.</span>
+          <span>worked.</span>
         </h2>
         <p>
-          Different teams, different constraints.
-          <br /> The same habit of following a feature all the way through.
+          My roles at Green Fortune Technologies, Hippo Homes and Nethues, from
+          2021 to the present.
         </p>
       </div>
       <div className="history-list">
@@ -156,13 +156,13 @@ function Today() {
             GREEN FORTUNE TECHNOLOGIES · 2025 — PRESENT
           </span>
           <h2>
-            Interfaces, workflows
+            CRM, field work
             <br />
-            and the systems behind them.
+            and the web.
           </h2>
           <p>
-            My current work spans a sales CRM, an operations platform, a shared
-            React visualization package, and a public website with its CMS and
+            I work on the sales CRM, operations platform, a shared React
+            visualization package and the public website, including its CMS and
             staging environment.
           </p>
         </div>
@@ -187,9 +187,7 @@ function Gallery({ project }: { project: ProjectContent }) {
   if (!project.images.length) return null;
   return (
     <div className="evidence-gallery">
-      <p className="gallery-invite">
-        Explore the screens — choose a view below.
-      </p>
+      <p className="gallery-invite">Choose a screenshot to view.</p>
       <div className="gallery-options">
         {project.images.map(([file, label], i) => (
           <button
@@ -453,15 +451,15 @@ function Project({ slug }: { slug: string }) {
 function Lite() {
   return (
     <section className="lite-page shell">
-      <span className="kicker">A DIRECT ROUTE THROUGH THE WORK</span>
+      <span className="kicker">LITE VERSION</span>
       <h1>
         Ankit Chandola.
         <br />
         <span>Full-stack developer.</span>
       </h1>
       <p className="lite-intro">
-        Interfaces, APIs and operational software. Based in Delhi, India. A
-        reading version without demonstrations or ambient animation.
+        I build operations software, CRM workflows and browser tools. Based in
+        Delhi, India. This version has no scripts or animation.
       </p>
       <Today />
       <div className="lite-projects" id="work">
@@ -484,7 +482,7 @@ function Lite() {
       </div>
       <Experience />
       <a className="solid-button" href="/">
-        Explore the interactive edition
+        Back to the main site
         <ArrowRight size={23} />
       </a>
     </section>
@@ -493,8 +491,8 @@ function Lite() {
 function Missing() {
   return (
     <section className="shell not-found">
-      <h1>A small detour.</h1>
-      <a href="/">Return to the work</a>
+      <h1>Page not found.</h1>
+      <a href="/">Back to homepage</a>
     </section>
   );
 }

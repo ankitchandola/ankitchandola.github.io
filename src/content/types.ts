@@ -51,6 +51,10 @@ export interface Project {
   slug: string;
   name: string;
   kind: string;
+  cover: {
+    src: string;
+    alt: string;
+  };
   summary: string;
   indexSummary?: string;
   tags: readonly string[];

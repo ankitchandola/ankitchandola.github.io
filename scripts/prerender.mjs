@@ -20,7 +20,7 @@ const template = (await readFile('dist/case.html', 'utf8')).replace(
 const esc = (s) =>
   s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const lite =
-  'A reading version of Ankit Chandola’s portfolio: current work, selected projects and experience, without demonstrations or animation.';
+  'Ankit Chandola’s portfolio without scripts or animation. Current work, selected projects and experience.';
 const pages = Object.fromEntries([
   ...projects.map((p) => [
     '/work/' + p.slug,

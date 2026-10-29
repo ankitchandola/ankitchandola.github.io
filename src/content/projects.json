@@ -3,6 +3,10 @@
     "slug": "recon-desk",
     "name": "Recon Desk",
     "kind": "Personal project",
+    "cover": {
+      "src": "/assets/projects/covers/recon-desk.svg",
+      "alt": "Illustration of two export sheets, matched by record key, with a changed amount marked for review."
+    },
     "summary": "Compare CSV and Excel exports, then review bank-to-books matches. File processing stays in the browser.",
     "tags": ["React", "TypeScript", "Web Workers", "IndexedDB"],
     "ownership": "I built the application end to end.",
@@ -44,21 +48,21 @@
     "home": {
       "anchor": "playground",
       "label": "Independent project \u00b7 browser tool",
-      "tagline": "Compare exports. Review matches. Keep control of the result.",
+      "tagline": "Compare exports and review bank-to-books matches in your browser.",
       "highlights": [
         [
-          "Keep identity intact.",
-          "Leading-zero keys stay intact. Duplicate keys are surfaced as problems.",
+          "Match by record key",
+          "Leading zeros are preserved, and duplicate keys are flagged for review.",
           "check"
         ],
         [
-          "Set it once. Reuse it.",
-          "Saved profiles keep comparison rules ready for the next export.",
+          "Save comparison rules",
+          "Reuse a saved profile for the next export.",
           "sheet"
         ],
         [
-          "Take the answers with you.",
-          "CSV, JSON and text-cell XLSX results, with values preserved.",
+          "Export the results",
+          "Download CSV, JSON or XLSX with values stored as text cells.",
           "arrow-up-right"
         ]
       ],
@@ -68,7 +72,7 @@
           "Recurring exports make meaningful changes hard to spot. Row order and formatting can add noise. I built the comparison and reconciliation tool around reusable rules."
         ],
         [
-          "The engineering choice",
+          "How comparison works",
           "Match by identity, use exact decimal operations, and keep file processing in workers. Duplicate keys are reported as ambiguous instead of guessed."
         ],
         [
@@ -79,7 +83,7 @@
     },
     "decision": {
       "label": "Recon Desk",
-      "title": "Ambiguous keys stay visible.",
+      "title": "Don’t guess when keys repeat.",
       "implementation": "Duplicate keys are reported rather than matched arbitrarily. Composite keys use ordered parts, and identifiers retain leading zeros.",
       "boundary": "The comparison excludes ambiguous keys from matching on both sides."
     },
@@ -130,7 +134,7 @@
     "context": ["Personal project", "Designed and built alone"],
     "result": "A publicly hosted tool with two local-file workflows: comparing exports and reconciling a bank statement against books. Review decisions survive reloads, unresolved items carry into the next month, and reports download in several formats.",
     "demonstration": {
-      "title": "A suggestion is not a decision.",
+      "title": "Review a suggested match",
       "intro": "Try two competing candidates for one bank entry. Confirm one, reject the suggestion, or leave it unresolved. The review decision changes the outcome.",
       "boundary": "Interactive explanation with synthetic records. This illustrates manual review, not the full matching engine, date rules or candidate budget.",
       "labels": {
@@ -163,18 +167,22 @@
       }
     },
     "detailHeadings": {
-      "problem": "When matching becomes ambiguous",
-      "contribution": "Comparison, review and recovery",
-      "engineering": "Correctness before convenience",
-      "result": "What the browser tool delivers",
-      "scope": "Where the engine stops"
+      "problem": "Comparing exports and matching transactions",
+      "contribution": "What I built",
+      "engineering": "Large files, matching and recovery",
+      "result": "The tool and recorded benchmarks",
+      "scope": "Limits"
     }
   },
   {
     "slug": "operations",
     "name": "Internal Operations Platform",
-    "indexSummary": "Orders through installation, with offline survey workflows across frontend and backend.",
+    "indexSummary": "Order tracking and offline survey work. I built most of the frontend and the offline functionality on both frontend and backend.",
     "kind": "Professional work",
+    "cover": {
+      "src": "/assets/projects/covers/operations.svg",
+      "alt": "Illustration of a site-survey clipboard and phone, with saved measurements queued for the server."
+    },
     "summary": "One platform connecting orders, site surveys, production, dispatch and installation. My work spans the frontend and selected backend services, including the complete offline implementation.",
     "tags": [
       "React / TypeScript",
@@ -184,7 +192,7 @@
       "Fastify",
       "PostgreSQL"
     ],
-    "ownership": "I owned most frontend development and implemented the offline functionality across both frontend and backend, within an existing team codebase.",
+    "ownership": "I owned most frontend development and built the offline functionality across both frontend and backend. I worked in an existing team codebase.",
     "sections": [
       [
         "Field workflows",
@@ -272,12 +280,12 @@
       ]
     ],
     "demonstration": {
-      "title": "Offline is a state, not a success message.",
-      "intro": "Save sample edits while disconnected, reconnect, then let the server accept or reject each save. Watch the device queue drain and the recovery path appear.",
+      "title": "Save offline, then reconnect",
+      "intro": "Save a sample edit while offline, then reconnect. Accept or reject it to see the difference between saving on the device and saving on the server.",
       "boundary": "Local simulation with four sample queue slots, not an application capacity limit. It does not persist or contact a backend. The real implementation batches saves, uploads local photos first and sequences dependent edits per unit.",
       "labels": {
         "device": "Surveyor\u2019s device",
-        "server": "Authoritative server",
+        "server": "Server",
         "queue": "Local save queue",
         "save": "Save a sample edit",
         "connect": "Reconnect",
@@ -296,35 +304,41 @@
         "done": "Survey marked complete",
         "measurements": "Required measurements complete",
         "incomplete": "Server confirmation and complete measurements are both required.",
-        "queueHelp": "Queued does not mean surveyed.",
+        "queueHelp": "Saved on the device, not yet confirmed by the server.",
         "serverHelp": "The server checks permissions and workflow eligibility.",
-        "recovery": "Rejected saves return to authoritative data; they are not displayed as successful.",
+        "recovery": "The rejected edit is rolled back and the latest server data is fetched.",
         "completion": "Survey completion gate",
-        "pending": "pending save(s)",
-        "confirmed": "confirmed save(s)",
+        "pendingOne": "pending save",
+        "pendingMany": "pending saves",
+        "confirmedOne": "confirmed save",
+        "confirmedMany": "confirmed saves",
         "idleNote": "Save an edit on the device to begin.",
         "queuedNote": "The edit is queued on the device. A server response is still required, even when connected.",
-        "acceptedNote": "A save was accepted and the server data replaces the optimistic view. That confirmation does not by itself complete the survey.",
+        "acceptedNote": "The server accepted the save. Its response replaces the temporary local view, but the survey is not automatically complete.",
         "completeNote": "Confirmed work and complete measurements allow survey completion.",
         "rejectedNote": "The failed save rolls back and refetches. Save a corrected edit to try again."
       }
     },
     "detailHeadings": {
-      "problem": "One order, several realities",
-      "contribution": "Field work that survives disconnection",
-      "engineering": "Failure paths worth designing for",
-      "result": "What reaches the site team",
-      "scope": "Prepared work, not the whole platform"
+      "problem": "Tracking orders across office and site",
+      "contribution": "What I built",
+      "engineering": "Scanning, sync and offline preparation",
+      "result": "What changed for surveyors",
+      "scope": "Offline support limits"
     }
   },
   {
     "slug": "sales-crm",
     "name": "Sales CRM & Browser Telephony",
-    "indexSummary": "Custom Frappe CRM workflows, browser calling and a controlled handoff into operations.",
+    "indexSummary": "Browser calls, quotations and sales workflows built on Frappe CRM, with a handoff to the operations platform.",
     "kind": "Professional work",
+    "cover": {
+      "src": "/assets/projects/covers/sales-crm.svg",
+      "alt": "Illustration of a browser-call headset linking an agent and customer, beside a quotation and contact card."
+    },
     "summary": "Company-specific development on an existing Frappe CRM: browser calling, lead qualification, quotation reviews, permissions and a controlled handoff into operations.",
     "tags": ["Vue 3", "Python / Frappe", "MariaDB / Redis", "Exotel"],
-    "ownership": "I owned the majority of company-specific frontend and Python backend development. The original Frappe CRM platform and initial installation predated my involvement.",
+    "ownership": "I owned most of the custom frontend and Python backend development. The Frappe CRM platform was already installed when I joined.",
     "images": [
       [
         "crm-lead-detail",
@@ -361,11 +375,11 @@
       ],
       [
         "Operations handoff",
-        "Implemented an explicit project-creation action with permission and data checks, expiring signed quote-file links and retryable recovery. Completion requires both external project and draft-order identifiers. The inspected CRM and operations revisions use different API contracts, so these notes do not establish live end-to-end compatibility."
+        "Built a project-creation action with permission and data checks, expiring signed quote-file links and retries after failure. The handoff is marked complete only when both the project and draft-order identifiers are returned. The CRM and operations revisions reviewed for this page use different API contracts; live end-to-end compatibility has not been verified."
       ],
       [
-        "Engineering boundaries",
-        "The custom application builds on Vue 3, frappe-ui, Python/Frappe, MariaDB and Redis. Frappe supplies the underlying CRM, administration and framework services. My work includes focused frontend and Python tests; the source notes do not establish current test pass counts or measured business improvements."
+        "Built on Frappe",
+        "The custom application uses Vue 3, frappe-ui, Python/Frappe, MariaDB and Redis. Frappe supplies the base CRM, administration and framework services. I added focused frontend and Python tests. I have not recorded current test pass counts or measured business improvements for this page."
       ]
     ],
     "galleryLabel": "CRM screenshot views",
@@ -384,7 +398,7 @@
         "Web Locks do not coordinate separate browsers or machines, and the SDK patches need checking on every upgrade."
       ],
       [
-        "Progress is not responsiveness",
+        "Sales stage and customer engagement",
         "One status field cannot show both how far a sale has progressed and whether the customer has gone quiet.",
         "Separate business stage and engagement state, enforce transitions in Python and connect call dispositions and follow-up retries to the model.",
         "Two state dimensions must stay consistent across forms, APIs and automation."
@@ -406,8 +420,8 @@
       ]
     ],
     "demonstration": {
-      "title": "Two call legs. One trustworthy outcome.",
-      "intro": "Deliver the browser invitation before the API response, or connect the agent without a customer answer. Watch which signals are enough to update the call record.",
+      "title": "Did the customer answer?",
+      "intro": "Send the browser invitation before the API response, then connect the agent. The customer outcome stays unknown until a provider event arrives.",
       "boundary": "Event-order simulation, not a live call or Exotel integration. Correlation, buffered invitations and provider-confirmed outcomes are based on the documented implementation.",
       "labels": {
         "browser": "Agent / browser leg",
@@ -430,8 +444,8 @@
         "linkedNote": "The invitation can now be correlated with the dial request.",
         "connectedNote": "The agent leg is connected. This alone says nothing about whether the customer answered.",
         "answerNote": "The provider webhook supplies the customer outcome.",
-        "idleNote": "Try the early invitation first to expose the event-order problem.",
-        "authority": "Outcome authority",
+        "idleNote": "Send the early invitation first to see how it waits for the call ID.",
+        "authority": "Customer outcome source",
         "authorityNote": "Provider webhooks and scheduled reconciliation determine the customer result.",
         "correlation": "Call-ID correlation",
         "known": "Call identifier known",
@@ -439,11 +453,11 @@
       }
     },
     "detailHeadings": {
-      "problem": "A sale is more than one status",
-      "contribution": "Custom workflows on Frappe",
-      "engineering": "Calls, ownership and uncertain events",
+      "problem": "Calls, quotations and sales handoff",
+      "contribution": "My work on Frappe CRM",
+      "engineering": "Call events, tabs and sales states",
       "result": "Linked sales records and handoff",
-      "scope": "Custom work versus the base platform"
+      "scope": "What Frappe already provided"
     }
   },
   {
@@ -451,6 +465,10 @@
     "name": "Project Visualization Library",
     "indexSummary": "A shared React package for project navigation and unit selection across two applications.",
     "kind": "Professional work \u00b7 shared package",
+    "cover": {
+      "src": "/assets/projects/covers/visualization.svg",
+      "alt": "Illustration of a shared floor-and-unit grid connected to operations and customer views, with one unit selected."
+    },
     "summary": "A reusable React package for navigating project hierarchies, reading unit progress and working with selected units. Used by the operations platform and a customer dashboard.",
     "tags": [
       "React / TypeScript",
@@ -496,7 +514,7 @@
     ],
     "decision": {
       "label": "Shared React package",
-      "title": "Reusable UI, explicit ownership.",
+      "title": "Share the UI, not the data layer.",
       "implementation": "Typed props, callbacks and adapters connect the same visualization components to two applications.",
       "boundary": "Each host owns its authentication, API access, persistence and business validation."
     },
@@ -515,7 +533,7 @@
         "Each host writes adapters and orchestrates its own queries and actions."
       ],
       [
-        "Late data must win",
+        "Selections after an availability update",
         "A restored selection could arrive before the host had finished loading which units are disabled.",
         "Re-prune the selection whenever disabled units change, not only on the first render.",
         "Selection state has to stay synchronised with inputs that change after mount."
@@ -540,7 +558,7 @@
       "1 month, now receiving updates"
     ],
     "demonstration": {
-      "title": "One component. Two different jobs.",
+      "title": "Try the two host views",
       "intro": "Switch the host application, select a unit, then change its eligibility after selection. The shared view reacts to host inputs; each host keeps control of its data and rules.",
       "boundary": "Illustrative grid with synthetic units, not the production package. Customer and operations views demonstrate different host configurations; these controls do not represent a permissions check.",
       "labels": {
@@ -548,7 +566,7 @@
         "customer": "Customer host",
         "package": "Shared React package",
         "host": "Host-owned inputs",
-        "backend": "Backend-owned authority",
+        "backend": "Backend",
         "floor": "Sample floor",
         "unitA": "Unit A",
         "unitB": "Unit B",
@@ -566,9 +584,9 @@
         "opsNote": "The operations host supplies selection inputs and owns persistence, offline storage and queries.",
         "customerNote": "The customer host supplies progress data and owns its own API access and routing.",
         "packageNote": "Hierarchy, selection, detail panels and progress rendering live in the reusable package.",
-        "backendNote": "Permissions, authoritative records and business transitions stay on the backend.",
+        "backendNote": "The backend checks permissions, stores confirmed records and enforces business rules.",
         "selectionNote": "A selected unit can be rendered by the package while actions are handled by its host.",
-        "prunedNote": "The host changed eligibility after selection. The package re-pruned the selection.",
+        "prunedNote": "The host disabled the selected unit. The package removed it from the selection.",
         "emptyNote": "Select a sample unit to inspect the shared view.",
         "customerDetail": "Progress detail",
         "opsDetail": "Selection detail",
@@ -576,18 +594,22 @@
       }
     },
     "detailHeadings": {
-      "problem": "Shared information, different jobs",
-      "contribution": "The reusable interface I built",
-      "engineering": "Async inputs and host boundaries",
+      "problem": "Project tracking in two applications",
+      "contribution": "What I built",
+      "engineering": "Uploads, host adapters and selections",
       "result": "One package in two applications",
-      "scope": "UI ownership has a clear edge"
+      "scope": "What the host application handles"
     }
   },
   {
     "slug": "website-cms",
     "name": "Public Brand Website & CMS",
-    "indexSummary": "An SSR website, Strapi publishing and enquiry flows, with shared EC2 staging.",
+    "indexSummary": "A server-rendered website with Strapi articles, enquiry forms connected to Frappe CRM and shared EC2 staging.",
     "kind": "Professional work",
+    "cover": {
+      "src": "/assets/projects/covers/website-cms.svg",
+      "alt": "Illustration of editable article blocks becoming a published page, with a separate enquiry sent to the CRM."
+    },
     "summary": "A public-facing SSR website, structured enquiry flows and a Strapi publishing platform, with staging deployment on AWS EC2.",
     "tags": ["React Router SSR", "Strapi", "Frappe CRM", "AWS EC2"],
     "ownership": "I implemented the website and CMS together and set up their shared staging environment.",
@@ -640,7 +662,7 @@
     "problem": "The brand needed a product-discovery and enquiry channel that delivers structured leads to sales with their campaign context, and a way for editors to publish articles without a code release.",
     "challenges": [
       [
-        "Forms that understand CRM outcomes",
+        "Different CRM responses",
         "A submission can create a lead, match an existing one, reactivate it, reach a closed record or fail.",
         "One server-side lead request recognises created, existing and reactivated leads as success, routes closed matches to a follow-up state, and maps validation, rate limits and service errors to failure states. Credentials stay on the server.",
         "The website stays coupled to the CRM\u2019s response contract."
@@ -665,8 +687,8 @@
       "2 months, now receiving updates"
     ],
     "demonstration": {
-      "title": "Publishing and lead delivery have different boundaries.",
-      "intro": "Explore the editor\u2019s publishing loop, or change a CRM response to see why an enquiry cannot always end with the same thank-you message.",
+      "title": "Publish an article or submit an enquiry",
+      "intro": "Edit and publish a sample headline, or switch to enquiries and choose a CRM response to see the form outcome.",
       "boundary": "Browser-only demonstration with sample content and simulated CRM responses. It neither publishes content nor submits a real enquiry.",
       "labels": {
         "publishing": "Publishing loop",
@@ -695,11 +717,11 @@
         "failed": "Request failed",
         "submit": "Simulate enquiry",
         "initial": "Choose a CRM response, then submit the sample enquiry.",
-        "newNote": "CRM creates a lead; the form shows the successful outcome.",
-        "existingNote": "CRM recognises an existing record. Created, existing and eligible reactivated leads share the successful form state.",
-        "reactivatedNote": "CRM reactivates an eligible lead. The form shows the same success state used for new and existing leads.",
-        "closedNote": "A closed match receives its own follow-up state; the website does not silently reopen it.",
-        "failedNote": "The form shows a failure state rather than a successful submission.",
+        "newNote": "The CRM created a lead. The form confirms the enquiry.",
+        "existingNote": "The CRM found an existing lead. The form confirms the enquiry without creating a duplicate.",
+        "reactivatedNote": "The CRM reactivated an eligible lead. The form confirms the enquiry.",
+        "closedNote": "The CRM found a closed record. The form shows a follow-up message and does not reopen the lead.",
+        "failedNote": "The request failed. The form shows an error, not a submission confirmation.",
         "attribution": "Campaign context stays attached",
         "attributionNote": "First-touch and last-touch parameters travel with the enquiry. CRM credentials remain on the server.",
         "visitor": "Visitor form",
@@ -708,11 +730,11 @@
       }
     },
     "detailHeadings": {
-      "problem": "Two audiences, two journeys",
-      "contribution": "Website, CMS and staging ownership",
-      "engineering": "Contracts across system boundaries",
-      "result": "Publishing and lead intake connected",
-      "scope": "Publishing is not infrastructure availability"
+      "problem": "Enquiries and article publishing",
+      "contribution": "Website, CMS and staging",
+      "engineering": "CRM responses, content blocks and hosting",
+      "result": "Lead delivery and publishing",
+      "scope": "Forms, Strapi and staging limits"
     }
   }
 ]

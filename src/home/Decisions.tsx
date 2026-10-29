@@ -9,13 +9,13 @@ export default function Decisions() {
       <div className="section-intro">
         <p className="eyebrow">03 / ENGINEERING DECISIONS</p>
         <h2>
-          The choices behind
+          A few engineering
           <br />
-          <span>the working parts.</span>
+          <span>decisions.</span>
         </h2>
         <p className="section-description">
-          Three small decisions with consequences for correctness, offline state
-          and component ownership.
+          How I handle duplicate records, offline saves and the split between a
+          shared component and its host application.
         </p>
       </div>
       <div className="decision-list">
@@ -39,7 +39,7 @@ export default function Decisions() {
                 <p>{d.implementation}</p>
               </div>
               <div>
-                <h3>Boundary</h3>
+                <h3>Limits</h3>
                 <p>{d.boundary}</p>
               </div>
               <a className="text-link" href={'/#' + (home?.anchor ?? slug)}>

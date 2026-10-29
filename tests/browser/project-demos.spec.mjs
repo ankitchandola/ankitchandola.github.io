@@ -30,18 +30,18 @@ test('Operations cannot confirm offline and rejected saves do not count as accep
   await demo.getByRole('button', { name: 'Reject next save' }).click();
   await expect(demo.locator('.ops-recovery')).toBeVisible();
   await expect(demo.locator('.ops-server .queue-count')).toHaveText(
-    '0 confirmed save(s)',
+    '0 confirmed saves',
   );
   await demo.getByRole('button', { name: 'Accept next save' }).click();
   await expect(demo.locator('.ops-server .queue-count')).toHaveText(
-    '1 confirmed save(s)',
+    '1 confirmed save',
   );
   await expect(
     demo.getByRole('button', { name: 'Accept next save' }),
   ).toBeDisabled();
   await demo.getByRole('button', { name: 'Reset simulation' }).click();
   await expect(demo.locator('.ops-server .queue-count')).toHaveText(
-    '0 confirmed save(s)',
+    '0 confirmed saves',
   );
 });
 
@@ -89,7 +89,9 @@ test('Package prunes late-disabled selections and keeps customer details usable'
   await expect(demo.locator('.unit-detail strong')).toHaveText(
     'No unit selected',
   );
-  await expect(demo.getByRole('status')).toContainText('re-pruned');
+  await expect(demo.getByRole('status')).toContainText(
+    'removed it from the selection',
+  );
   await demo
     .getByRole('button', { name: 'Customer host', exact: true })
     .click();
@@ -121,11 +123,11 @@ test('Website separates CMS drafts from publication and branches closed CRM matc
   await demo.getByLabel('Simulated CRM response').selectOption('closed');
   await demo.getByRole('button', { name: 'Simulate enquiry' }).click();
   await expect(demo.getByRole('status')).toContainText(
-    'does not silently reopen',
+    'does not reopen the lead',
   );
   await demo.getByLabel('Simulated CRM response').selectOption('failed');
   await demo.getByRole('button', { name: 'Simulate enquiry' }).click();
-  await expect(demo.getByRole('status')).toContainText('failure state');
+  await expect(demo.getByRole('status')).toContainText('request failed');
   await demo.getByRole('button', { name: 'Reset demonstration' }).click();
   await expect(demo.locator('.sample-article h4')).toHaveText(
     'A sample product story',

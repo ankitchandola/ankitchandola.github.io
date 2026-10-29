@@ -77,6 +77,16 @@ test('compact project index keeps complete narratives on detail pages', async ({
 }) => {
   await page.goto('/');
   await expect(page.locator('.project-card')).toHaveCount(5);
+  for (const project of projects) {
+    const cover = page.locator(
+      `#${project.home?.anchor ?? project.slug} .project-index-image img`,
+    );
+    await cover.scrollIntoViewIfNeeded();
+    await expect(cover).toHaveAttribute('src', project.cover.src);
+    await expect
+      .poll(() => cover.evaluate((img) => img.complete && img.naturalWidth > 0))
+      .toBe(true);
+  }
   await expect(page.locator('#amount')).toHaveCount(0);
   const project = page.locator('#operations');
   await expect(project.locator('.project-summary')).toContainText(
@@ -87,6 +97,9 @@ test('compact project index keeps complete narratives on detail pages', async ({
     'both frontend and backend',
   );
   await expect(page.locator('.evidence-gallery')).toBeVisible();
+  await expect(
+    page.locator('.evidence-gallery figure:visible img'),
+  ).toHaveAttribute('src', '/assets/projects/order-overview.png');
 });
 
 test('city modal contains focus, supports keyboard controls and restores the preview', async ({
@@ -640,14 +653,14 @@ test('generated routes and custom 404 never use an SPA fallback', async ({
   ]) {
     const response = await request.get(route);
     expect(response.status()).toBe(404);
-    expect(await response.text()).toContain('A small detour.');
+    expect(await response.text()).toContain('Page not found.');
   }
   const response = await page.goto('/not-a-page/');
   expect(response.status()).toBe(404);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'A small detour.',
+    'Page not found.',
   );
-  await page.getByRole('link', { name: 'Return to the work' }).click();
+  await page.getByRole('link', { name: 'Back to homepage' }).click();
   await expect(page).toHaveURL('/');
 });
 
@@ -706,7 +719,7 @@ test('comparison scenarios, inclusive tolerance, invalid input and reset', async
   );
   await page.getByRole('button', { name: 'Rows shuffled' }).click();
   await expect(page.locator('#comparison-result-title')).toHaveText(
-    'Same records. Zero changes.',
+    'No changed records',
   );
   await expect(amount).toBeDisabled();
   await expect(tolerance).toBeDisabled();
@@ -714,7 +727,7 @@ test('comparison scenarios, inclusive tolerance, invalid input and reset', async
   await page.getByRole('button', { name: 'A duplicate key' }).click();
   await expect(page.locator('#after-rows .row-problem')).toHaveCount(2);
   await expect(page.locator('#comparison-result-title')).toContainText(
-    'ambiguous key',
+    'duplicate key',
   );
   await page.getByRole('button', { name: 'A price changed' }).click();
   await amount.fill('950.01');
@@ -726,7 +739,7 @@ test('comparison scenarios, inclusive tolerance, invalid input and reset', async
   );
   await amount.fill('950');
   await expect(page.locator('#comparison-result-title')).toHaveText(
-    'Within your rules. All clear.',
+    'All 3 records within tolerance',
   );
   const lastValid = await page.locator('#after-rows').innerText();
   await amount.fill('');

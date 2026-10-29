@@ -7,9 +7,9 @@ export default function Contact() {
         <p className="eyebrow">05 / START WITH A HELLO</p>
         <div className="contact-main">
           <h2>
-            Something in mind?
+            Want to
             <br />
-            <span>Let’s build it well.</span>
+            <span>talk?</span>
           </h2>
           <a
             aria-label="Email Ankit"

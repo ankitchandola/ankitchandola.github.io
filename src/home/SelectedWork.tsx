@@ -7,18 +7,17 @@ export default function SelectedWork() {
       <div className="section-intro">
         <p className="eyebrow">01 / SELECTED WORK</p>
         <h2>
-          Selected work.
+          Projects I’ve
           <br />
-          <span>In practice.</span>
+          <span>worked on.</span>
         </h2>
         <p className="section-description">
-          Tools and systems I’ve worked on, with the implementation, ownership
-          and decisions behind each one.
+          A personal browser tool and four projects from my current role. Each
+          page shows what I built, how it works and where my contribution stops.
         </p>
       </div>
       <div className="project-collection">
         {projects.map((project) => {
-          const image = project.images[0];
           return (
             <article
               className={
@@ -27,19 +26,19 @@ export default function SelectedWork() {
               id={project.home?.anchor ?? project.slug}
               key={project.slug}
             >
-              {image && (
-                <a
-                  className="project-index-image"
-                  href={'/work/' + project.slug}
-                  aria-label={'Explore ' + project.name}
-                >
-                  <img
-                    src={'/assets/projects/' + image[0] + '.png'}
-                    alt={image[2]}
-                    loading="lazy"
-                  />
-                </a>
-              )}
+              <a
+                className="project-index-image"
+                href={'/work/' + project.slug}
+                aria-label={'Explore ' + project.name}
+              >
+                <img
+                  src={project.cover.src}
+                  alt={project.cover.alt}
+                  width="960"
+                  height="600"
+                  loading="lazy"
+                />
+              </a>
               <div className="project-card-copy">
                 <p className="project-kind-label">{project.kind}</p>
                 <h3>{project.name}</h3>

@@ -1364,9 +1364,8 @@ footer a:focus-visible {
   justify-content: center;
   aspect-ratio: 16 / 10;
   min-width: 0;
-  padding: 24px;
-  background: var(--soft, #e4eee7);
   border-radius: 4px;
+  overflow: hidden;
 }
 .project-index-image img {
   display: block;
@@ -1529,9 +1528,6 @@ footer a:focus-visible {
     row-gap: 48px;
   }
   .project-featured {
-    padding: 16px;
-  }
-  .project-index-image {
     padding: 16px;
   }
   .hero-city {

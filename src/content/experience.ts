@@ -8,7 +8,7 @@ export const experience: readonly Experience[] = [
     role: 'Full-stack developer',
     home: {
       tone: 'green',
-      headline: ['Interfaces, operations.', 'And everything in between.'],
+      headline: ['Operations software', 'and sales tools.'],
       points: [
         'Operations workflows and offline survey functionality across frontend and backend',
         'Custom Vue and Python CRM workflows, browser telephony and quotations',
@@ -30,7 +30,7 @@ export const experience: readonly Experience[] = [
     role: 'Full-stack developer',
     home: {
       tone: 'peach',
-      headline: ['Many moving parts.', 'One connected retail journey.'],
+      headline: ['Retail apps,', 'in store and online.'],
       points: [
         'POS, kiosk, manual-order and e-commerce applications',
         'Negotiation-based order workflows and customer creation',
@@ -51,7 +51,7 @@ export const experience: readonly Experience[] = [
     role: 'Web application development',
     home: {
       tone: 'cream',
-      headline: ['Modern web experiences.', 'Stronger foundations.'],
+      headline: ['PHP to Next.js,', 'ticketing and payments.'],
       points: [
         'Legacy PHP application migration to Next.js',
         'Data-driven interfaces and shared UI components',

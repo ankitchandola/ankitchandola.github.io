@@ -60,7 +60,7 @@ export function mountComparison(root: HTMLElement) {
     amount.setAttribute('aria-invalid', result.error ? 'true' : 'false');
     amount.setAttribute('aria-describedby', 'input-error');
     if (result.error !== undefined) {
-      $('comparison-result-title').textContent = 'Let’s check that amount';
+      $('comparison-result-title').textContent = 'Enter a valid amount';
       $('result-description').textContent =
         'The tables still show your last valid comparison. Enter a valid amount to update them.';
       $('result-icon').dataset.icon = 'problem';
@@ -82,18 +82,17 @@ export function mountComparison(root: HTMLElement) {
         : 'clear';
     $('result-badge').textContent = result.unchanged.length + ' unchanged';
     if (problem) {
-      $('comparison-result-title').textContent =
-        '1 ambiguous key. No guessing.';
+      $('comparison-result-title').textContent = '1 duplicate key';
       $('result-description').textContent =
         'SKU 002 appears twice in today’s file. Both rows are flagged for review, rather than matched arbitrarily.';
       $('demo-tip').textContent =
-        'The detail that matters → A duplicate is a problem to resolve, not a new or changed record.';
+        'Resolve the duplicate before comparing this key. It is not counted as a new or changed record.';
     } else if (state.scenario === 'reorder') {
-      $('comparison-result-title').textContent = 'Same records. Zero changes.';
+      $('comparison-result-title').textContent = 'No changed records';
       $('result-description').textContent =
-        'The row order moved, but every SKU still matches. Identity matters more than position.';
+        'The rows are in a different order, but every SKU and amount still matches.';
       $('demo-tip').textContent =
-        'Try this → Switch to “A price changed” to edit an amount and experiment with tolerance.';
+        'Choose “A price changed” to edit an amount and try a tolerance.';
     } else if (changed) {
       const changedRow = result.after.find((row) => row.sku === '002');
       if (!changedRow) throw new Error('Comparison result is missing SKU 002');
@@ -102,19 +101,19 @@ export function mountComparison(root: HTMLElement) {
         `SKU 002 went from ₹850.00 to ₹${money(changedRow.cents)}. That’s a ₹${money(result.difference)} difference.`;
       $('demo-tip').textContent =
         result.difference <= 10000
-          ? `Try this → Move the tolerance to ₹${Math.ceil(result.difference / 100)}. The difference falls within your rule.`
-          : 'Try this → Set the new amount to ₹920, then move tolerance to ₹70 to see a difference accepted.';
+          ? `Set the tolerance to ₹${Math.ceil(result.difference / 100)} to count this difference as unchanged.`
+          : 'Set the amount to ₹920 and the tolerance to ₹70 to count the difference as unchanged.';
     } else {
       $('comparison-result-title').textContent =
         result.difference === 0
-          ? 'An exact match. All clear.'
-          : 'Within your rules. All clear.';
+          ? 'All 3 records match'
+          : 'All 3 records within tolerance';
       $('result-description').textContent =
         result.difference === 0
           ? 'Both files have the same records and amounts. There’s nothing to review.'
           : `The ₹${money(result.difference)} difference is within your ₹${state.tolerance} tolerance. All 3 records are treated as unchanged.`;
       $('demo-tip').textContent =
-        'Your rule, applied consistently → The full tool lets you save these choices as a reusable profile.';
+        'The full tool lets you save comparison rules in a reusable profile.';
     }
   }
   for (const button of scenarios)

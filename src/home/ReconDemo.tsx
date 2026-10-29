@@ -66,33 +66,27 @@ export default function ReconDemo({ home }: { home: ProjectHome }) {
           <span className="demo-label">
             <span className="live-dot"></span> INTERACTIVE DEMO
           </span>
-          <h3>Change something.</h3>
+          <h3>Compare sample records.</h3>
           <p>
-            I’ve loaded a tiny sample for you. Pick a scenario, adjust a rule,
-            and watch the result.
+            Choose a scenario or edit an amount. The result updates using SKU as
+            the record key.
           </p>
           <ol className="demo-steps">
             <li>
-              <span>1</span>Choose a little chaos
+              <span>1</span>Choose a scenario
             </li>
             <li>
-              <span>2</span>Make the rules yours
+              <span>2</span>Set the tolerance
             </li>
             <li>
-              <span>3</span>See what really changed
+              <span>3</span>Review the result
             </li>
           </ol>
           <div className="guide-note">
             <span>
               <Icon name="asterisk" />
             </span>
-            <p>
-              No files to upload.
-              <br />
-              No sign-up. Just a small
-              <br />
-              taste of the real tool.
-            </p>
+            <p>Uses three sample records. No upload or account needed.</p>
           </div>
           <span className="small-label">FICTIONAL DATA · SIMPLIFIED DEMO</span>
         </aside>
@@ -177,7 +171,7 @@ export default function ReconDemo({ home }: { home: ProjectHome }) {
           <div className="rules">
             <div>
               <span className="step-title">
-                <b>2</b> Make the rules yours
+                <b>2</b> Set the tolerance
               </span>
               <span className="key-note">
                 MATCH BY <code>SKU</code>
@@ -235,7 +229,7 @@ export default function ReconDemo({ home }: { home: ProjectHome }) {
               <Icon name="check" />
             </span>
             <div>
-              <span className="small-label">3 / HERE’S WHAT MATTERS</span>
+              <span className="small-label">3 / COMPARISON RESULT</span>
               <h5 id="comparison-result-title">1 changed record</h5>
               <p id="result-description">
                 SKU 002 went from ₹850.00 to ₹920.00. That’s a ₹70.00
@@ -247,8 +241,8 @@ export default function ReconDemo({ home }: { home: ProjectHome }) {
             </span>
           </div>
           <p className="demo-tip" id="demo-tip">
-            <b>Try this →</b> Move the tolerance to ₹70. The difference falls
-            within your rule.
+            <b>Try this:</b> Set the tolerance to ₹70. The changed amount will
+            count as unchanged.
           </p>
         </div>
       </div>
@@ -264,7 +258,7 @@ export default function ReconDemo({ home }: { home: ProjectHome }) {
         ))}
       </div>
       <details className="comparison-notes">
-        <summary>Behind the build</summary>
+        <summary>How the comparison works</summary>
         <div>
           {home.notes.map(([title, body]) => (
             <section key={title}>

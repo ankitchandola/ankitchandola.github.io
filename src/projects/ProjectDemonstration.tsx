@@ -214,7 +214,8 @@ function Operations({ l }: { l: Labels }) {
             ))}
           </div>
           <strong className="queue-count">
-            {pending} <span>{l('pending')}</span>
+            {pending}{' '}
+            <span>{l(pending === 1 ? 'pendingOne' : 'pendingMany')}</span>
           </strong>
           <p>{l(pending ? (online ? 'syncing' : 'queued') : 'empty')}</p>
           <Action
@@ -243,7 +244,8 @@ function Operations({ l }: { l: Labels }) {
             {l('server')}
           </span>
           <strong className="queue-count">
-            {accepted} <span>{l('confirmed')}</span>
+            {accepted}{' '}
+            <span>{l(accepted === 1 ? 'confirmedOne' : 'confirmedMany')}</span>
           </strong>
           <p>{l('serverHelp')}</p>
           <div className="demo-actions">

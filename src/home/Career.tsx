@@ -8,13 +8,13 @@ export default function Career() {
       <div className="section-intro">
         <p className="eyebrow">04 / TODAY &amp; YESTERDAY</p>
         <h2>
-          Different teams.
+          Where I’ve
           <br />
-          <span>A wider perspective.</span>
+          <span>worked.</span>
         </h2>
         <p className="section-description">
-          Different teams, different constraints. Each role added another part
-          of the full-stack picture.
+          My roles at Green Fortune Technologies, Hippo Homes and Nethues, from
+          2021 to the present.
         </p>
       </div>
       <div className="career-stack">
@@ -72,7 +72,7 @@ export default function Career() {
         rel="noopener"
         target="_blank"
       >
-        The full story, in my résumé <Icon name="arrow-up-right" />
+        View résumé <Icon name="arrow-up-right" />
       </a>
     </section>
   );

@@ -48,7 +48,7 @@ export function CityDestinationPanels() {
           Studio
         </h3>
         <p>
-          Five projects, from comparison tools to connected web applications.
+          My browser tool and four projects from Green Fortune Technologies.
         </p>
         <ul className="city-projects">
           {projects.map(({ slug, name, indexSummary, summary }) => (
@@ -72,8 +72,8 @@ export function CityDestinationPanels() {
           Journey
         </h3>
         <p>
-          Three teams, a growing full-stack perspective. A career timeline, not
-          a model of their offices.
+          My roles from 2021 to the present, starting with Nethues. These
+          buildings are fictional, not the companies’ offices.
         </p>
         <ol className="city-timeline">
           {cityExperienceOrder.map((index) => {

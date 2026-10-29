@@ -5,25 +5,25 @@ export default function HowIWork() {
         <div>
           <p className="eyebrow">02 / HOW I WORK</p>
           <h2>
-            The useful part
+            What I
             <br />
-            is in the <span>details.</span>
+            <span>work on.</span>
           </h2>
         </div>
         <div className="about-copy">
           <p>
-            I’m Ankit, a full-stack developer based in Delhi. I follow features
-            through the interface, validation, APIs and the workflows connecting
+            My work covers forms, shared UI components, APIs and the data behind
             them.
           </p>
           <p>
-            I like the questions that show up after the happy path. Answering
-            them is where a product starts feeling dependable.
+            Much of it comes down to specific questions: what happens to a
+            survey when the connection drops? Does a connected browser mean the
+            customer answered? The project pages explain those decisions.
           </p>
           <div className="capabilities">
             <div>
               <span>01</span>
-              <b>Make it understandable</b>
+              <b>Frontend</b>
               <p>
                 React, Next.js, TypeScript
                 <br />
@@ -32,7 +32,7 @@ export default function HowIWork() {
             </div>
             <div>
               <span>02</span>
-              <b>Make it hold together</b>
+              <b>Backend</b>
               <p>
                 Node.js, PostgreSQL, Fastify
                 <br />
