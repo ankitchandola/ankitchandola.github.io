@@ -744,6 +744,11 @@ footer.wrap,
   overflow: hidden;
   min-height: 0;
 }
+.lite-contribution {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+}
 @media (hover: hover) and (pointer: fine) and (min-width: 701px) {
   .lite-description {
     grid-template-rows: 0fr;

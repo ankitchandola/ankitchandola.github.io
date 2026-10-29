@@ -459,7 +459,8 @@ function Lite() {
         <span>Full-stack developer.</span>
       </h1>
       <p className="lite-intro">
-        I build operations software, CRM workflows and browser tools. Based in
+        I build CRM workflows, operations tools with offline surveys, shared
+        React components and a browser tool for comparing spreadsheets. Based in
         Delhi, India. This version has no scripts or animation.
       </p>
       <Today />
@@ -474,7 +475,12 @@ function Lite() {
             <div>
               <h3>{p.name}</h3>
               <div className="lite-description">
-                <p>{p.summary}</p>
+                <p>
+                  {p.summary}
+                  {p.contribution && (
+                    <span className="lite-contribution">{p.contribution}</span>
+                  )}
+                </p>
               </div>
             </div>
             <ArrowUpRight size={30} />
