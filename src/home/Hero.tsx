@@ -28,9 +28,8 @@ export default function Hero() {
           <span>front to back.</span>
         </p>
         <p className="hero-description">
-          I’m Ankit. I build CRM workflows, operations tools with offline
-          surveys, shared React components and a browser tool for comparing
-          spreadsheets.
+          I’m Ankit. I build operations software across the frontend and
+          backend, from offline field workflows to shared React components.
         </p>
         <div className="hero-actions">
           <a className="button dark" href="#work">

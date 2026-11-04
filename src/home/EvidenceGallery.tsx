@@ -22,7 +22,7 @@ export default function EvidenceGallery({
           </button>
         ))}
       </div>
-      {images.map(([file, title, caption], i) => (
+      {images.map(([file, title, caption, width, height], i) => (
         <figure key={file} data-panel={i} hidden={i > 0}>
           <a
             href={'/assets/projects/' + file + '.png'}
@@ -32,6 +32,8 @@ export default function EvidenceGallery({
             aria-hidden="true"
           >
             <img
+              width={width}
+              height={height}
               src={'/assets/projects/' + file + '.png'}
               loading="lazy"
               alt={caption}

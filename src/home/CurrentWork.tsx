@@ -3,18 +3,10 @@ import { LinkArrow } from './icons';
 export default function CurrentWork() {
   return (
     <section className="current-work wrap" id="today">
-      <p className="eyebrow">TODAY / FULL-STACK DEVELOPMENT</p>
+      <p className="eyebrow">TODAY / CURRENT ROLE</p>
       <div className="current-grid">
         <div>
-          <h2>
-            CRM, field work
-            <br />
-            <span>and the web.</span>
-          </h2>
-          <p>
-            At Green Fortune Technologies, I work across frontend development,
-            backend services and staging deployment.
-          </p>
+          <h2>Green Fortune Technologies</h2>
           <span className="current-role">
             Full-stack developer · 2025 — present
           </span>

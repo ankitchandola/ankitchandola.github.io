@@ -2,6 +2,8 @@ export type ProjectImage = readonly [
   file: string,
   label: string,
   caption: string,
+  width: number,
+  height: number,
 ];
 export type ProjectSection = readonly [title: string, body: string];
 export type ProjectChallenge = readonly [

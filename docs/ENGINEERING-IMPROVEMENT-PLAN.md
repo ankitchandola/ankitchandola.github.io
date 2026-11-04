@@ -4,9 +4,11 @@
 
 Add automated quality gates, migrate application JavaScript to TypeScript, and improve maintainability without changing the portfolio's design, content claims, routes, or rendering architecture.
 
-This is an implementation plan, not a record of completed changes. Follow [DESIGN.md](DESIGN.md) throughout implementation. Keep the original interactive Site separate.
+Status updated 4 November 2026: formatting, lint, strict type checks, PR validation, production browser/accessibility tests, typed models and React/content migration are implemented. DOM interaction/tooling migration, full build-time content validation, broader component/CSS cleanup and measured performance work remain. Screenshot dimensions are now stored and checked against the assets. Use [README.md](../README.md) for the current commands and validation coverage.
 
-## Current baseline
+The baseline below describes the original review, not the current checkout. Follow [DESIGN.md](DESIGN.md) throughout implementation. Keep the original interactive Site separate.
+
+## Original planning baseline
 
 - npm with `package-lock.json`; React 19, React Router 7, and Vite 7.
 - `npm test` runs the native Node test runner against `tests/*.test.mjs`.

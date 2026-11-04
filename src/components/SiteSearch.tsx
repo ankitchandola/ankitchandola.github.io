@@ -33,7 +33,7 @@ export default function SiteSearch({
       </summary>
       <div className="search-panel">
         <label className="search-field" hidden>
-          Search projects and technologies
+          Find a project or section
           <input
             type="search"
             placeholder="Try React, offline or CRM"
@@ -58,7 +58,6 @@ export default function SiteSearch({
             >
               <a href={'/work/' + project.slug}>
                 <strong>{project.name}</strong>
-                <span>{project.tags.join(' · ')}</span>
               </a>
             </li>
           ))}

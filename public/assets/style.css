@@ -2481,8 +2481,10 @@ body.motion-paused .sheet {
   height: 22px;
   color: var(--peach);
 }
-.stack-ribbon:hover .marquee-track {
-  animation-play-state: paused;
+@media (hover: hover) and (pointer: fine) {
+  .ribbon-window:hover .marquee-track {
+    animation-play-state: paused;
+  }
 }
 @keyframes marquee {
   to {

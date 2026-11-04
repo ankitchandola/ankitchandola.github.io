@@ -137,21 +137,17 @@ body {
   list-style: none;
 }
 .search-panel .search-results a {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
   padding: 12px 8px;
   border-radius: 4px;
 }
 .search-results a:hover {
   background: var(--mint);
 }
-.search-results strong,
-.search-results span {
+.search-results strong {
   display: block;
-}
-.search-results span {
-  font: 400 14px/1.5 var(--body);
-  margin-top: 4px;
-  color: var(--muted);
 }
 .search-panel .search-all {
   display: inline-flex;
@@ -1694,7 +1690,7 @@ footer a:focus-visible {
     font-size: 14px;
   }
   .hero-city {
-    max-width: 300px;
+    max-width: 264px;
     margin-inline: auto;
   }
   .hero-city:has(> .city-open:not([hidden])) {
@@ -1865,26 +1861,11 @@ footer a:focus-visible {
     flex-direction: column;
   }
   .ribbon-window {
-    padding: 16px 20px;
-  }
-  .marquee-track {
-    width: auto;
-    animation: none;
-  }
-  .marquee-group {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 8px 16px;
-    padding: 0;
-    white-space: normal;
-  }
-  .marquee-group[aria-hidden],
-  .marquee-group .icon {
-    display: none;
+    padding: 16px 0;
   }
   .marquee-group span {
     padding: 0;
-    font-size: 15px;
+    font-size: 18px;
   }
   .stack-ribbon .motion {
     justify-content: flex-start;
@@ -3515,9 +3496,30 @@ body.motion-paused .evidence-gallery figure:not([hidden]) {
   }
   .current-grid {
     gap: 24px;
+    margin-top: 16px;
   }
   .current-grid h2 {
-    font-size: 32px;
+    font-size: 28px;
+    text-wrap: pretty;
+  }
+  .current-role {
+    margin-top: 12px;
+  }
+  .start-here {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 16px;
+    margin-top: 20px;
+  }
+  .start-here > span {
+    grid-column: 1 / -1;
+  }
+  .start-here a {
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .start-here a > .icon {
+    display: none;
   }
   .scope-numbers,
   .scope-stats {

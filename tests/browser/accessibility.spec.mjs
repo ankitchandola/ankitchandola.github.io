@@ -60,6 +60,38 @@ test('reduced motion stops ambient motion and puzzle animation', async ({
   ).toBe('0s');
 });
 
+test('technology strip moves, pauses and resumes on desktop and touch', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  const track = page.locator('.marquee-track');
+  const motion = page.locator('#motion');
+  await page.locator('.stack-ribbon').scrollIntoViewIfNeeded();
+  const position = () =>
+    track.evaluate((element) => getComputedStyle(element).transform);
+  const initial = await position();
+  await expect.poll(position).not.toBe(initial);
+  await motion.click();
+  await expect(motion).toHaveText('Play motion');
+  const stopped = await position();
+  await page.waitForTimeout(200);
+  expect(await position()).toBe(stopped);
+  await motion.click();
+  await expect(motion).toHaveText('Pause motion');
+  await expect.poll(position).not.toBe(stopped);
+  await motion.click();
+  await page.reload();
+  await expect(motion).toHaveText('Play motion');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(motion).toBeDisabled();
+  await expect(motion).toHaveText('Motion reduced');
+  expect(
+    await track.evaluate((element) => getComputedStyle(element).animationName),
+  ).toBe('none');
+  await expect(page.locator('.marquee-group[aria-hidden]')).toBeHidden();
+});
+
 test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
   test('homepage keeps project evidence and navigation readable', async ({

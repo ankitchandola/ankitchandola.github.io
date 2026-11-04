@@ -82,6 +82,8 @@ stays on version 9 while the React/JSX accessibility plugins declare support
 through that major. Browser storage is optional: documented catches keep theme
 and motion controls usable when persistence is blocked.
 
+Screenshot image tuples in `src/content/projects.json` include their actual pixel width and height. Both galleries emit these attributes to reserve space before loading; generated-site checks compare them with the PNG files. Update the dimensions when replacing a screenshot. A browser regression delays an image and checks that its height stays stable.
+
 The checks cover the comparison model, the puzzle model and levels,
 prerendered links and assets, headings, duplicate IDs, script-free lite output
 and principal palette contrast. They do not replace a rendered visual review

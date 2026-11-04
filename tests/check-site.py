@@ -1,7 +1,7 @@
 from pathlib import Path
 from html.parser import HTMLParser
 from urllib.parse import urlsplit
-import re, json, html
+import re, json, html, struct
 root=Path('dist')
 class Page(HTMLParser):
  def __init__(self,text):
@@ -13,6 +13,10 @@ class Page(HTMLParser):
   if tag=='script':self.scripts+=1
   if tag in ['a','link'] and 'href' in a:self.refs.append(a['href'])
   if tag in ['script','img'] and 'src' in a:self.refs.append(a['src'])
+  if tag=='img' and a.get('src','').startswith('/assets/projects/') and a['src'].endswith('.png'):
+   image=root/a['src'].lstrip('/')
+   width,height=struct.unpack('>II',image.read_bytes()[16:24])
+   assert (a.get('width'),a.get('height'))==(str(width),str(height)),f'{image}: missing or incorrect intrinsic dimensions'
   if tag=='a' and a.get('target')=='_blank':assert 'noopener' in a.get('rel',''),'Missing link safety'
 files=list(root.rglob('index.html'))
 for file in files:

@@ -11,6 +11,8 @@ export function checkContentContracts(
   acceptDemonstration: (demo: ProjectDemonstration) => void,
   acceptScope: (scope: Scope) => void,
 ) {
+  acceptImage(['screen', 'View', 'Caption', 1600, 1000]);
+  // @ts-expect-error Screenshots reserve their intrinsic dimensions before loading.
   acceptImage(['screen', 'View', 'Caption']);
   // @ts-expect-error A screenshot needs its accessible caption.
   acceptImage(['screen', 'View']);

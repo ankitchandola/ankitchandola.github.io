@@ -716,6 +716,37 @@ for (const route of ['/work/recon-desk']) {
   }
 }
 
+test('project screenshot reserves its full height before a delayed load', async ({
+  page,
+}) => {
+  let release;
+  const pending = new Promise((resolve) => {
+    release = resolve;
+  });
+  await page.route('**/assets/projects/*.png', async (route) => {
+    await pending;
+    await route.continue();
+  });
+  try {
+    await page.goto('/work/operations', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => document.fonts.ready);
+    const image = page.locator('.evidence-gallery figure:not([hidden]) img');
+    await image.scrollIntoViewIfNeeded();
+    const before = await image.boundingBox();
+    expect(before.height).toBeGreaterThan(100);
+    expect(await image.evaluate((img) => img.complete)).toBe(false);
+    release();
+    await expect
+      .poll(() => image.evaluate((img) => img.naturalWidth))
+      .toBeGreaterThan(0);
+    const after = await image.boundingBox();
+    expect(Math.abs(after.height - before.height)).toBeLessThan(1);
+  } finally {
+    release();
+    await page.unrouteAll({ behavior: 'wait' });
+  }
+});
+
 test('comparison scenarios, inclusive tolerance, invalid input and reset', async ({
   page,
 }) => {

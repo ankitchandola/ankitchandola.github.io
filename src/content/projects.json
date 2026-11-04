@@ -38,12 +38,16 @@
       [
         "recon-desk-comparison-results",
         "Comparison results",
-        "Changed values, record counts and export options."
+        "Changed values, record counts and export options.",
+        2048,
+        1280
       ],
       [
         "recon-desk-reconcile-suggestions",
         "Review suggestions",
-        "Candidate bank and books transactions with explicit confirm and reject actions."
+        "Candidate bank and books transactions with explicit confirm and reject actions.",
+        2048,
+        1280
       ]
     ],
     "url": "https://ankitchandola.github.io/csvDiffTool/",
@@ -223,22 +227,30 @@
       [
         "order-overview",
         "Order overview",
-        "Order-level progress and component summaries, using dummy records."
+        "Order-level progress and component summaries, using dummy records.",
+        2048,
+        1280
       ],
       [
         "order-workspace",
         "Order workspace",
-        "Survey, sales-order and handover tasks within the same order."
+        "Survey, sales-order and handover tasks within the same order.",
+        2048,
+        1280
       ],
       [
         "survey-unit-detail",
         "Survey measurements",
-        "A selected unit opens measurement, remarks, photo and deviation controls."
+        "A selected unit opens measurement, remarks, photo and deviation controls.",
+        1966,
+        2048
       ],
       [
         "offline-waiting-to-sync",
         "Saved on device",
-        "A pending-sync badge and local-save message distinguish queued work from server confirmation."
+        "A pending-sync badge and local-save message distinguish queued work from server confirmation.",
+        2048,
+        1280
       ]
     ],
     "decision": {
@@ -349,17 +361,23 @@
       [
         "crm-lead-detail",
         "Lead detail",
-        "Sample lead with separate business stage and engagement fields, plus inbound and outbound call activity."
+        "Sample lead with separate business stage and engagement fields, plus inbound and outbound call activity.",
+        2048,
+        1280
       ],
       [
         "crm-leads-kanban",
         "Stage board",
-        "Sample leads grouped by configured business stage in the Frappe CRM Kanban view."
+        "Sample leads grouped by configured business stage in the Frappe CRM Kanban view.",
+        2048,
+        1280
       ],
       [
         "crm-leads-list",
         "Leads list",
-        "Sample lead records and stage, source and owner filters in the Frappe CRM list view."
+        "Sample lead records and stage, source and owner filters in the Frappe CRM list view.",
+        2048,
+        1280
       ]
     ],
     "sections": [
@@ -507,17 +525,23 @@
       [
         "customer-progress-grid",
         "Customer progress",
-        "Project totals and units grouped by floor, flat and room."
+        "Project totals and units grouped by floor, flat and room.",
+        2048,
+        1280
       ],
       [
         "customer-unit-detail",
         "Unit details",
-        "Component statuses, specifications and the selected unit\u2019s location."
+        "Component statuses, specifications and the selected unit\u2019s location.",
+        2048,
+        1280
       ],
       [
         "customer-unit-timeline",
         "Unit timeline",
-        "Survey and production history for the selected unit."
+        "Survey and production history for the selected unit.",
+        2048,
+        1280
       ]
     ],
     "decision": {
@@ -645,27 +669,37 @@
       [
         "web-home",
         "Homepage",
-        "Public website homepage with product introduction and consultation links."
+        "Public website homepage with product introduction and consultation links.",
+        2048,
+        1280
       ],
       [
         "web-blog-list",
         "Blog listing",
-        "Featured articles, categories, author information and article search."
+        "Featured articles, categories, author information and article search.",
+        2048,
+        1280
       ],
       [
         "strapi-entry-editor",
         "CMS editor",
-        "Strapi\u2019s entry editor showing the configured article fields, featured image and rich-text content block."
+        "Strapi\u2019s entry editor showing the configured article fields, featured image and rich-text content block.",
+        2048,
+        1280
       ],
       [
         "web-blog-post",
         "Published article",
-        "The corresponding sample article rendered on the public website."
+        "The corresponding sample article rendered on the public website.",
+        2048,
+        1280
       ],
       [
         "strapi-blog-list",
         "CMS collection",
-        "The configured blog collection in Strapi\u2019s content manager, using sample entries."
+        "The configured blog collection in Strapi\u2019s content manager, using sample entries.",
+        2048,
+        1280
       ]
     ],
     "galleryLabel": "Website and CMS screenshot views",

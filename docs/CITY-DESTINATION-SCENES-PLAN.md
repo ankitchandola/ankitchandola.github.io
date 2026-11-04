@@ -2,7 +2,7 @@
 
 Implementation plan · 28 October 2026
 
-Status: the shared renderer boundary and playable Arcade vertical slice are implemented locally. Journey, Studio and Contact retain their reading panels pending the Arcade review checkpoint; their separate scenes are not implemented. Nothing has been committed or published for this milestone.
+Status updated 4 November 2026: the shared renderer boundary and playable Arcade vertical slice are implemented and committed (`98141fd`). Journey, Studio and Contact retain their reading panels pending the Arcade review checkpoint; their separate scenes are not implemented. Deployment status is not tracked by this plan.
 
 This plan builds on [the previous city plan](CITY-PORTFOLIO-PLAN.md). It supersedes that plan's destination-panel presentation, its restriction against an embedded miniature puzzle, and its rule that Back to city always resets the camera. Preserve the current implementation until each replacement scene is ready.
 
@@ -32,7 +32,7 @@ The local implementation already provides a strong base:
 
 The preceding review passed formatting, lint, TypeScript, 47 model tests, the build, generated-site checks and 96 desktop/phone browser tests. These are baseline results, not validation of the new scenes.
 
-The existing local work is uncommitted. Preserve it and extend it incrementally. Do not rebuild the original five-project building system or the discarded machine. The separate original interactive Site remains outside this work.
+The Arcade milestone is committed. Preserve it and extend it incrementally. Do not rebuild the original five-project building system or the discarded machine. The separate original interactive Site remains outside this work.
 
 ## 3. Destination scenes
 

@@ -199,7 +199,7 @@ function Gallery({ project }: { project: ProjectContent }) {
           </button>
         ))}
       </div>
-      {project.images.map(([file, label, caption], i) => (
+      {project.images.map(([file, label, caption, width, height], i) => (
         <figure key={file} hidden={active !== i}>
           <a
             href={'/assets/projects/' + file + '.png'}
@@ -210,6 +210,8 @@ function Gallery({ project }: { project: ProjectContent }) {
           >
             <img
               loading="lazy"
+              width={width}
+              height={height}
               src={'/assets/projects/' + file + '.png'}
               alt={caption}
             />
@@ -458,9 +460,8 @@ function Lite() {
         <span>Full-stack developer.</span>
       </h1>
       <p className="lite-intro">
-        I build CRM workflows, operations tools with offline surveys, shared
-        React components and a browser tool for comparing spreadsheets. Based in
-        Delhi, India. This version has no scripts or animation.
+        Based in Delhi, India. A quick overview of my work and experience,
+        without scripts or animation.
       </p>
       <Today />
       <div className="lite-projects" id="work">
