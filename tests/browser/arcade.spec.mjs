@@ -1,5 +1,11 @@
 import { test, expect, sceneOnly } from './fixtures.mjs';
-import { OrthographicCamera, Vector3 } from 'three';
+import raw from '../../src/content/levels.json' with { type: 'json' };
+import { parseLevel } from '../../src/play/model.ts';
+import {
+  frameTable,
+  mirrorRects,
+  tableCamera,
+} from '../../src/play/three/projection.ts';
 
 const enter = async (page) => {
   await page.goto('/');
@@ -110,23 +116,14 @@ test('Arcade projected mirror tap solves the table without orbit controls', asyn
   );
   const canvas = page.locator('#hero-city');
   const bounds = await canvas.boundingBox();
-  const aspect = bounds.width / bounds.height;
-  const half = Math.max(4.1, 5.2 / aspect);
-  const camera = new OrthographicCamera(
-    -half * aspect,
-    half * aspect,
-    half,
-    -half,
-    0.1,
-    60,
-  );
-  camera.position.set(3.2, 10, 7);
-  camera.lookAt(0, 0.5, 0);
-  camera.updateMatrixWorld();
-  const p = new Vector3(0.5, 0.76, -1).project(camera);
+  const lesson = parseLevel(raw[0]);
+  const size = { width: bounds.width, height: bounds.height };
+  const camera = tableCamera();
+  frameTable(camera, lesson, size);
+  const [rect] = mirrorRects(camera, lesson, size).values();
   await page.mouse.click(
-    bounds.x + ((p.x + 1) * bounds.width) / 2,
-    bounds.y + ((1 - p.y) * bounds.height) / 2,
+    bounds.x + rect.x + rect.width / 2,
+    bounds.y + rect.y + rect.height / 2,
   );
   await expect(mirror(page)).toHaveAttribute('aria-label', /backward/);
   await fire(page).click();

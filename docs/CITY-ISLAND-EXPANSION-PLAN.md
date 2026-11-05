@@ -8,7 +8,7 @@ This plan extends the [separate-scenes plan](CITY-DESTINATION-SCENES-PLAN.md), w
 2. Ricochet gets a complete 3D presentation at `/play`, covering every mode of the existing game, and the city Arcade shares that renderer.
 3. Each destination opens its own view, distinct from the city overview, and all of them belong to the same island world.
 
-Stage 1 (island and atmosphere) is implemented; see DESIGN.md for the settled rules. Already delivered and committed before this plan: the full-screen explorer (`37a7cce`) and distinct destination buildings with rooftop signs (`b742fe7`). Neither commit is deployed yet.
+Stages 1 (island and atmosphere) and 2 (shared Ricochet table) are implemented; see DESIGN.md for the settled rules. Stage 1, the full-screen explorer (`37a7cce`) and the distinct destination buildings (`b742fe7`) are deployed. The shared table lives in `src/play/three/table.ts`, with its DOM-free framing, fit and mirror-rectangle maths in `src/play/three/projection.ts`.
 
 ## 1. Principles
 
