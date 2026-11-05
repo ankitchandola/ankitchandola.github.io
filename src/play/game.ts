@@ -141,7 +141,11 @@ export function createGame({ urls }: GameOptions) {
     savePrefs(browserStorage(), patch);
     return { ...snapshot.prefs, ...patch };
   };
-  const open = (action: OpenAction | null, prefs = snapshot.prefs) => {
+  const open = (
+    action: OpenAction | null,
+    prefs = snapshot.prefs,
+    animate = false,
+  ) => {
     if (!action) {
       set({
         prefs,
@@ -156,6 +160,7 @@ export function createGame({ urls }: GameOptions) {
       prefs,
       notice: '',
       shareUrl: '',
+      animate,
       focusRequest:
         snapshot.focusRequest + (state.level === snapshot.state.level ? 0 : 1),
     });
@@ -232,20 +237,25 @@ export function createGame({ urls }: GameOptions) {
         animate,
       });
     },
-    select: (index: number) => open({ type: 'select', index }),
-    next: () => open({ type: 'next' }),
-    chooseMode: (next: SavedMode) => {
+    select: (index: number, animate = false) =>
+      open({ type: 'select', index }, snapshot.prefs, animate),
+    next: (animate = false) => open({ type: 'next' }, snapshot.prefs, animate),
+    chooseMode: (next: SavedMode, animate = false) => {
       const prefs = remember({ mode: next });
       if (next === 'campaign')
-        open({ type: 'select', index: snapshot.state.levelIndex }, prefs);
+        open(
+          { type: 'select', index: snapshot.state.levelIndex },
+          prefs,
+          animate,
+        );
       if (next === 'random')
-        open(randomPuzzle(snapshot.prefs.preset ?? 'medium'), prefs);
-      if (next === 'daily') open(dailyPuzzle(), prefs);
+        open(randomPuzzle(snapshot.prefs.preset ?? 'medium'), prefs, animate);
+      if (next === 'daily') open(dailyPuzzle(), prefs, animate);
     },
-    chooseDifficulty: (preset: PresetName) => {
-      open(randomPuzzle(preset), remember({ mode: 'random', preset }));
+    chooseDifficulty: (preset: PresetName, animate = false) => {
+      open(randomPuzzle(preset), remember({ mode: 'random', preset }), animate);
     },
-    newPuzzle: () => {
+    newPuzzle: (animate = false) => {
       const { state, prefs } = snapshot;
       open(
         randomPuzzle(
@@ -254,6 +264,7 @@ export function createGame({ urls }: GameOptions) {
             : (state.preset ?? prefs.preset ?? 'medium'),
         ),
         remember({ mode: 'random' }),
+        animate,
       );
     },
     copyLink: async () => {

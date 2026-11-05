@@ -38,12 +38,13 @@ export function createSceneHost(canvas: HTMLCanvasElement) {
   let active: SceneView | null = null;
   let visible = false;
   let lost = false;
+  let paused = false;
   let frame = 0;
   let width = 0;
   let height = 0;
   const draw = (time: number) => {
     frame = 0;
-    if (!active || !visible || lost || document.hidden) return;
+    if (!active || !visible || lost || paused || document.hidden) return;
     if (active.shouldRender && !active.shouldRender()) return;
     const moving = active.update(time);
     if (active.dynamicShadows) renderer.shadowMap.needsUpdate = true;
@@ -54,7 +55,7 @@ export function createSceneHost(canvas: HTMLCanvasElement) {
   };
   const invalidate = (shadows = false) => {
     if (shadows) renderer.shadowMap.needsUpdate = true;
-    if (!frame && active && visible && !lost && !document.hidden)
+    if (!frame && active && visible && !lost && !paused && !document.hidden)
       frame = requestAnimationFrame(draw);
   };
   const resize = () => {
@@ -119,6 +120,16 @@ export function createSceneHost(canvas: HTMLCanvasElement) {
       invalidate(true);
     },
     invalidate,
+    pause() {
+      paused = true;
+      stop();
+      active?.deactivate();
+    },
+    resume() {
+      paused = false;
+      if (!lost) active?.activate();
+      invalidate(true);
+    },
     resize,
     settle() {
       active?.settle();

@@ -2,7 +2,7 @@
 
 These are working notes for finishing [CITY-ISLAND-EXPANSION-PLAN.md](CITY-ISLAND-EXPANSION-PLAN.md) stages 4–7. Behaviour rules come from [CITY-DESTINATION-SCENES-PLAN.md](CITY-DESTINATION-SCENES-PLAN.md) sections 3–7 and 9, so read both plans before starting. Delete this file in the stage 7 commit.
 
-**Start condition:** stage 3 (see [ARCADE-STAGE3-HANDOFF.md](ARCADE-STAGE3-HANDOFF.md)) is committed **and the owner has approved it**. If the owner hasn't approved it, stop.
+**Start condition:** stage 3 (see [CITY-ISLAND-EXPANSION-PLAN.md](CITY-ISLAND-EXPANSION-PLAN.md)) is committed **and the owner has approved it**. Stage 3 is implemented and awaiting that approval; its Arcade handoff has been retired. If the owner hasn't approved it, stop.
 
 ## Ground rules (every stage)
 
@@ -306,7 +306,7 @@ Pause here and report to the owner, per the plan ("one project object with Inspe
      - an explicit list of what is unverified.
 
      State these as allocation counts and chunk sizes, never as GPU memory or FPS claims.
-7. **Delete the handoff files:** this file and `ARCADE-STAGE3-HANDOFF.md`.
+7. **Delete this handoff file.** The Arcade stage-3 handoff was already retired at its milestone.
 8. **Final check and commit:** run `npm run check` in full, then commit `docs: record the finished city scenes` (code removals may be a separate `refactor:` commit).
 
 Then stop and report to the owner. **No push.**

@@ -9,7 +9,7 @@ export function render(url: string) {
     </StaticRouter>,
   );
 }
-// The homepage is never hydrated; src/home/client.js adds its interactions to this static markup.
+// The homepage stays static; the city Arcade mounts its own client portals.
 export function renderHome() {
   return renderToStaticMarkup(<Home />);
 }

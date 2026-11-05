@@ -5,7 +5,6 @@ import {
   CityDestinationControls,
   CityDestinationPanels,
 } from './CityDestinations';
-import ArcadeBoard from './ArcadeBoard';
 
 export default function Hero() {
   return (
@@ -114,9 +113,10 @@ export default function Hero() {
                 aria-hidden="true"
                 hidden
               />
-              <ArcadeBoard />
+              <div id="arcade-stage" className="ricochet" hidden />
               <div id="city-fade" className="city-fade" aria-hidden="true" />
             </div>
+            <div id="city-arcade-root" hidden />
             <CityDestinationPanels />
           </div>
           <div className="city-dialog-footer">

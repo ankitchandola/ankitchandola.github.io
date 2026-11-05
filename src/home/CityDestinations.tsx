@@ -4,7 +4,6 @@ import { profile } from '../content/profile';
 import projects from '../content/projects';
 import { ricochet } from '../content/ricochet';
 import { Icon } from './icons';
-import { arcadeLevel } from './city-scenes/arcade-state';
 
 export function CityDestinationControls() {
   return (
@@ -117,30 +116,7 @@ export function CityDestinationPanels() {
           Arcade
         </h3>
         <p>{ricochet.summary}</p>
-        <div
-          className="arcade-controls"
-          role="group"
-          aria-label="Arcade puzzle controls"
-        >
-          {Object.keys(arcadeLevel.mirrors).map((key) => (
-            <button type="button" data-arcade-mirror={key} key={key}>
-              Turn mirror
-            </button>
-          ))}
-          <button type="button" data-arcade-action="fire">
-            Fire
-          </button>
-          <button type="button" data-arcade-action="reset" disabled>
-            Reset puzzle
-          </button>
-        </div>
-        <p id="arcade-result" role="status">
-          Turn the mirror, then fire.
-        </p>
-        <p id="arcade-loading" role="status" hidden />
-        <button id="arcade-retry" type="button" hidden>
-          Retry 3D scene
-        </button>
+        <div id="arcade-panel" className="ricochet" />
       </section>
       <section
         id="city-panel-contact"

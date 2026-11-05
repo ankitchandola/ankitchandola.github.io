@@ -77,7 +77,7 @@ export function Modes({ game }: { game: RicochetGame }) {
           key={value}
           type="button"
           aria-pressed={state.mode === value}
-          onClick={() => game.chooseMode(value)}
+          onClick={(event) => game.chooseMode(value, event.detail > 0)}
         >
           {label}
         </button>
@@ -93,7 +93,7 @@ export function Heading({
 }: {
   game: RicochetGame;
   headingRef: RefObject<HTMLHeadingElement | null>;
-  level?: 'h2' | 'h3';
+  level?: 'h2' | 'h3' | 'h4';
 }) {
   const { state, prefs } = useGame(game);
   const { mode, level, preset, seed } = state;
@@ -215,7 +215,11 @@ function Outcome({
   let after: ReactNode = null;
   if (shot.outcome === 'hit' && mode !== 'campaign')
     after = (
-      <button type="button" className="solid-button" onClick={game.newPuzzle}>
+      <button
+        type="button"
+        className="solid-button"
+        onClick={(event) => game.newPuzzle(event.detail > 0)}
+      >
         New puzzle
         <Shuffle size={22} />
       </button>
@@ -228,7 +232,7 @@ function Outcome({
           <button
             type="button"
             className="solid-button"
-            onClick={() => game.chooseMode('random')}
+            onClick={(event) => game.chooseMode('random', event.detail > 0)}
           >
             Random puzzle
             <Shuffle size={22} />
@@ -236,7 +240,7 @@ function Outcome({
           <button
             type="button"
             className="ricochet-button"
-            onClick={() => game.chooseMode('daily')}
+            onClick={(event) => game.chooseMode('daily', event.detail > 0)}
           >
             <CalendarDays size={22} />
             Today’s puzzle
@@ -245,7 +249,11 @@ function Outcome({
         {exit}
       </div>
     ) : (
-      <button type="button" className="solid-button" onClick={game.next}>
+      <button
+        type="button"
+        className="solid-button"
+        onClick={(event) => game.next(event.detail > 0)}
+      >
         Next lesson
         <ArrowRight size={22} />
       </button>
@@ -306,7 +314,7 @@ export function Pickers({ game }: { game: RicochetGame }) {
                 className={solved ? 'is-solved' : undefined}
                 aria-pressed={i === state.levelIndex}
                 aria-label={`Lesson ${i + 1}, ${l.title}${solved ? ', solved' : ''}`}
-                onClick={() => game.select(i)}
+                onClick={(event) => game.select(i, event.detail > 0)}
               >
                 {i + 1}
                 {solved && (
@@ -334,7 +342,9 @@ export function Pickers({ game }: { game: RicochetGame }) {
                 key={value}
                 type="button"
                 aria-pressed={state.preset === value}
-                onClick={() => game.chooseDifficulty(value)}
+                onClick={(event) =>
+                  game.chooseDifficulty(value, event.detail > 0)
+                }
               >
                 {PRESET_LABELS[value]}
               </button>
@@ -342,7 +352,7 @@ export function Pickers({ game }: { game: RicochetGame }) {
           <button
             type="button"
             className="ricochet-new"
-            onClick={game.newPuzzle}
+            onClick={(event) => game.newPuzzle(event.detail > 0)}
           >
             <Shuffle size={18} aria-hidden="true" />
             New puzzle

@@ -20,13 +20,13 @@ Ricochet (`/play`) is a small mirror puzzle built for this site, linked from the
 
 `src/content/projects.json` supplies the homepage project collection, engineering decisions, project detail pages, interactive explanation copy and lite summaries. Recon's detail page hosts the full comparison demo in `src/home/ReconDemo.tsx`, with typed interaction wiring in `src/home/comparison.ts`. `src/projects/ProjectDemonstration.tsx` supplies the other project explanations: offline save recovery, call-event correlation, host-driven unit selection, and CMS publishing / enquiry routing. These use synthetic examples and never call the source applications.
 
-The lazy-loaded Three.js neighbourhood is an optional portfolio map with nine sites and matching static artwork. “Explore the city” opens a large desktop or full-screen phone dialog. Studio links to five projects, Journey reads employment oldest first, and Say hello uses shared contact details. Arcade enters a separate playable Ricochet table, reusing the first lesson and rules without changing full-game progress. Small projected targets or unavailable graphics use a playable flat board with the same state. Two construction plots are noninteractive “Future space”; three buildings remain scenery. These are fictional destinations, not real workplaces.
+The lazy-loaded Three.js neighbourhood is an optional portfolio map with nine sites and matching static artwork. “Explore the city” opens a full-screen dialog. Studio links to five projects, Journey reads employment oldest first, and Say hello uses shared contact details. Arcade offers the full Ricochet game, including every mode, Undo, Reset, Next and New puzzle, with progress and preferences shared with `/play`. Game actions never change the homepage URL; Play full Ricochet opens `/play` for share links. Both places upgrade to the same 3D table when measured targets fit and otherwise keep the playable flat board. Two construction plots are noninteractive “Future space”; three buildings remain scenery. These are fictional destinations, not real workplaces.
 
-Persistent HTML destination controls supplement occlusion-aware building selection. Back restores the exact previous city pose, including after switching destinations or resizing. The preview, city and Arcade share one on-demand renderer; inactive room resources are disposed, while puzzle state lasts until Close. Loading, retry, context recovery, keyboard access, focus containment and scroll restoration preserve useful HTML actions. Arcade is the first milestone of the [separate-scenes plan](docs/CITY-DESTINATION-SCENES-PLAN.md); the other three destinations retain reading panels pending its review.
+Persistent HTML destination controls supplement occlusion-aware building selection. Back restores the exact previous city pose, including after switching destinations or resizing. Preview and explorer share one on-demand city renderer. Arcade's `BoardView` uses its own renderer while the city host pauses, so only the selected canvas draws. Puzzle state lasts through destination switches until Close, which releases the Arcade context; each new open re-reads storage changed on `/play`. Loading, retry, context-loss fallback, keyboard access, focus containment and scroll restoration preserve useful HTML actions. Stages 1–3 of the [island expansion plan](docs/CITY-ISLAND-EXPANSION-PLAN.md) are implemented, awaiting owner review; the other three destinations retain reading panels.
 
 The destination extension uses 12 static material batches and 112,050 model triangles, versus 11 and 133,100 before conversion. Chromium instrumentation recorded 28 draw calls on the initial shadow-generating frame, 13 on a subsequent overview redraw and 14 with a selected footprint; these are rendering-cost observations, not an FPS benchmark. Camera transitions run only while needed. No animation library or new dependency was added.
 
-Header search filters project content locally, falling back to a native project directory without JavaScript. Homepage sections are React components in `src/home/`, rendered to static HTML at build time; `index.html` holds only the document head. No fictional role or payment model remains. Project details describe supplied implementation facts, not inferred business outcomes.
+Header search filters project content locally, falling back to a native project directory without JavaScript. Homepage sections are React components in `src/home/`, rendered to static HTML at build time; `index.html` holds only the document head. The Arcade alone mounts a client React root with portals into its board and panel; the rest of the homepage is not hydrated. No fictional role or payment model remains. Project details describe supplied implementation facts, not inferred business outcomes.
 
 ## Design and development
 
@@ -96,6 +96,16 @@ production `dist/` served on `127.0.0.1:4173`. It refuses to reuse another serve
 `scripts/serve-dist.mjs` serves generated files and directory indexes; missing
 routes and assets return the generated custom 404 with HTTP 404, never an SPA
 fallback.
+
+`tests/browser/arcade.spec.mjs` covers full-game storage parity, URL isolation,
+room state, projected targets, fit/focus switching, import retry, context loss,
+stale loads, keyboard containment and GPU allocation/idle behavior.
+`tests/browser/table.spec.mjs` checks every campaign level and generated
+easy/medium/hard/Today puzzles in both presentations and both hosts, plus
+cancellation when Flat board is selected during loading.
+The [Ricochet resource baseline](docs/RICOCHET.md#stage-3-review-and-resource-baseline)
+records the responsive review, download sizes, renderer counts and unavailable
+device/browser checks.
 
 The suite covers both gallery variants, keyboard gallery selection, comparison
 scenarios/validation/reset, puzzle controls/progress and generated links,

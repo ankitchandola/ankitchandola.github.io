@@ -1173,7 +1173,15 @@ html[data-theme='dark'] .city-poster {
   grid-area: close;
   justify-self: end;
 }
-.city-dialog button:where(:not(.ricochet-mirror, .ricochet-source)) {
+.city-dialog
+  button:where(
+    :not(
+      .ricochet-mirror,
+      .ricochet-source,
+      .ricochet-table-mirror,
+      .ricochet-table-source
+    )
+  ) {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -1581,122 +1589,87 @@ html[data-theme='dark'] .city-dialog {
   opacity: 0;
   background: var(--paper);
 }
-.arcade-flat {
+#arcade-stage {
   --accent: var(--teal);
   position: absolute;
-  inset: 0;
+  top: var(--city-top, 96px);
+  right: calc(var(--city-drawer) + 48px);
+  bottom: 16px;
+  left: var(--city-gutter);
   z-index: 1;
-  display: grid;
-  place-items: center;
-  container-type: size;
-  padding: 12px;
-  background: var(--paper);
+  min-width: 0;
+  min-height: 0;
 }
-.arcade-flat .ricochet-board {
-  width: min(100%, max(268px, calc((100cqh - 24px) * 1.2)));
-  min-width: 268px;
-  box-shadow: none;
+#arcade-panel {
+  --accent: var(--teal);
+  margin-top: 24px;
 }
-.arcade-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 12px 0;
-}
-.arcade-flat[data-instant='true'] .rc-mirror,
-.motion-paused .arcade-flat .rc-mirror {
-  transition: none;
-}
-.arcade-flat[data-instant='true'] .rc-beam,
-.motion-paused .arcade-flat .rc-beam {
-  animation: none;
-}
-.city-dialog [data-arcade-action='fire'] {
-  color: var(--paper);
-  background: var(--teal);
-}
-.city-dialog[data-destination='arcade'] .city-dialog-body {
-  top: var(--city-top, 0);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(240px, 1fr) auto;
-  overflow-y: auto;
-}
-.city-dialog[data-destination='arcade'] .city-dialog-stage {
-  position: relative;
-  inset: auto;
-}
-.city-dialog[data-destination='arcade'] .city-dialog-stage .city-poster {
-  top: 0;
-  bottom: 0;
-}
-.city-dialog[data-destination='arcade'] .city-panels {
-  position: static;
-  width: auto;
-  height: auto;
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 24px;
-  padding: 16px var(--city-gutter) max(16px, env(safe-area-inset-bottom));
-  border-width: 1px 0 0;
-  border-radius: 0;
-  box-shadow: none;
-}
-.city-dialog[data-destination='arcade'] .city-sheet-handle {
-  display: none;
-}
-.city-dialog[data-destination='arcade'] #city-back {
-  margin-top: 0;
-}
-.city-dialog[data-destination='arcade'] .city-panels h3 {
+.city-panels .ricochet-level-heading h4 {
   font-size: 24px;
-  margin-bottom: 8px;
 }
-.city-dialog[data-destination='arcade'] .city-panels > section {
-  overflow: visible;
+#arcade-panel .ricochet-level-heading p {
+  margin-top: 8px;
 }
-.city-dialog[data-destination='arcade'] .city-dialog-footer {
-  padding: 0;
-  background: none;
+#arcade-panel .ricochet-result {
+  margin-top: 24px;
+}
+#arcade-panel .ricochet-result p {
+  display: flex;
+  gap: 12px;
+}
+#arcade-panel .solid-button {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--paper);
+}
+.city-dialog
+  .ricochet
+  :is(.ricochet-modes, .ricochet-levels, .ricochet-presentation)
+  button[aria-pressed='true'] {
+  color: var(--paper);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.city-dialog .ricochet .ricochet-solved-badge {
+  box-shadow: 0 0 0 2px var(--white);
 }
 .city-dialog[data-destination='arcade'] .city-controls,
 .city-dialog[data-destination='arcade'] .city-notes,
 .city-dialog[data-destination='arcade'] .city-label {
   display: none;
 }
-.city-dialog[data-destination='arcade']:not(
-    [data-phase='loading']
-  )[data-presentation='flat']
-  .city-dialog-stage
-  canvas,
-.city-dialog[data-destination='arcade']:not([data-phase='loading'])
-  .city-poster {
-  visibility: hidden;
+.city-dialog[data-destination='arcade'] #hero-city,
+.city-dialog[data-destination='arcade'] .city-poster {
+  display: none;
 }
-.city-dialog[data-destination='arcade'] .city-dialog-stage canvas {
+.city-dialog .ricochet-table canvas {
+  position: static;
+  opacity: 1;
   cursor: default;
 }
 @media (max-width: 760px) {
-  .city-dialog[data-destination='arcade'] .city-panels {
-    gap: 8px;
-    flex-direction: column;
-    align-items: stretch;
+  .city-dialog[data-destination='arcade']:not([data-sheet='expanded']) {
+    --sheet: min(
+      55%,
+      max(
+        240px,
+        calc(
+          100% - var(--city-top, 152px) - var(--arcade-min-height, 354px) - 24px
+        )
+      )
+    );
+  }
+  #arcade-stage {
+    right: var(--city-gutter);
+    bottom: calc(var(--sheet-drag, var(--sheet)) + 8px);
+  }
+  .city-dialog[data-sheet='expanded'] #arcade-stage {
+    visibility: hidden;
   }
 }
 @media (max-height: 500px) and (min-width: 600px) {
-  .city-dialog[data-destination='arcade'] .city-dialog-body {
-    grid-template-columns: minmax(292px, 1fr) 308px;
-    grid-template-rows: minmax(240px, 1fr);
-  }
-  .city-dialog[data-destination='arcade'] .city-panels {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    padding: 8px 16px max(8px, env(safe-area-inset-bottom));
-    border-width: 0 0 0 1px;
-  }
-  .city-dialog[data-destination='arcade'] .city-panels > section {
-    overflow-y: auto;
+  .city-dialog[data-destination='arcade'] {
+    --city-drawer: 308px;
   }
 }
 .project-collection {

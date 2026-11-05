@@ -4,20 +4,108 @@ This document explains the logic behind the `/play` puzzle: how the beam is trac
 
 ## Files
 
-| File                      | Responsibility                                                                                                 |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `src/play/model.ts`       | The rules, with no React and no DOM: parsing levels, rotating mirrors, tracing the beam, and the state reducer |
-| `src/play/solve.ts`       | A brute-force solver: minimum rotations, distinct solution routes and mirror reachability                      |
-| `src/play/generate.ts`    | The seeded level generator, its presets, the daily seed and share-link encoding                                |
-| `src/play/random.ts`      | `mulberry32`, `hashSeed` and `randomSeed`                                                                      |
-| `src/play/progress.ts`    | `localStorage`: solved campaign levels and saved preferences                                                   |
-| `src/play/Ricochet.tsx`   | The page: modes, the board, URL handling, Copy link and saving                                                 |
-| `src/play/play.css`       | Board and control styles, using the `--rc-*` colour tokens                                                     |
-| `src/content/levels.json` | The five campaign levels                                                                                       |
-| `tests/play.test.mjs`     | Tests for the rules, reducer, storage and every shipped level                                                  |
-| `tests/generate.test.mjs` | Property, snapshot and share-link tests for the generator                                                      |
+| File                                                     | Responsibility                                                                                                 |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `src/play/model.ts`                                      | The rules, with no React and no DOM: parsing levels, rotating mirrors, tracing the beam, and the state reducer |
+| `src/play/solve.ts`                                      | A brute-force solver: minimum rotations, distinct solution routes and mirror reachability                      |
+| `src/play/generate.ts`                                   | The seeded level generator, its presets, the daily seed and share-link encoding                                |
+| `src/play/random.ts`                                     | `mulberry32`, `hashSeed` and `randomSeed`                                                                      |
+| `src/play/progress.ts`                                   | `localStorage`: solved campaign levels and saved preferences                                                   |
+| `src/play/game.ts`                                       | Shared controller: modes, reducer actions, saving, results and optional URL handling                           |
+| `src/play/GameParts.tsx`                                 | Shared modes, headings, controls, results and pickers                                                          |
+| `src/play/Ricochet.tsx`                                  | Full-page composition, with URL handling and Copy link enabled                                                 |
+| `src/play/BoardView.tsx`                                 | 3D/flat presentation, loading, retry, stale-load protection and focus transfer                                 |
+| `src/play/three/table.ts`, `projection.ts`, `surface.ts` | Level-driven table, projection/fit maths and disposable renderer                                               |
+| `src/home/CityArcade.tsx`, `city-arcade.ts`              | Arcade portals, per-open game and city/activity signals                                                        |
+| `src/play/play.css`                                      | Board and control styles, using the `--rc-*` colour tokens                                                     |
+| `src/content/levels.json`                                | The five campaign levels                                                                                       |
+| `tests/play.test.mjs`                                    | Tests for the rules, reducer, storage and every shipped level                                                  |
+| `tests/generate.test.mjs`                                | Property, snapshot and share-link tests for the generator                                                      |
+| `tests/browser/arcade.spec.mjs`, `table.spec.mjs`        | Game/presentation parity, focus, failure, stale loads and renderer lifetime                                    |
 
 `model.ts` is the only file that knows the rules. The solver, the generator, the page and the tests all go through it.
+
+## Presentations
+
+The full page and city Arcade use one controller implementation and the same
+`BoardView`. Both offer Learn, Random easy/medium/hard and Today, with Undo,
+Reset, Next lesson and New puzzle. Only `/play` reads or changes puzzle URLs
+and offers Copy link. Arcade keeps Play full Ricochet and Open full page links
+for that full-page experience.
+
+The first `/play` render is the SVG/HTML board. When active and large enough,
+`BoardView` lazy-loads the Three.js surface and frames the level-driven table.
+Transparent HTML buttons sit over the projected source and mirror cells; they
+use the flat board's names and reducer actions. Canvas pixels are decorative,
+not the keyboard controls. The beam consumes `beamPoints`, including loop
+dashes, and theme changes update materials from the `--rc-*` tokens.
+
+`mayFitTable` provides a cheap DOM-free upper-bound check before importing
+Three.js. The real check frames the table, then measures the shortest projected
+cell span: it must be at least 44 CSS pixels, with a table stage of at least
+260px. Resize and level changes remeasure. A stage that cannot fit uses the
+flat board without drawing a hidden table. In Arcade fill mode the board keeps
+its aspect ratio and 44px minimum cells; an unusually short stage scrolls rather
+than shrinking its buttons. Mirror and source focus follow presentation changes.
+
+The optional `presentation` field in v1 `ricochet-prefs` remembers `3d` or
+`flat`. Choosing Flat board, leaving Arcade or closing the explorer invalidates
+pending 3D loads. Loading, failed import and unavailable WebGL keep the same
+playable flat game. Context loss preserves game state and focus; Retry 3D
+recreates a fresh canvas/context. Disposal releases geometry, materials,
+textures, listeners and the renderer context, including renderer-owned defaults.
+
+Renderers draw on demand and stop when inactive or hidden. Mirrors turn in
+120ms, beams draw in at most 600ms, and pointer-selected levels settle in a
+330ms stagger. Keyboard actions, reduced motion and global pause settle
+immediately. Arcade pauses the city renderer and orbit controls while its own
+canvas draws. Its game survives destination switches within one open explorer,
+but Close releases it; reopening creates a new game and reloads progress and
+preferences saved by `/play`.
+
+### Stage-3 review and resource baseline
+
+Chromium review covers all five lessons, Random easy/medium/hard and Today in
+both hosts and themes at 320×812, 375×812, 768×1000, 1024×1000, 1440×1000 and
+900×420. Phone captures were repeated after fixing tall-board sheet sizing.
+The browser suites cover projected buttons, result/path parity, keyboard
+focus, storage, import failures, stale loads, context loss and five reopen
+cycles. Existing flat-board visual goldens remain unchanged.
+
+At 1440×1000, lesson one warmed these live WebGL object counts, including
+the city's destination-hover geometry before entering Arcade:
+
+| Surface                     | Buffers | Textures | Idle behavior                                                         |
+| --------------------------- | ------: | -------: | --------------------------------------------------------------------- |
+| `/play` table               |      16 |        9 | No additional draw calls over 1,000ms                                 |
+| Arcade table                |      16 |        9 | No additional draw calls over 1,000ms; 0 buffers/textures after Close |
+| City retained behind Arcade |      68 |       11 | Paused, including during table motion                                 |
+
+These are allocation counts, not GPU-byte measurements or FPS claims. Flat
+fallback does not render a hidden table. Reopened Arcade counts return to the
+same warmed baseline.
+
+The current build's cold requested JS/CSS graph, including shared site
+assets, totals 1,073,788 bytes raw / 296,462 bytes gzip for `/play` (9 files)
+and 1,039,357 / 280,772 bytes for the homepage plus Arcade (11 files).
+Gzip is calculated from built files, not measured HTTP compression; HTML,
+fonts, images and the résumé are excluded. Principal shared chunks:
+
+| Chunk                         | Raw bytes | Gzip bytes |
+| ----------------------------- | --------: | ---------: |
+| Three.js / RoundedBoxGeometry |   562,456 |    143,525 |
+| Shared game / React           |   253,594 |     81,373 |
+| City explorer                 |    56,150 |     18,355 |
+| Lazy table surface            |    10,111 |      4,550 |
+| Game CSS                      |     9,411 |      2,368 |
+
+The city already loads the shared Three.js chunk, so opening Arcade does not
+download it again. The build still warns that this chunk exceeds 500kB.
+
+Safari, Firefox, physical phones, real screen-reader sessions, constrained
+hardware/network profiling and GPU memory bytes were not checked. Journey,
+Studio and Say hello's new scenes and the four-scene consistency review
+remain gated on owner approval of stage 3.
 
 ## The grid
 
@@ -125,7 +213,7 @@ Level 3, "Round and round", relies on this. Its starting layout sends the beam r
 
 ## Drawing the beam
 
-`beamPoints(level, shot)` in `Ricochet.tsx` turns a trace into the corner points of an SVG path. Points sit at cell centres, except that the line starts at the tip of the source arrow (`SOURCE_TIP`). The end of the line depends on the outcome:
+`beamPoints(level, shot)` in `board-path.ts` turns a trace into the corner points used by both presentations. Points sit at cell centres, except that the line starts at the tip of the source arrow (`SOURCE_TIP`). The end of the line depends on the outcome:
 
 - **hit:** the target's outer ring (`TARGET_RADIUS`), so the line never covers the target;
 - **blocked:** the edge of the wall cell. The wall's centre is moved half a cell back towards the beam.
@@ -169,7 +257,7 @@ Three helpers decide what the page shows:
 
 ## Saving progress
 
-`progress.js` stores a JSON array of level ids under `ricochet-solved`.
+`progress.ts` stores a JSON array of level ids under `ricochet-solved`.
 
 - **`loadSolved(storage, knownIds)`** keeps only string entries that match a current level id. Missing, malformed or wrongly typed data, a missing `storage`, or a `getItem` that throws all give an empty list.
 - **`saveSolved(storage, ids)`** merges `ids` with what is already stored, then writes. It returns `false` instead of throwing if storage is unavailable.
@@ -184,10 +272,11 @@ Nothing saves "whenever state changes", so the empty first render can never over
 
 ### Preferences
 
-`ricochet-prefs` holds `{v: 1, mode, preset, dailySolved}`:
+`ricochet-prefs` holds `{v: 1, mode, preset, dailySolved, presentation}`:
 
 - **`mode`** is the last of Learn, Random or Today. `/play` reopens in it, and Random reopens at the saved `preset` with a fresh puzzle.
 - **`dailySolved`** is the UTC date of the last solved puzzle of the day. When it matches today, the page shows "Solved today".
+- **`presentation`** optionally remembers `3d` or `flat`. A saved 3D preference does not override the measured fit check or graphics fallback.
 
 `loadPrefs` drops an unknown version entirely and drops invalid fields one by one. `savePrefs` merges with what is stored. Saves happen in handlers: changing mode, changing difficulty, and a daily hit. The puzzle in progress is deliberately not saved. A `?l=`, `?seed=` or `?mode=today` URL always wins over saved preferences.
 

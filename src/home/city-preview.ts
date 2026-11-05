@@ -177,6 +177,7 @@ export function createCityView(
   };
 
   let expanded = false;
+  let paused = false;
   let insets: CityInsets = { top: 0, right: 0, bottom: 0, left: 0 };
   type Frame = { unit: number; x: number; y: number };
   let shownFrame: Frame | null = null;
@@ -301,7 +302,7 @@ export function createCityView(
     update,
     settle: () => stopTransition(true),
     activate() {
-      controls.enabled = expanded && host.available;
+      controls.enabled = expanded && host.available && !paused;
       canvas.style.touchAction = expanded ? 'none' : 'auto';
     },
     deactivate() {
@@ -377,6 +378,11 @@ export function createCityView(
     showScene(view: SceneView) {
       host.activate(view);
     },
+    setPaused(value: boolean) {
+      paused = value;
+      if (value) host.pause();
+      else host.resume();
+    },
     invalidate: host.invalidate,
     get zoomLevel() {
       return camera.zoom;
@@ -398,7 +404,7 @@ export function createCityView(
       city.setOpenWater(value);
       if (!value) insets = { top: 0, right: 0, bottom: 0, left: 0 };
       host.activate(cityView);
-      controls.enabled = expanded && host.available;
+      controls.enabled = expanded && host.available && !paused;
       canvas.style.touchAction = expanded ? 'none' : 'auto';
       focus(null);
       resize();
@@ -430,13 +436,14 @@ export function createCityView(
     },
     focus,
     preview(id: CityDestinationId | null) {
-      if (!host.isActive(cityView) || hovered === id) return;
+      if (paused || !host.isActive(cityView) || hovered === id) return;
       hovered = id;
       mark(hover, id === selected ? null : id);
       invalidate();
     },
     pick(clientX: number, clientY: number) {
-      if (!expanded || !host.available || !host.isActive(cityView)) return null;
+      if (paused || !expanded || !host.available || !host.isActive(cityView))
+        return null;
       const rect = canvas.getBoundingClientRect();
       pointer.set(
         ((clientX - rect.left) / rect.width) * 2 - 1,

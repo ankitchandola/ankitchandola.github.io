@@ -22,8 +22,8 @@ export default function Board({
   onFire,
 }: Pick<GameState, 'level' | 'mirrors' | 'shot'> & {
   shotCount: number;
-  onRotate?: (key: string) => void;
-  onFire?: () => void;
+  onRotate?: (key: string, animate: boolean) => void;
+  onFire?: (animate: boolean) => void;
 }) {
   const cells = level.rows.flatMap((row, y) =>
     [...row].map((c, x) => ({ c, x, y })),
@@ -127,7 +127,7 @@ export default function Board({
           className="ricochet-source"
           data-board-fire
           style={{ gridColumn: source.x + 1, gridRow: source.y + 1 }}
-          onClick={onFire}
+          onClick={(event) => onFire?.(event.detail > 0)}
           aria-label={`Fire the beam from ${place(source.x, source.y)}, pointing ${pointing[source.dir]}`}
         />
         {mirrorCells.map(({ key, m, x, y }) => {
@@ -138,7 +138,7 @@ export default function Board({
               className="ricochet-mirror"
               data-board-mirror={key}
               style={{ gridColumn: x + 1, gridRow: y + 1 }}
-              onClick={() => onRotate?.(key)}
+              onClick={(event) => onRotate?.(key, event.detail > 0)}
               aria-label={`Mirror, ${place(x, y)}, slanted ${m === '/' ? 'forward' : 'backward'}`}
             />
           );

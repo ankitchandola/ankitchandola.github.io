@@ -1,7 +1,7 @@
 import { ACESFilmicToneMapping, VSMShadowMap, WebGLRenderer } from 'three';
 import type { Level, Mirrors, Shot } from '../model.ts';
 import { cellRect, type CellRect } from './projection.ts';
-import { createRicochetTable } from './table.ts';
+import { createRicochetTable, type TableColors } from './table.ts';
 
 export interface TableLayout {
   fits: boolean;
@@ -12,7 +12,12 @@ export interface TableLayout {
 export interface TableSurface {
   /** Sizes the canvas and returns where its mirrors and source sit, in canvas CSS pixels. */
   resize(width: number, height: number): TableLayout;
-  setLevel(level: Level, mirrors: Mirrors, shot: Shot | null): TableLayout;
+  setLevel(
+    level: Level,
+    mirrors: Mirrors,
+    shot: Shot | null,
+    animate: boolean,
+  ): TableLayout;
   sync(mirrors: Mirrors, shot: Shot | null, animate: boolean): void;
   settle(): void;
   setActive(active: boolean): void;
@@ -40,9 +45,23 @@ export function createTableSurface(
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = VSMShadowMap;
   const table = createRicochetTable(level, mirrors);
+  const applyColors = () => {
+    const style = getComputedStyle(canvas);
+    const colors: TableColors = {
+      surface: style.getPropertyValue('--rc-surface').trim(),
+      wall: style.getPropertyValue('--rc-wall').trim(),
+      mirror: style.getPropertyValue('--rc-mirror').trim(),
+      beam: style.getPropertyValue('--rc-beam').trim(),
+      sourceMark: style.getPropertyValue('--rc-source-mark').trim(),
+      target: style.getPropertyValue('--rc-target').trim(),
+      targetRing: style.getPropertyValue('--rc-target-ring').trim(),
+    };
+    table.setColors(colors);
+  };
+  applyColors();
   let size = { width: 0, height: 0 };
   let fits = false;
-  let active = true;
+  let active = false;
   let lost = false;
   let frame = 0;
   const draw = (time: number) => {
@@ -57,6 +76,14 @@ export function createTableSurface(
     if (!frame && active && fits && !lost && !document.hidden)
       frame = requestAnimationFrame(draw);
   };
+  const theme = new MutationObserver(() => {
+    applyColors();
+    invalidate();
+  });
+  theme.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
   const stop = () => {
     table.settle();
     cancelAnimationFrame(frame);
@@ -78,6 +105,19 @@ export function createTableSurface(
     else invalidate();
   };
   document.addEventListener('visibilitychange', visibility);
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const motionChanged = () => {
+    if (reduced.matches || document.body.classList.contains('motion-paused')) {
+      stop();
+      invalidate();
+    }
+  };
+  reduced.addEventListener('change', motionChanged);
+  const motion = new MutationObserver(motionChanged);
+  motion.observe(document.body, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
   const contextLost = (event: Event) => {
     event.preventDefault();
     lost = true;
@@ -97,8 +137,8 @@ export function createTableSurface(
       invalidate();
       return layout();
     },
-    setLevel(next, nextMirrors, shot) {
-      table.setLevel(next, nextMirrors);
+    setLevel(next, nextMirrors, shot, animate) {
+      table.setLevel(next, nextMirrors, animate && active && fits);
       if (shot) table.sync(nextMirrors, shot, false);
       if (size.width) fits = table.resize(size.width, size.height);
       invalidate();
@@ -120,9 +160,13 @@ export function createTableSurface(
     dispose() {
       stop();
       document.removeEventListener('visibilitychange', visibility);
+      reduced.removeEventListener('change', motionChanged);
+      motion.disconnect();
+      theme.disconnect();
       canvas.removeEventListener('webglcontextlost', contextLost);
       table.dispose();
       renderer.dispose();
+      if (!lost) renderer.forceContextLoss();
     },
   };
 }

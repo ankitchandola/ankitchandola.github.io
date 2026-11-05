@@ -48,7 +48,7 @@ export default function BoardView({
   const canvas = useRef<HTMLCanvasElement>(null);
   const surface = useRef<TableSurface | null>(null);
   const shown = useRef<Pick<typeof state, 'level' | 'mirrors' | 'shot'>>(state);
-  const loading = useRef(false);
+  const request = useRef(0);
   const mounted = useRef(false);
   const focusedKey = useRef<string | null>(null);
   const [size, setSize] = useState<Size | null>(null);
@@ -65,7 +65,7 @@ export default function BoardView({
     const measure = () => {
       const width = element.clientWidth;
       const height = fill
-        ? element.clientHeight
+        ? Math.max(0, element.clientHeight - 64)
         : Math.round(Math.min(width * 0.82, window.innerHeight * 0.75));
       setSize((current) =>
         current?.width === width && current.height === height
@@ -84,20 +84,34 @@ export default function BoardView({
   }, [fill]);
 
   useEffect(() => {
-    if (!wants3d || !room || !active || status !== 'idle') return;
-    if (loading.current || surface.current) return;
-    loading.current = true;
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      surface.current?.dispose();
+      surface.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!wants3d || !room || !active || surface.current) return;
+    const generation = ++request.current;
+    let pending = true;
     setStatus('loading');
     import('./three/surface.ts')
       .then(({ createTableSurface }) => {
         const element = canvas.current;
-        if (!mounted.current || !element) return;
+        if (!mounted.current || generation !== request.current || !element)
+          return;
+        pending = false;
         const { state: now } = game.getSnapshot();
         const created = createTableSurface(
           element,
           now.level,
           now.mirrors,
           () => {
+            console.warn(
+              'Ricochet 3D context lost. The flat board remains playable.',
+            );
             surface.current?.dispose();
             surface.current = null;
             setLayout(null);
@@ -114,26 +128,19 @@ export default function BoardView({
         setStatus('ready');
       })
       .catch((error: unknown) => {
-        if (!mounted.current) return;
+        if (!mounted.current || generation !== request.current) return;
+        pending = false;
         console.warn(
           'Ricochet 3D table unavailable. Using the flat board.',
           error,
         );
         setStatus('error');
-      })
-      .finally(() => {
-        loading.current = false;
       });
-  }, [wants3d, room, active, status, game]);
-
-  useEffect(() => {
-    mounted.current = true;
     return () => {
-      mounted.current = false;
-      surface.current?.dispose();
-      surface.current = null;
+      request.current = generation + 1;
+      if (pending && mounted.current) setStatus('idle');
     };
-  }, []);
+  }, [wants3d, room, active, attempt, game]);
 
   useEffect(() => {
     if (status === 'ready' && size)
@@ -144,7 +151,10 @@ export default function BoardView({
     const current = surface.current;
     if (!current || status !== 'ready') return;
     const last = shown.current;
-    if (last.level !== level) setLayout(current.setLevel(level, mirrors, shot));
+    if (last.level !== level)
+      setLayout(
+        current.setLevel(level, mirrors, shot, animate && motionAllowed()),
+      );
     else if (last.mirrors !== mirrors || last.shot !== shot)
       current.sync(mirrors, shot, animate && motionAllowed());
     shown.current = { level, mirrors, shot };
@@ -157,27 +167,34 @@ export default function BoardView({
   useLayoutEffect(() => {
     const key = focusedKey.current;
     const root = wrapper.current;
-    if (!key || !root || root.contains(document.activeElement)) return;
+    if (!active || !key || !root || root.contains(document.activeElement))
+      return;
     root
       .querySelector<HTMLButtonElement>(
-        `[data-${show3d ? 'table' : 'board'}-mirror="${key}"]`,
+        key === 'source'
+          ? `[data-${show3d ? 'table' : 'board'}-fire]`
+          : `[data-${show3d ? 'table' : 'board'}-mirror="${key}"]`,
       )
       ?.focus({ preventScroll: true });
-  }, [show3d]);
+  }, [show3d, active]);
 
   // A lost or failed context cannot be reused, so retry draws on a fresh canvas.
   const retry = () => {
+    focusedKey.current = null;
+    wrapper.current?.focus({ preventScroll: true });
     setAttempt((n) => n + 1);
     setStatus('idle');
   };
   const note =
-    wants3d && room && (status === 'error' || status === 'unavailable')
-      ? status === 'error'
-        ? 'The 3D table could not open. The flat board works the same.'
-        : '3D is unavailable here. The flat board works the same.'
-      : wants3d && status === 'ready' && layout && !layout.fits
-        ? 'Not enough room for the 3D table. Showing the flat board.'
-        : '';
+    wants3d && room && status === 'loading'
+      ? 'Opening the 3D table. The flat board is ready to play.'
+      : wants3d && room && (status === 'error' || status === 'unavailable')
+        ? status === 'error'
+          ? 'The 3D table could not open. The flat board works the same.'
+          : '3D is unavailable here. The flat board works the same.'
+        : wants3d && status === 'ready' && layout && !layout.fits
+          ? 'Not enough room for the 3D table. Showing the flat board.'
+          : '';
   const tableStyle: CSSProperties | undefined =
     size && !fill ? { height: size.height } : undefined;
 
@@ -187,10 +204,18 @@ export default function BoardView({
       className={fill ? 'ricochet-view is-fill' : 'ricochet-view'}
       data-presentation={show3d ? '3d' : 'flat'}
       data-table-status={status}
+      data-instant={String(!animate)}
+      tabIndex={-1}
+      aria-label="Ricochet board"
       onFocusCapture={(event) => {
         const target = event.target as HTMLElement;
         focusedKey.current =
-          target.dataset.tableMirror ?? target.dataset.boardMirror ?? null;
+          target.dataset.tableMirror ??
+          target.dataset.boardMirror ??
+          (target.hasAttribute('data-table-fire') ||
+          target.hasAttribute('data-board-fire')
+            ? 'source'
+            : null);
       }}
     >
       {room && (
@@ -215,47 +240,49 @@ export default function BoardView({
           </button>
         </div>
       )}
-      <div className="ricochet-table" style={tableStyle} hidden={!show3d}>
-        <canvas key={attempt} ref={canvas} aria-hidden="true" />
-        {show3d && layout && (
-          <div className="ricochet-table-targets">
-            <button
-              type="button"
-              className="ricochet-table-source"
-              data-table-fire
-              style={box(layout.source)}
-              onClick={(event) => game.fire(event.detail > 0)}
-              aria-label={`Fire the beam from ${place(level.source.x, level.source.y)}, pointing ${pointing[level.source.dir]}`}
-            />
-            {[...layout.mirrors].map(([key, rect]) => {
-              const [x = 0, y = 0] = key.split(',').map(Number);
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  className="ricochet-table-mirror"
-                  data-table-mirror={key}
-                  style={box(rect)}
-                  onClick={(event) => game.rotate(key, event.detail > 0)}
-                  aria-label={`Mirror, ${place(x, y)}, slanted ${mirrors[key] === '/' ? 'forward' : 'backward'}`}
-                />
-              );
-            })}
-          </div>
+      <div className="ricochet-surface">
+        <div className="ricochet-table" style={tableStyle} hidden={!show3d}>
+          <canvas key={attempt} ref={canvas} aria-hidden="true" />
+          {show3d && layout && (
+            <div className="ricochet-table-targets">
+              <button
+                type="button"
+                className="ricochet-table-source"
+                data-table-fire
+                style={box(layout.source)}
+                onClick={(event) => game.fire(event.detail > 0)}
+                aria-label={`Fire the beam from ${place(level.source.x, level.source.y)}, pointing ${pointing[level.source.dir]}`}
+              />
+              {[...layout.mirrors].map(([key, rect]) => {
+                const [x = 0, y = 0] = key.split(',').map(Number);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    className="ricochet-table-mirror"
+                    data-table-mirror={key}
+                    style={box(rect)}
+                    onClick={(event) => game.rotate(key, event.detail > 0)}
+                    aria-label={`Mirror, ${place(x, y)}, slanted ${mirrors[key] === '/' ? 'forward' : 'backward'}`}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
+        {!show3d && (
+          <Board
+            level={level}
+            mirrors={mirrors}
+            shot={shot}
+            shotCount={shotCount}
+            onRotate={(key, animate) => game.rotate(key, animate)}
+            onFire={(animate) => game.fire(animate)}
+          />
         )}
       </div>
-      {!show3d && (
-        <Board
-          level={level}
-          mirrors={mirrors}
-          shot={shot}
-          shotCount={shotCount}
-          onRotate={(key) => game.rotate(key)}
-          onFire={() => game.fire()}
-        />
-      )}
       {note && (
-        <p className="ricochet-table-note">
+        <p className="ricochet-table-note" role="status">
           {note}
           {status === 'error' && (
             <button type="button" className="ricochet-button" onClick={retry}>

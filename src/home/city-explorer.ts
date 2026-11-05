@@ -1,6 +1,6 @@
 import { createCityView, type CityInsets, type CityPose } from './city-preview';
-import { createArcadeActivity } from './city-scenes/arcade-activity';
-import type { ArcadeView } from './city-scenes/arcade';
+import { mountCityArcade } from './CityArcade';
+import { cityArcade } from './city-arcade';
 import {
   cityDestinations,
   isCityDestination,
@@ -59,22 +59,17 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
   let entrance: Animation | undefined;
   let exit: Animation | undefined;
   let sceneTransition: Animation | undefined;
-  let generation = 0;
-  let arcadeScene: ArcadeView | null = null;
-  let phase: 'closed' | 'overview' | 'loading' | 'active' | 'error' = 'closed';
-  let useFlat = true;
   const pointers = new Map<number, { x: number; y: number }>();
   let gesturing = false;
   let tapped: CityDestinationId | null = null;
-  let tappedMirror: string | null = null;
-  const loading = dialog.querySelector<HTMLElement>('#arcade-loading');
-  const retry = dialog.querySelector<HTMLButtonElement>('#arcade-retry');
+  const arcadeStage = dialog.querySelector<HTMLElement>('#arcade-stage');
+  const arcadeRoot = dialog.querySelector<HTMLElement>('#city-arcade-root');
   const fade = dialog.querySelector<HTMLElement>('#city-fade');
   const fullGame = dialog.querySelector<HTMLElement>('#arcade-full');
-  if (!loading || !retry || !fade || !fullGame)
+  if (!arcadeStage || !arcadeRoot || !fade || !fullGame)
     throw new Error('Arcade scene markup is incomplete.');
-  const setPhase = (next: typeof phase) => {
-    phase = next;
+  mountCityArcade(arcadeRoot);
+  const setPhase = (next: 'closed' | 'overview' | 'active') => {
     dialog.dataset.phase = next;
   };
   const updateZoom = (zoom: number) => {
@@ -198,102 +193,6 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
     }
     setSheet(dialog.dataset.sheet !== 'expanded');
   });
-  const activity = createArcadeActivity(
-    dialog,
-    (state, animate) => arcadeScene?.sync(state, animate),
-    motionAllowed,
-  );
-  const presentation = () => {
-    const visible = selected === 'arcade' && phase !== 'loading';
-    dialog.dataset.presentation = useFlat ? 'flat' : '3d';
-    activity.presentation(visible, useFlat);
-    canvas.tabIndex =
-      available && dialog.open && selected !== 'arcade' ? 0 : -1;
-    canvas.setAttribute(
-      'aria-label',
-      selected === 'arcade'
-        ? 'Ricochet puzzle table. Use the mirror and Fire controls below.'
-        : 'Interactive 3D neighbourhood',
-    );
-    canvas.setAttribute(
-      'aria-describedby',
-      selected === 'arcade' ? 'arcade-result' : 'city-keyboard-help',
-    );
-  };
-  const releaseScene = () => {
-    sceneTransition?.cancel();
-    if (arcadeScene) {
-      view?.showCity();
-      arcadeScene.dispose();
-      arcadeScene = null;
-    }
-  };
-  const loadArcade = async (animate: boolean) => {
-    const request = ++generation;
-    if (document.activeElement === retry)
-      dialog
-        .querySelector<HTMLElement>('#city-heading-arcade')
-        ?.focus({ preventScroll: true });
-    retry.hidden = true;
-    loading.hidden = false;
-    if (!available || !view) {
-      setPhase('active');
-      useFlat = true;
-      loading.textContent = '3D unavailable. The same puzzle works here.';
-      presentation();
-      return;
-    }
-    setPhase('loading');
-    loading.textContent = 'Opening the puzzle table…';
-    presentation();
-    try {
-      const { createArcadeScene } = await import('./city-scenes/arcade');
-      if (
-        request !== generation ||
-        !dialog.open ||
-        selected !== 'arcade' ||
-        !available
-      )
-        return;
-      const room = createArcadeScene(
-        canvas,
-        activity.state,
-        view.invalidate,
-        (fits) => {
-          useFlat = !fits;
-          presentation();
-        },
-      );
-      arcadeScene = room;
-      setPhase('active');
-      loading.hidden = true;
-      view.showScene(room);
-      if (animate && motionAllowed() && !useFlat) {
-        sceneTransition = fade.animate([{ opacity: 1 }, { opacity: 0 }], {
-          duration: 180,
-          easing: 'ease-out',
-        });
-      }
-      presentation();
-    } catch (error) {
-      if (request !== generation || !dialog.open || selected !== 'arcade')
-        return;
-      releaseScene();
-      console.warn(
-        'Arcade 3D scene unavailable. Keeping the playable flat board.',
-        error,
-      );
-      setPhase('error');
-      useFlat = true;
-      loading.textContent =
-        'The 3D table could not open. You can still play below, or retry.';
-      retry.hidden = false;
-      presentation();
-    }
-  };
-  retry.addEventListener('click', () => {
-    void loadArcade(false);
-  });
   const showDestination = (
     id: CityDestinationId | null,
     animate = false,
@@ -303,12 +202,16 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
       if (canvas.hasPointerCapture(pointer))
         canvas.releasePointerCapture(pointer);
     pointers.clear();
-    tapped = tappedMirror = null;
-    ++generation;
-    releaseScene();
+    tapped = null;
+    sceneTransition?.cancel();
     if (id && selected === null && returnPose === null)
       returnPose = view?.capture() ?? null;
     selected = id;
+    const arcadeActive = id === 'arcade' && dialog.open;
+    view?.setPaused(arcadeActive);
+    cityArcade.setActive(arcadeActive);
+    arcadeStage.hidden = id !== 'arcade';
+    canvas.setAttribute('aria-hidden', String(id === 'arcade'));
     fullGame.hidden = id !== 'arcade';
     dialog.dataset.destination = id ?? 'overview';
     panelContainer.hidden = id === null;
@@ -325,14 +228,18 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
     if (id === null) setSheet(false);
     if (dialog.open) view?.setInsets(measure(), true);
     if (id === 'arcade') {
-      void loadArcade(animate);
+      setPhase('active');
+      if (animate && motionAllowed())
+        sceneTransition = fade.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: 180,
+          easing: 'ease-out',
+        });
     } else if (id === null && returnPose) {
       view?.restore(returnPose);
       returnPose = null;
     } else view?.focus(id, animate && motionAllowed());
     if (id !== 'arcade') {
       setPhase(id ? 'active' : 'overview');
-      presentation();
     }
     updateAvailability();
     const name = cityDestinations.find((place) => place.id === id)?.name;
@@ -397,15 +304,11 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
   };
   canvas.addEventListener('city-unavailable', () => {
     available = false;
-    ++generation;
-    releaseScene();
-    if (selected === 'arcade') void loadArcade(false);
     updateAvailability();
   });
   canvas.addEventListener('city-available', () => {
     available = true;
-    if (selected === 'arcade') void loadArcade(false);
-    else view?.focus(selected);
+    if (selected !== 'arcade') view?.focus(selected);
     updateAvailability();
   });
   updateAvailability();
@@ -415,13 +318,15 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
   const finishClose = () => {
     if (!dialog.open || closing) return;
     closing = true;
+    cityArcade.close();
+    view?.setPaused(false);
     entrance?.cancel();
     view?.settle();
     dialog.close();
   };
   const requestClose = (animate: boolean) => {
     if (closing) return;
-    ++generation;
+    cityArcade.setActive(false);
     sceneTransition?.cancel();
     view?.settle();
     if (exit?.playState === 'running') {
@@ -453,6 +358,7 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
     document.body.style.top = `-${scrollY}px`;
     document.body.classList.add('city-is-open');
     dialog.showModal();
+    cityArcade.open();
     stage.append(canvas);
     canvas.setAttribute('role', 'img');
     canvas.setAttribute('aria-label', 'Interactive 3D neighbourhood');
@@ -477,19 +383,6 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
   });
   dialog.addEventListener('keydown', (event) => {
     if (event.key !== 'Tab') return;
-    if (
-      !event.shiftKey &&
-      selected === 'arcade' &&
-      useFlat &&
-      phase !== 'loading' &&
-      document.activeElement?.id === 'city-heading-arcade'
-    ) {
-      event.preventDefault();
-      stage
-        .querySelector<HTMLButtonElement>('[data-board-fire]')
-        ?.focus({ preventScroll: true });
-      return;
-    }
     const targets = [
       ...dialog.querySelectorAll<HTMLElement>(
         'button:not(:disabled), a[href], canvas[tabindex="0"]',
@@ -506,20 +399,20 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
     }
   });
   dialog.addEventListener('close', () => {
+    cityArcade.close();
     entrance?.cancel();
     exit?.cancel();
     showDestination(null);
     setPhase('closed');
-    activity.reset();
     previewDestination(null);
     pointers.clear();
     tapped = null;
-    tappedMirror = null;
     canvas.style.cursor = '';
     preview.append(canvas);
     canvas.removeAttribute('role');
     canvas.removeAttribute('aria-label');
     canvas.removeAttribute('aria-describedby');
+    canvas.removeAttribute('aria-hidden');
     canvas.removeAttribute('tabindex');
     view?.setExpanded(false);
     document.body.classList.remove('city-is-open');
@@ -628,9 +521,14 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
   canvas.addEventListener(
     'pointerdown',
     (event) => {
-      if (!dialog.open || !available || event.button !== 0) return;
+      if (
+        !dialog.open ||
+        !available ||
+        selected === 'arcade' ||
+        event.button !== 0
+      )
+        return;
       tapped = null;
-      tappedMirror = null;
       if (!pointers.size) gesturing = false;
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
       if (pointers.size > 1) gesturing = true;
@@ -648,15 +546,7 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
       return;
     }
     if (event.pointerType === 'mouse' && dialog.open && available) {
-      if (selected === 'arcade') {
-        canvas.style.cursor = arcadeScene?.pickMirror(
-          event.clientX,
-          event.clientY,
-        )
-          ? 'pointer'
-          : '';
-        return;
-      }
+      if (selected === 'arcade') return;
       const id = view?.pick(event.clientX, event.clientY) ?? null;
       previewDestination(id);
       canvas.style.cursor = id ? 'pointer' : '';
@@ -668,24 +558,17 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
     if (!start || gesturing || pointers.size || !dialog.open) return;
     if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 6)
       return;
-    if (selected === 'arcade')
-      tappedMirror =
-        arcadeScene?.pickMirror(event.clientX, event.clientY) ?? null;
-    else tapped = view?.pick(event.clientX, event.clientY) ?? null;
+    tapped = view?.pick(event.clientX, event.clientY) ?? null;
   });
   canvas.addEventListener('click', () => {
     // Touch compatibility mouse events focus the canvas after pointerup.
     if (tapped && dialog.open) showDestination(tapped, true, true);
-    if (tappedMirror && dialog.open && selected === 'arcade')
-      activity.rotate(tappedMirror);
     tapped = null;
-    tappedMirror = null;
   });
   canvas.addEventListener('pointercancel', (event) => {
     pointers.delete(event.pointerId);
     gesturing = true;
     tapped = null;
-    tappedMirror = null;
   });
   canvas.addEventListener('pointerleave', () => {
     previewDestination(null);

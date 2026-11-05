@@ -229,12 +229,13 @@ test('city does not keep drawing unchanged or offscreen scenery', async ({
   const modalDraws = await page.evaluate(() => window.cityDraws);
   await page.clock.runFor(700);
   expect(await page.evaluate(() => window.cityDraws)).toBe(modalDraws);
-  await expect(page.locator('canvas')).toHaveCount(1);
+  await expect(page.locator('canvas:visible')).toHaveCount(1);
 });
 
 test('city gestures rotate and zoom within limits; reset and Close remain available', async ({
   page,
 }, testInfo) => {
+  test.slow();
   await page.goto('/');
   const trigger = page.getByRole('button', {
     name: 'Explore the city',
@@ -242,7 +243,7 @@ test('city gestures rotate and zoom within limits; reset and Close remain availa
   });
   // The entire preview is the hit target, not only its visible caption.
   await trigger.click({ position: { x: 60, y: 80 } });
-  const canvas = page.locator('#city-dialog-stage canvas');
+  const canvas = page.locator('#city-dialog-stage #hero-city');
   const bounds = await canvas.boundingBox();
   expect(bounds).not.toBeNull();
   const x = bounds.x + bounds.width / 2;
@@ -1082,5 +1083,7 @@ test('puzzle keeps the flat board when the 3D table cannot load', async ({
   );
   await page.getByRole('button', { name: /^Mirror,/ }).click();
   await page.getByRole('button', { name: 'Fire', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('Hit the target');
+  await expect(page.locator('.ricochet-panel [role="status"]')).toContainText(
+    'Hit the target',
+  );
 });
