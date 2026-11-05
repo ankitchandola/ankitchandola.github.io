@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Board from './Board';
+import BoardView from './BoardView';
 import { describe } from './board-path';
 import { createGame } from './game.ts';
 import {
@@ -15,7 +15,7 @@ import './play.css';
 
 export default function Ricochet() {
   const [game] = useState(() => createGame({ urls: true }));
-  const { state, shotCount } = useGame(game);
+  const { state } = useGame(game);
   const heading = useHeadingFocus(game);
   useEffect(() => game.start(), [game]);
   const { level } = state;
@@ -37,14 +37,7 @@ export default function Ricochet() {
           <Modes game={game} />
           <Heading game={game} headingRef={heading} />
           <p className="sr-only">{describe(level)}</p>
-          <Board
-            level={level}
-            mirrors={state.mirrors}
-            shot={state.shot}
-            shotCount={shotCount}
-            onRotate={(key) => game.rotate(key)}
-            onFire={() => game.fire()}
-          />
+          <BoardView game={game} />
         </div>
         <div className="ricochet-panel">
           <Controls game={game} />

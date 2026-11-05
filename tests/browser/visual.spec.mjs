@@ -3,6 +3,12 @@ import { test, expect } from './fixtures.mjs';
 for (const theme of ['light', 'dark']) {
   test(`puzzle board visual baseline: ${theme}`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: theme });
+    await page.addInitScript(() =>
+      localStorage.setItem(
+        'ricochet-prefs',
+        JSON.stringify({ v: 1, presentation: 'flat' }),
+      ),
+    );
     await page.goto('/play');
     await page.evaluate(() => document.fonts.ready);
     await page

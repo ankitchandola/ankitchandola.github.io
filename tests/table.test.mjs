@@ -10,7 +10,10 @@ import {
   mirrorRects,
   tableCamera,
   tableFits,
+  toScreen,
 } from '../src/play/three/projection.ts';
+import { Vector3 } from 'three';
+import { mayFitTable } from '../src/play/table-fit.ts';
 
 const campaign = raw.map(parseLevel);
 const generated = Object.entries(PRESETS).map(([name, preset]) =>
@@ -23,17 +26,39 @@ const framed = (level, size) => {
   return camera;
 };
 
-test('Ricochet table keeps the first lesson framing the Arcade was tuned on', () => {
-  const [lesson] = campaign;
-  for (const size of [
-    { width: 1440, height: 1000 },
-    { width: 600, height: 900 },
-  ]) {
-    const camera = framed(lesson, size);
-    const aspect = size.width / size.height;
-    assert.ok(Math.abs(camera.top - Math.max(4.1, 5.2 / aspect)) < 1e-9);
-    assert.ok(Math.abs(camera.right - camera.top * aspect) < 1e-9);
-  }
+test('Ricochet table frames the whole table, sign and legs with a margin', () => {
+  for (const level of levels)
+    for (const size of [
+      { width: 1440, height: 1000 },
+      { width: 600, height: 900 },
+    ]) {
+      const camera = framed(level, size);
+      const corners = [];
+      for (const x of [-1, 1])
+        for (const z of [-(level.h / 2 + 0.5), (level.h + 1.4) / 2])
+          for (const y of [-0.55, 2.15])
+            corners.push(
+              toScreen(
+                camera,
+                new Vector3((x * (level.w + 1.3)) / 2, y, z),
+                size,
+              ),
+            );
+      const xs = corners.map((c) => c.x),
+        ys = corners.map((c) => c.y);
+      const gap = Math.min(
+        Math.min(...xs),
+        size.width - Math.max(...xs),
+        Math.min(...ys),
+        size.height - Math.max(...ys),
+      );
+      assert.ok(gap > 0, `${level.id} ${size.width}`);
+      assert.ok(
+        Math.min(...ys) > 0.03 * size.height ||
+          Math.min(...xs) > 0.03 * size.width,
+        level.id,
+      );
+    }
 });
 
 test('Ricochet table measures every board and picks mirrors from their projected rectangles', () => {
@@ -68,4 +93,17 @@ test('Ricochet table reports when cells fall below touch size', () => {
     tableFits(framed(campaign[0], short), campaign[0], short),
     false,
   );
+});
+
+test('the cheap fit bound never rejects a canvas where a preset board fits', () => {
+  for (const level of levels)
+    for (let width = 300; width <= 1600; width += 50)
+      for (let height = 200; height <= 1200; height += 50) {
+        const size = { width, height };
+        if (tableFits(framed(level, size), level, size))
+          assert.ok(
+            mayFitTable(width, height),
+            `${level.id} ${width}×${height}`,
+          );
+      }
 });

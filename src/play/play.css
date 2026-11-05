@@ -265,7 +265,7 @@
   gap: 12px;
   margin-top: 12px;
 }
-:is(.ricochet-levels, .ricochet-modes) button {
+:is(.ricochet-levels, .ricochet-modes, .ricochet-presentation) button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -279,7 +279,7 @@
   color: var(--ink);
   font: 700 18px var(--label);
 }
-:is(.ricochet-levels, .ricochet-modes) button svg {
+:is(.ricochet-levels, .ricochet-modes, .ricochet-presentation) button svg {
   color: var(--rc-beam);
 }
 .ricochet-levels button.is-solved {
@@ -302,12 +302,15 @@
 .ricochet-levels .ricochet-solved-badge svg {
   color: inherit;
 }
-:is(.ricochet-levels, .ricochet-modes) button[aria-pressed='true'] {
+:is(.ricochet-levels, .ricochet-modes, .ricochet-presentation)
+  button[aria-pressed='true'] {
   background: var(--ink);
   border-color: var(--ink);
   color: var(--paper);
 }
-:is(.ricochet-levels, .ricochet-modes) button[aria-pressed='true'] svg {
+:is(.ricochet-levels, .ricochet-modes, .ricochet-presentation)
+  button[aria-pressed='true']
+  svg {
   color: inherit;
 }
 
@@ -343,14 +346,14 @@
     box-shadow: inset 0 0 0 2px var(--rc-beam);
   }
   .ricochet-button:not(:disabled):hover,
-  :is(.ricochet-levels, .ricochet-modes)
+  :is(.ricochet-levels, .ricochet-modes, .ricochet-presentation)
     button:not([aria-pressed='true']):hover {
     background: var(--rc-hover);
   }
 }
 :is(
   .ricochet-button,
-  :is(.ricochet-levels, .ricochet-modes) button,
+  :is(.ricochet-levels, .ricochet-modes, .ricochet-presentation) button,
   .ricochet-controls .solid-button
 ) {
   transition:
@@ -359,7 +362,7 @@
 }
 :is(
   .ricochet-button:not(:disabled),
-  :is(.ricochet-levels, .ricochet-modes) button,
+  :is(.ricochet-levels, .ricochet-modes, .ricochet-presentation) button,
   .ricochet-controls .solid-button
 ):active {
   transform: scale(0.97);
@@ -388,14 +391,14 @@
   :is(.ricochet-mirror, .ricochet-source),
   :is(
     .ricochet-button,
-    :is(.ricochet-levels, .ricochet-modes) button,
+    :is(.ricochet-levels, .ricochet-modes, .ricochet-presentation) button,
     .ricochet-controls .solid-button
   ) {
     transition: none;
   }
   :is(
     .ricochet-button,
-    :is(.ricochet-levels, .ricochet-modes) button,
+    :is(.ricochet-levels, .ricochet-modes, .ricochet-presentation) button,
     .ricochet-controls .solid-button
   ):active {
     transform: none;
@@ -445,4 +448,57 @@
   background: var(--rc-surface);
   color: var(--ink);
   font: 400 16px var(--body);
+}
+
+.ricochet-view {
+  position: relative;
+}
+.ricochet-presentation {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.ricochet-presentation button {
+  padding: 0 16px;
+  font-size: 16px;
+}
+.ricochet-table {
+  position: relative;
+  border-radius: 4px;
+  background: linear-gradient(180deg, var(--rc-hover), var(--rc-surface));
+}
+.ricochet-table canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ricochet-view.is-fill,
+.ricochet-view.is-fill .ricochet-table {
+  height: 100%;
+}
+.ricochet-table-targets > button {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+.ricochet-table-targets > button:focus-visible {
+  outline: 3px solid var(--rc-beam);
+  outline-offset: 2px;
+}
+.ricochet-table-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 0;
+  font: 400 16px/1.5 var(--body);
+  color: var(--muted);
+}
+@media (hover: hover) {
+  .ricochet-table-targets > button:hover {
+    box-shadow: inset 0 0 0 2px var(--rc-beam);
+  }
 }

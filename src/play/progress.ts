@@ -10,6 +10,7 @@ export interface Preferences {
   mode?: SavedMode;
   preset?: PresetName;
   dailySolved?: string;
+  presentation?: '3d' | 'flat';
 }
 
 export const STORAGE_KEY = 'ricochet-solved';
@@ -81,6 +82,11 @@ function readPrefs(storage: OptionalStorage): Preferences {
       DATE.test(value.dailySolved)
     )
       prefs.dailySolved = value.dailySolved;
+    if (
+      'presentation' in value &&
+      (value.presentation === '3d' || value.presentation === 'flat')
+    )
+      prefs.presentation = value.presentation;
     return prefs;
   } catch {
     return {};

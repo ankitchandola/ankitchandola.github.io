@@ -30,20 +30,31 @@ export const cellPoint = (
   height = SURFACE,
 ) => new Vector3(x - level.w / 2, height, y - level.h / 2);
 
-function reach(camera: OrthographicCamera, w: number, h: number) {
+const MARGIN = 1.1;
+
+/** View-space bounds of the table, its legs and the sign arch behind it. */
+function bounds(camera: OrthographicCamera, level: Level) {
   camera.updateMatrixWorld();
-  let x = 0,
-    y = 0;
+  const box = {
+    left: Infinity,
+    right: -Infinity,
+    bottom: Infinity,
+    top: -Infinity,
+  };
   for (const side of [-1, 1])
-    for (const z of [-(h / 2 + 0.5), (h + 1.4) / 2])
+    for (const z of [-(level.h / 2 + 0.5), (level.h + 1.4) / 2])
       for (const height of [-0.55, 2.15]) {
-        const p = new Vector3((side * (w + 1.3)) / 2, height, z).applyMatrix4(
-          camera.matrixWorldInverse,
-        );
-        x = Math.max(x, Math.abs(p.x));
-        y = Math.max(y, Math.abs(p.y));
+        const p = new Vector3(
+          (side * (level.w + 1.3)) / 2,
+          height,
+          z,
+        ).applyMatrix4(camera.matrixWorldInverse);
+        box.left = Math.min(box.left, p.x);
+        box.right = Math.max(box.right, p.x);
+        box.bottom = Math.min(box.bottom, p.y);
+        box.top = Math.max(box.top, p.y);
       }
-  return { x, y };
+  return box;
 }
 
 export function frameTable(
@@ -52,17 +63,17 @@ export function frameTable(
   { width, height }: Size,
 ): void {
   const aspect = width / height;
-  // Framing was tuned on the 6×5 first lesson; other boards keep its margins.
-  const lesson = reach(camera, 6, 5);
-  const board = reach(camera, level.w, level.h);
+  const box = bounds(camera, level);
   const half = Math.max(
-    (4.1 * board.y) / lesson.y,
-    (5.2 * board.x) / lesson.x / aspect,
+    ((box.top - box.bottom) / 2) * MARGIN,
+    ((box.right - box.left) / 2 / aspect) * MARGIN,
   );
-  camera.left = -half * aspect;
-  camera.right = half * aspect;
-  camera.top = half;
-  camera.bottom = -half;
+  const x = (box.left + box.right) / 2,
+    y = (box.top + box.bottom) / 2;
+  camera.left = x - half * aspect;
+  camera.right = x + half * aspect;
+  camera.top = y + half;
+  camera.bottom = y - half;
   camera.updateProjectionMatrix();
   camera.updateMatrixWorld();
 }
@@ -95,6 +106,31 @@ export const tableFits = (
 ): boolean =>
   cellSpan(camera, level, size) >= MIN_TARGET && size.height >= MIN_HEIGHT;
 
+export function cellRect(
+  camera: OrthographicCamera,
+  level: Level,
+  size: Size,
+  x: number,
+  y: number,
+): CellRect {
+  const corners = [
+    cellPoint(level, x, y),
+    cellPoint(level, x + 1, y),
+    cellPoint(level, x, y + 1),
+    cellPoint(level, x + 1, y + 1),
+  ].map((point) => toScreen(camera, point, size));
+  const xs = corners.map((c) => c.x),
+    ys = corners.map((c) => c.y);
+  const left = Math.min(...xs),
+    top = Math.min(...ys);
+  return {
+    x: left,
+    y: top,
+    width: Math.max(...xs) - left,
+    height: Math.max(...ys) - top,
+  };
+}
+
 export function mirrorRects(
   camera: OrthographicCamera,
   level: Level,
@@ -103,22 +139,7 @@ export function mirrorRects(
   const rects = new Map<string, CellRect>();
   for (const key of Object.keys(level.mirrors)) {
     const [x = 0, y = 0] = key.split(',').map(Number);
-    const corners = [
-      cellPoint(level, x, y),
-      cellPoint(level, x + 1, y),
-      cellPoint(level, x, y + 1),
-      cellPoint(level, x + 1, y + 1),
-    ].map((point) => toScreen(camera, point, size));
-    const xs = corners.map((c) => c.x),
-      ys = corners.map((c) => c.y);
-    const left = Math.min(...xs),
-      top = Math.min(...ys);
-    rects.set(key, {
-      x: left,
-      y: top,
-      width: Math.max(...xs) - left,
-      height: Math.max(...ys) - top,
-    });
+    rects.set(key, cellRect(camera, level, size, x, y));
   }
   return rects;
 }

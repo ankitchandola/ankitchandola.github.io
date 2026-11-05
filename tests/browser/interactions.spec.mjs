@@ -1014,3 +1014,73 @@ test('Ctrl+K opens search, sections filter and arrow keys move through results',
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/#experience$/);
 });
+
+test('puzzle plays on the 3D table when it fits and remembers the flat board choice', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/play');
+  const view = page.locator('.ricochet-view');
+  if (testInfo.project.name === 'phone') {
+    await expect(view).toHaveAttribute('data-presentation', 'flat');
+    await expect(page.getByRole('group', { name: 'Board view' })).toHaveCount(
+      0,
+    );
+    return;
+  }
+  await expect(view).toHaveAttribute('data-presentation', '3d');
+  await expect(page.locator('.ricochet-table canvas')).toHaveAttribute(
+    'data-ready',
+    'true',
+  );
+  const mirror = page.locator('[data-table-mirror="3,1"]');
+  await expect(mirror).toHaveAccessibleName(/forward/);
+  const box = await mirror.boundingBox();
+  expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(44);
+  await mirror.click();
+  await expect(mirror).toHaveAccessibleName(/backward/);
+  await mirror.press('Enter');
+  await expect(mirror).toHaveAccessibleName(/forward/);
+  await expect(mirror).toBeFocused();
+  await mirror.press('Enter');
+  await page.locator('[data-table-fire]').click();
+  await expect(page.getByRole('status')).toContainText('Hit the target');
+  await page.getByRole('button', { name: /^Lesson 5,/ }).click();
+  await expect(page.locator('[data-table-mirror]')).toHaveCount(7);
+  await expect(page.locator('.ricochet-level-heading h2')).toBeFocused();
+
+  await page.getByRole('button', { name: 'Flat board' }).click();
+  await expect(view).toHaveAttribute('data-presentation', 'flat');
+  await expect(page.locator('.ricochet-board')).toBeVisible();
+  await expect(page.locator('.ricochet-table')).toBeHidden();
+  await page.reload();
+  await expect(view).toHaveAttribute('data-presentation', 'flat');
+  await expect(
+    page.getByRole('button', { name: 'Flat board' }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '3D table' }).click();
+  await expect(view).toHaveAttribute('data-presentation', '3d');
+
+  await page.setViewportSize({ width: 420, height: 900 });
+  await expect(view).toHaveAttribute('data-presentation', 'flat');
+  await expect(page.getByRole('group', { name: 'Board view' })).toHaveCount(0);
+});
+
+test('puzzle keeps the flat board when the 3D table cannot load', async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name === 'phone',
+    'Phones never load the 3D table.',
+  );
+  await page.route(/\/assets\/surface-[^/]+\.js$/, (route) => route.abort());
+  await page.goto('/play');
+  const view = page.locator('.ricochet-view');
+  await expect(view).toHaveAttribute('data-table-status', 'error');
+  await expect(view).toHaveAttribute('data-presentation', 'flat');
+  await expect(page.locator('.ricochet-table-note')).toContainText(
+    'could not open',
+  );
+  await page.getByRole('button', { name: /^Mirror,/ }).click();
+  await page.getByRole('button', { name: 'Fire', exact: true }).click();
+  await expect(page.getByRole('status')).toContainText('Hit the target');
+});
