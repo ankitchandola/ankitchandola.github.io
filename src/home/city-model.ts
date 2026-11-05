@@ -1,14 +1,18 @@
 import {
   BoxGeometry,
   Box3,
+  BufferAttribute,
   BufferGeometry,
   CanvasTexture,
+  Color,
   ConeGeometry,
   CylinderGeometry,
   DoubleSide,
   ExtrudeGeometry,
   Group,
+  IcosahedronGeometry,
   Mesh,
+  MeshBasicMaterial,
   MeshStandardMaterial,
   PlaneGeometry,
   Shape,
@@ -37,7 +41,7 @@ export function createCity() {
   const occluders: { bounds: Box3; id?: CityDestinationId }[] = [];
   const parts: Mesh<BufferGeometry, MeshStandardMaterial>[] = [];
   const material = (color: string, roughness = 0.8) =>
-    new MeshStandardMaterial({ color, roughness });
+    new MeshStandardMaterial({ color, roughness, vertexColors: true });
   const cream = material('#eee5d2');
   const white = material('#fffaf0');
   const teal = material('#245e58');
@@ -49,6 +53,8 @@ export function createCity() {
   const leaves = material('#66876a');
   const lightLeaves = material('#829974');
   const water = material('#78b8ab', 0.32);
+  const sand = material('#e3d6b8', 0.95);
+  const stone = material('#b9b5a3', 0.9);
   const signCanvas = document.createElement('canvas');
   signCanvas.width = 1024;
   signCanvas.height = 768;
@@ -73,6 +79,7 @@ export function createCity() {
   texture.colorSpace = SRGBColorSpace;
   texture.anisotropy = 4;
   const lettering = new MeshStandardMaterial({
+    vertexColors: true,
     map: texture,
     side: DoubleSide,
     roughness: 0.8,
@@ -269,6 +276,20 @@ export function createCity() {
         teal,
       );
     planter(parent, w * 0.28, y + 0.09, -d * 0.27);
+  }
+  // A rounded, slightly irregular coast around the town plate; deterministic so the poster matches.
+  function coastline() {
+    const points: Vector2[] = [];
+    for (let i = 0; i < 72; i++) {
+      const angle = (i / 72) * Math.PI * 2;
+      const c = Math.cos(angle);
+      const n = Math.sin(angle);
+      const radius =
+        Math.pow(Math.abs(c / 7.3) ** 4 + Math.abs(n / 6.4) ** 4, -1 / 4) *
+        (1 + 0.035 * Math.sin(3 * angle + 1) + 0.025 * Math.sin(5 * angle + 2));
+      points.push(new Vector2(radius * c, -radius * n));
+    }
+    return new Shape(points);
   }
   // North-light workshop roof: glazed faces step towards the front of the building.
   function sawtooth(parent: Group, w: number, d: number, y: number) {
@@ -490,6 +511,48 @@ export function createCity() {
   }
 
   box(city, 0, -0.23, 0, 12.1, 0.46, 10, cream, 0.2);
+  const coast = coastline();
+  const shore = new ExtrudeGeometry(coast, {
+    depth: 0.35,
+    bevelEnabled: true,
+    bevelThickness: 0.06,
+    bevelSize: 0.14,
+    bevelSegments: 3,
+  });
+  shore.rotateX(-Math.PI / 2);
+  mesh(city, shore, sand, 0, -0.56, 0);
+  for (const [x, z, size, turn] of [
+    [-7.1, -2.2, 0.42, 0.4],
+    [-6.7, -1.5, 0.28, 1.2],
+    [6.9, 3.6, 0.38, 2.1],
+    [7.35, 2.9, 0.24, 0.8],
+    [3.8, -6.5, 0.34, 1.7],
+  ] as const) {
+    const rock = mesh(
+      city,
+      new IcosahedronGeometry(size, 0),
+      stone,
+      x,
+      -0.3,
+      z,
+    );
+    rock.rotation.set(turn, turn * 1.7, turn * 0.6);
+    rock.scale.set(1.25, 0.8, 1);
+  }
+  const pier = group(-1.4, 6.9);
+  pier.position.y = 0;
+  box(pier, 0, -0.06, 0, 0.82, 0.08, 4.1, wood, 0.02);
+  for (let i = 0; i < 6; i++)
+    for (const side of [-1, 1])
+      cylinder(pier, side * 0.36, -0.3, -1.85 + i * 0.74, 0.05, 0.5, wood);
+  cylinder(pier, 0.3, 0.25, 1.9, 0.025, 0.6, teal);
+  box(pier, 0.3, 0.58, 1.9, 0.12, 0.12, 0.12, cream, 0.02);
+  const boat = group(-0.55, 7.7);
+  boat.position.y = 0;
+  box(boat, 0, -0.27, 0, 0.5, 0.2, 1.35, white, 0.08);
+  box(boat, 0, -0.2, 0, 0.52, 0.035, 1.37, teal, 0.015);
+  box(boat, 0, -0.08, -0.15, 0.32, 0.2, 0.42, cream, 0.03);
+  cylinder(boat, 0, 0.3, 0.2, 0.018, 0.95, wood);
   box(city, 0, 0.015, 0, 11.6, 0.06, 9.5, road, 0.3);
   box(city, 0, 0.075, 0, 9.2, 0.12, 7.1, paving, 0.16);
   for (const side of [-1, 1]) {
@@ -740,12 +803,15 @@ export function createCity() {
       ? object.geometry.toNonIndexed()
       : object.geometry.clone();
     geometry.applyMatrix4(object.matrixWorld);
+    bakeContactShade(geometry);
     const batch = batches.get(object.material) ?? [];
     batch.push(geometry);
     batches.set(object.material, batch);
     object.geometry.dispose();
   }
   const result = new Group();
+  const waterSurface = createWater(coast);
+  result.add(...waterSurface.meshes);
   for (const [surface, geometries] of batches) {
     const geometry = mergeGeometries(geometries);
     for (const part of geometries) part.dispose();
@@ -755,5 +821,112 @@ export function createCity() {
     object.receiveShadow = true;
     result.add(object);
   }
-  return { group: result, landmarks, occluders };
+  const glow = new Color('#ffc477');
+  return {
+    group: result,
+    landmarks,
+    occluders,
+    // Dusk lights the glazing from inside and darkens the sea; geometry is unchanged.
+    setDusk(dusk: boolean) {
+      glass.emissive.copy(dusk ? glow : new Color(0));
+      glass.emissiveIntensity = dusk ? 0.85 : 0;
+      waterSurface.paint(dusk);
+    },
+    setOpenWater: (open: boolean) => waterSurface.setOpen(open),
+  };
+}
+
+// Vertical faces darken towards their base, so walls read as standing on the ground without
+// a per-frame occlusion pass.
+function bakeContactShade(geometry: BufferGeometry) {
+  const position = geometry.getAttribute('position');
+  const normal = geometry.getAttribute('normal');
+  const colors = new Float32Array(position.count * 3);
+  for (let i = 0; i < position.count; i++) {
+    const upright = Math.abs(normal.getY(i)) < 0.6;
+    const lift = Math.min(1, Math.max(0, (position.getY(i) - 0.1) / 0.75));
+    const shade = upright ? 0.7 + 0.3 * lift * lift * (3 - 2 * lift) : 1;
+    colors.set([shade, shade, shade], i * 3);
+  }
+  geometry.setAttribute('color', new BufferAttribute(colors, 3));
+}
+
+export const seaColours = {
+  day: { shallow: '#a9d6cb', deep: '#6aa7a0' },
+  dusk: { shallow: '#2f5d5d', deep: '#163538' },
+} as const;
+
+function createWater(coast: Shape) {
+  const size = 80;
+  const half = size / 2;
+  const paintCanvas = document.createElement('canvas');
+  paintCanvas.width = paintCanvas.height = 512;
+  const fadeCanvas = document.createElement('canvas');
+  fadeCanvas.width = fadeCanvas.height = 256;
+  const paint = paintCanvas.getContext('2d');
+  const fade = fadeCanvas.getContext('2d');
+  if (!paint || !fade) throw new Error('City water requires a 2D canvas.');
+  // The compact hero fades the sea out between 7.6 and 9.6 units so it keeps a soft oval edge;
+  // the full-screen explorer shows opaque sea to every edge.
+  const edge = fade.createRadialGradient(128, 128, 0, 128, 128, 128);
+  edge.addColorStop(0, '#fff');
+  edge.addColorStop(7.6 / half, '#fff');
+  edge.addColorStop(9.6 / half, '#000');
+  fade.fillStyle = edge;
+  fade.fillRect(0, 0, 256, 256);
+  const map = new CanvasTexture(paintCanvas);
+  map.colorSpace = SRGBColorSpace;
+  const alphaMap = new CanvasTexture(fadeCanvas);
+  const surface = new MeshBasicMaterial({
+    map,
+    alphaMap,
+    transparent: true,
+    depthWrite: false,
+    toneMapped: false,
+  });
+  const sea = new Mesh(new PlaneGeometry(size, size), surface);
+  sea.rotation.x = -Math.PI / 2;
+  sea.position.y = -0.36;
+  sea.renderOrder = -1;
+  const foamShape = new Shape(
+    coast.getPoints().map((point) => point.clone().multiplyScalar(1.05)),
+  );
+  foamShape.holes.push(
+    new Shape(coast.getPoints().map((point) => point.clone())),
+  );
+  const foamGeometry = new ExtrudeGeometry(foamShape, {
+    depth: 0.001,
+    bevelEnabled: false,
+  });
+  foamGeometry.rotateX(-Math.PI / 2);
+  const foam = new Mesh(
+    foamGeometry,
+    new MeshBasicMaterial({
+      color: '#ffffff',
+      transparent: true,
+      opacity: 0.4,
+      depthWrite: false,
+      toneMapped: false,
+    }),
+  );
+  foam.position.y = -0.35;
+  return {
+    meshes: [sea, foam],
+    paint(dusk: boolean) {
+      const { shallow, deep } = dusk ? seaColours.dusk : seaColours.day;
+      const depth = paint.createRadialGradient(256, 256, 0, 256, 256, 256);
+      depth.addColorStop(0, shallow);
+      depth.addColorStop(7.8 / half, shallow);
+      depth.addColorStop(10 / half, deep);
+      depth.addColorStop(1, deep);
+      paint.fillStyle = depth;
+      paint.fillRect(0, 0, 512, 512);
+      map.needsUpdate = true;
+      foam.material.opacity = dusk ? 0.18 : 0.4;
+    },
+    setOpen(open: boolean) {
+      surface.alphaMap = open ? null : alphaMap;
+      surface.needsUpdate = true;
+    },
+  };
 }

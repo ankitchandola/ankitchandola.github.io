@@ -4,11 +4,9 @@ import {
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
-  PlaneGeometry,
   Raycaster,
   RingGeometry,
   Scene,
-  ShadowMaterial,
   Spherical,
   Vector2,
   Vector3,
@@ -73,8 +71,9 @@ export function createCityView(
   controls.enabled = false;
   controls.update();
   canvas.style.touchAction = 'auto';
-  scene.add(new HemisphereLight('#fffaf0', '#a6ad9c', 2.6));
-  const sun = new DirectionalLight('#fff1dc', 2.6);
+  const sky = new HemisphereLight('#fffaf0', '#9fbcb2', 2.6);
+  scene.add(sky);
+  const sun = new DirectionalLight('#fff0d6', 2.7);
   sun.position.set(-7, 14, 7);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1024, 1024);
@@ -93,14 +92,25 @@ export function createCityView(
   const fill = new DirectionalLight('#d2e5dd', 0.8);
   fill.position.set(8, 6, -5);
   scene.add(fill);
-  const ground = new Mesh(
-    new PlaneGeometry(25, 25),
-    new ShadowMaterial({ opacity: 0.16 }),
-  );
-  ground.rotation.x = -Math.PI / 2;
-  ground.position.y = -0.47;
-  ground.receiveShadow = true;
-  scene.add(ground);
+  const applyTheme = () => {
+    const dusk = document.documentElement.dataset.theme === 'dark';
+    sky.color.set(dusk ? '#8aa6b4' : '#fffaf0');
+    sky.groundColor.set(dusk ? '#1d3a3c' : '#9fbcb2');
+    sky.intensity = dusk ? 1.5 : 2.6;
+    sun.color.set(dusk ? '#ffb98c' : '#fff0d6');
+    sun.intensity = dusk ? 1.3 : 2.7;
+    fill.color.set(dusk ? '#7fa7bd' : '#d2e5dd');
+    fill.intensity = dusk ? 0.55 : 0.8;
+    city.setDusk(dusk);
+  };
+  applyTheme();
+  new MutationObserver(() => {
+    applyTheme();
+    host.invalidate(true);
+  }).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
   const footprintGeometry = new RingGeometry(1, 1.08, 4);
   footprintGeometry.rotateZ(Math.PI / 4);
   footprintGeometry.rotateX(-Math.PI / 2);
@@ -233,6 +243,8 @@ export function createCityView(
     if (host.isActive(cityView)) host.invalidate();
   };
   const minHalfWidth = 8.7;
+  // The compact hero shows the whole island and its fading sea, not just the town plate.
+  const heroHalfWidth = 10;
   const minHalfHeight = 6.3;
   const freeSize = () => ({
     width: Math.max(1, canvas.clientWidth - insets.left - insets.right),
@@ -245,7 +257,7 @@ export function createCityView(
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
     if (!width || !height) return null;
-    if (!expanded) return { unit: (2 * minHalfWidth) / width, x: 0, y: 0 };
+    if (!expanded) return { unit: (2 * heroHalfWidth) / width, x: 0, y: 0 };
     const free = freeSize();
     // A tall sheet leaves a thin band; cropping the city there reads better than shrinking it.
     const fitHeight = Math.max(free.height, height * 0.4);
@@ -383,6 +395,7 @@ export function createCityView(
     },
     setExpanded(value: boolean) {
       expanded = value;
+      city.setOpenWater(value);
       if (!value) insets = { top: 0, right: 0, bottom: 0, left: 0 };
       host.activate(cityView);
       controls.enabled = expanded && host.available;

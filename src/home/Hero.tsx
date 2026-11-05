@@ -61,7 +61,7 @@ export default function Hero() {
         <div className="city-stage" aria-hidden="true">
           <img
             className="city-poster"
-            src="/assets/city-neighbourhood.png"
+            src="/assets/city-neighbourhood.webp"
             alt=""
             width="1236"
             height="1030"
@@ -103,7 +103,7 @@ export default function Hero() {
             <div id="city-dialog-stage" className="city-dialog-stage">
               <img
                 className="city-poster"
-                src="/assets/city-neighbourhood.png"
+                src="/assets/city-neighbourhood.webp"
                 alt="A miniature neighbourhood with a sawtooth-roofed studio, a clock-tower office, a vaulted arcade, a café and two future construction plots."
                 width="1236"
                 height="1030"
