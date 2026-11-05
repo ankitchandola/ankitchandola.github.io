@@ -8,24 +8,7 @@ import Decisions from './Decisions';
 import Career from './Career';
 import Contact from './Contact';
 import PlayInvite from './PlayInvite';
-import { profile, year } from '../content/profile';
-import { Icon } from './icons';
-function SiteFooter() {
-  return (
-    <footer className="wrap">
-      <span>
-        © {year} {profile.name}
-      </span>
-      <a className="lite-link" href="/lite">
-        Lite reading version
-      </a>
-      <span>FULL-STACK DEVELOPER</span>
-      <a href="#top">
-        Back to top <Icon name="arrow-up" />
-      </a>
-    </footer>
-  );
-}
+import FooterBar from '../components/FooterBar';
 export default function Home() {
   return (
     <>
@@ -44,7 +27,7 @@ export default function Home() {
         <Career />
         <Contact />
       </main>
-      <SiteFooter />
+      <FooterBar />
     </>
   );
 }

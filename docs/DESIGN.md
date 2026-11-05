@@ -89,7 +89,7 @@ The phone homepage is composed as one reading column rather than a stacked deskt
 - Contact keeps the prompt, email and copy action. The decorative arrow action is hidden on phones because the email link beside it does the same thing.
 - In portrait, the city overview sizes its scene to the model (4:3) and centres it with its controls instead of filling the screen with empty space. The camera only zooms in when height limits the frame, so the city's width is never cropped.
 
-Phone footers use an aligned two-column link grid below the copyright; the homepage role label occupies its own row. Remove the decorative “Next conversation” label from the shared contact section; location and email already provide the useful context.
+All editions share a closing footer with the monogram, name and role/location, a social/résumé navigation group, and a ruled bottom row for copyright, edition switching and Back to top. Phones stack the identity and social links, then use two columns for the edition and top links below copyright. Lite links back to Main portfolio instead of linking to itself. Remove the decorative “Next conversation” label from the shared contact section; location and email already provide the useful context.
 
 ## Components
 

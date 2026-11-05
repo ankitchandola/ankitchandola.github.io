@@ -1,17 +1,10 @@
 import { useState, type ReactNode } from 'react';
-import { Routes, Route } from 'react-router';
-import {
-  ArrowUpRight,
-  ArrowRight,
-  ArrowLeft,
-  FileText,
-  Github,
-  Linkedin,
-  Accessibility,
-} from 'lucide-react';
-import { contactPrompt, profile, scope, year } from './content/profile';
+import { Routes, Route, useLocation } from 'react-router';
+import { ArrowUpRight, ArrowRight, ArrowLeft } from 'lucide-react';
+import { contactPrompt, profile, scope } from './content/profile';
 import { experience } from './content/experience';
 import HeaderNavigation from './components/HeaderNavigation';
+import FooterBar from './components/FooterBar';
 import projects from './content/projects';
 import type { Project as ProjectContent } from './content/types.ts';
 import ProjectDemonstration from './projects/ProjectDemonstration';
@@ -33,6 +26,7 @@ function Header() {
   );
 }
 function Footer() {
+  const { pathname } = useLocation();
   return (
     <>
       <section className="contact shell" id="contact">
@@ -59,29 +53,7 @@ function Footer() {
           <ArrowUpRight size={28} />
         </a>
       </section>
-      <footer className="footer shell">
-        <span>
-          © {year} {profile.name}
-        </span>
-        <div>
-          <a href={profile.github} target="_blank" rel="noopener noreferrer">
-            <Github size={24} />
-            GitHub
-          </a>
-          <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">
-            <Linkedin size={24} />
-            LinkedIn
-          </a>
-          <a href={profile.resume} target="_blank" rel="noopener">
-            <FileText size={24} />
-            Résumé
-          </a>
-        </div>
-        <a href="/lite">
-          <Accessibility size={21} />
-          Lite version
-        </a>
-      </footer>
+      <FooterBar lite={pathname === '/lite' || pathname === '/lite/'} />
     </>
   );
 }
