@@ -138,6 +138,8 @@ test('Arcade projected mirror tap solves the table without orbit controls', asyn
 test('Arcade releases GPU allocations after warm-up and rests between actions', async ({
   page,
 }) => {
+  // Many full-screen frames under CI's software WebGL; tripled timeout, same assertions.
+  test.slow();
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.addInitScript(() => {
     window.arcadeGpu = { Buffer: 0, Texture: 0, draws: 0 };

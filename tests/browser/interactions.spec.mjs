@@ -585,6 +585,8 @@ test('city scenery, reserved plots and occluded landmarks do not act as destinat
 test('city camera transitions interrupt, settle on pause and stop rendering', async ({
   page,
 }) => {
+  // Many full-screen frames under CI's software WebGL; tripled timeout, same assertions.
+  test.slow();
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
   await page.addInitScript(() => {
