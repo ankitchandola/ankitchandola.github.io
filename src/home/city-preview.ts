@@ -24,6 +24,13 @@ export interface CityPose {
   zoom: number;
 }
 
+export interface CityInsets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
 export interface CityLabel {
   id: CityDestinationId;
   x: number;
@@ -136,10 +143,10 @@ export function createCityView(
     if (
       projected.z < -1 ||
       projected.z > 1 ||
-      x < 64 ||
-      x > canvas.clientWidth - 64 ||
-      y < 32 ||
-      y > canvas.clientHeight - 12
+      x < insets.left + 64 ||
+      x > canvas.clientWidth - insets.right - 64 ||
+      y < insets.top + 32 ||
+      y > canvas.clientHeight - insets.bottom - 12
     )
       return onLabel(null);
     // Orthographic rays are parallel, including rays used to test label occlusion.
@@ -160,6 +167,10 @@ export function createCityView(
   };
 
   let expanded = false;
+  let insets: CityInsets = { top: 0, right: 0, bottom: 0, left: 0 };
+  type Frame = { unit: number; x: number; y: number };
+  let shownFrame: Frame | null = null;
+  let frameFrom: Frame | null = null;
   type Pose = { target: Vector3; orbit: Spherical; zoom: number };
   let transition: { from: Pose; to: Pose; start: number } | null = null;
   const currentPose = (): Pose => ({
@@ -183,6 +194,10 @@ export function createCityView(
     const pending = transition;
     transition = null;
     if (finish && pending) applyPose(pending.to);
+    if (frameFrom) {
+      frameFrom = null;
+      resize();
+    }
   };
   const update = (time: number) => {
     if (transition) {
@@ -198,7 +213,19 @@ export function createCityView(
         ),
         zoom: from.zoom + (to.zoom - from.zoom) * eased,
       });
-      if (progress === 1) transition = null;
+      const target = targetFrame();
+      if (frameFrom && target) {
+        const start = frameFrom;
+        applyFrame({
+          unit: start.unit + (target.unit - start.unit) * eased,
+          x: start.x + (target.x - start.x) * eased,
+          y: start.y + (target.y - start.y) * eased,
+        });
+      }
+      if (progress === 1) {
+        transition = null;
+        frameFrom = null;
+      }
     }
     return transition !== null;
   };
@@ -207,16 +234,52 @@ export function createCityView(
   };
   const minHalfWidth = 8.7;
   const minHalfHeight = 6.3;
-  const resize = (width = canvas.clientWidth, height = canvas.clientHeight) => {
-    if (!width || !height) return;
-    const halfWidth = expanded
-      ? Math.max(minHalfWidth, (minHalfHeight * width) / height)
-      : minHalfWidth;
-    camera.left = -halfWidth;
-    camera.right = halfWidth;
-    camera.top = (halfWidth * height) / width;
+  const freeSize = () => ({
+    width: Math.max(1, canvas.clientWidth - insets.left - insets.right),
+    height: Math.max(1, canvas.clientHeight - insets.top - insets.bottom),
+  });
+  // Floating bars and the panel cover parts of the full-screen canvas, so the city is fitted to
+  // the remaining area. A view offset, which applies after zoom, moves the camera target to the
+  // centre of that area at every zoom level.
+  const targetFrame = (): Frame | null => {
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    if (!width || !height) return null;
+    if (!expanded) return { unit: (2 * minHalfWidth) / width, x: 0, y: 0 };
+    const free = freeSize();
+    // A tall sheet leaves a thin band; cropping the city there reads better than shrinking it.
+    const fitHeight = Math.max(free.height, height * 0.4);
+    return {
+      unit: Math.max(
+        (2 * minHalfWidth) / free.width,
+        (2 * minHalfHeight) / fitHeight,
+      ),
+      x: width / 2 - (insets.left + free.width / 2),
+      y: height / 2 - (insets.top + free.height / 2),
+    };
+  };
+  // Height-limited frames have spare width, so the overview fills more of it. Tall portrait
+  // frames would leave the city as a thin band; only the outer road corners are cropped instead.
+  const overviewZoom = () => {
+    if (!expanded) return 1;
+    const free = freeSize();
+    if (free.height > free.width * 1.2) return 1.3;
+    return minHalfHeight * free.width > minHalfWidth * free.height ? 1.12 : 1;
+  };
+  const applyFrame = (frame: Frame) => {
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    shownFrame = frame;
+    camera.left = (-width / 2) * frame.unit;
+    camera.right = (width / 2) * frame.unit;
+    camera.top = (height / 2) * frame.unit;
     camera.bottom = -camera.top;
-    camera.updateProjectionMatrix();
+    camera.setViewOffset(width, height, frame.x, frame.y, width, height);
+  };
+  const resize = () => {
+    const frame = targetFrame();
+    if (!frame) return;
+    if (!frameFrom) applyFrame(frame);
     invalidate();
   };
   const cityView: SceneView = {
@@ -259,13 +322,7 @@ export function createCityView(
       orbit: preset
         ? new Spherical(overview.radius, preset.phi, preset.theta)
         : overview,
-      zoom:
-        preset?.zoom ??
-        // Zooming in only once height limits the frame, so the city's width is never cropped.
-        (expanded &&
-        minHalfHeight * canvas.clientWidth > minHalfWidth * canvas.clientHeight
-          ? 1.12
-          : 1),
+      zoom: preset?.zoom ?? overviewZoom(),
     };
     const from = currentPose();
     to.orbit.theta =
@@ -274,9 +331,10 @@ export function createCityView(
         Math.sin(to.orbit.theta - from.orbit.theta),
         Math.cos(to.orbit.theta - from.orbit.theta),
       );
-    if (animate && expanded && host.available && !document.hidden)
+    if (animate && expanded && host.available && !document.hidden) {
       transition = { from, to, start: performance.now() };
-    else applyPose(to);
+      frameFrom = shownFrame;
+    } else applyPose(to);
     resize();
     invalidate();
   };
@@ -311,8 +369,21 @@ export function createCityView(
     get zoomLevel() {
       return camera.zoom;
     },
+    // A deferred change is applied by the next focus, which can animate the frame with the camera.
+    setInsets(next: CityInsets, deferred = false) {
+      if (
+        next.top === insets.top &&
+        next.right === insets.right &&
+        next.bottom === insets.bottom &&
+        next.left === insets.left
+      )
+        return;
+      insets = next;
+      if (!deferred) resize();
+    },
     setExpanded(value: boolean) {
       expanded = value;
+      if (!value) insets = { top: 0, right: 0, bottom: 0, left: 0 };
       host.activate(cityView);
       controls.enabled = expanded && host.available;
       canvas.style.touchAction = expanded ? 'none' : 'auto';

@@ -90,15 +90,15 @@ export default function Hero() {
           aria-labelledby="city-title"
         >
           <header className="city-dialog-header">
-            <div>
+            <div className="city-dialog-title">
               <h2 id="city-title">Explore the city</h2>
               <p>A miniature map of my portfolio.</p>
             </div>
             <button id="city-close" type="button">
               Close <Icon name="x" />
             </button>
+            <CityDestinationControls />
           </header>
-          <CityDestinationControls />
           <div className="city-dialog-body">
             <div id="city-dialog-stage" className="city-dialog-stage">
               <img
@@ -120,7 +120,10 @@ export default function Hero() {
             <CityDestinationPanels />
           </div>
           <div className="city-dialog-footer">
-            <p id="city-hint">Drag to rotate. Pinch or scroll to zoom.</p>
+            <div className="city-notes">
+              <p id="city-hint">Drag to rotate. Pinch or scroll to zoom.</p>
+              <p className="city-legend">Construction plots: Future space.</p>
+            </div>
             <p id="city-keyboard-help" className="sr-only">
               Focus the city view. Arrow keys rotate, plus and minus zoom, Home
               returns to the overview. Escape closes the whole explorer. Use the
@@ -163,7 +166,6 @@ export default function Hero() {
                 Reset view
               </button>
             </div>
-            <p className="city-legend">Construction plots: Future space.</p>
           </div>
         </dialog>
       </div>

@@ -1114,32 +1114,47 @@ footer a:focus-visible {
   overflow: hidden;
 }
 .city-dialog {
-  width: min(1280px, calc(100vw - 64px));
-  height: min(900px, calc(100dvh - 64px));
+  --city-gutter: 24px;
+  --city-drawer: min(380px, 44vw);
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
   max-width: none;
   max-height: none;
-  margin: auto;
+  margin: 0;
   padding: 0;
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  border: 0;
   background: var(--paper);
   color: var(--ink);
   overflow: hidden;
-  box-shadow: 0 24px 80px rgb(0 0 0 / 24%);
 }
 .city-dialog[open] {
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 .city-dialog::backdrop {
-  background: rgb(10 25 25 / 72%);
+  background: var(--paper);
 }
 .city-dialog-header {
-  display: flex;
+  position: absolute;
+  z-index: 3;
+  inset: 0 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas: 'title dock close';
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 16px 24px;
+  gap: 12px 16px;
+  padding: max(16px, env(safe-area-inset-top)) var(--city-gutter) 20px;
+  background: linear-gradient(var(--paper) 70%, transparent);
+  pointer-events: none;
+}
+.city-dialog-header > *,
+.city-dialog-footer > * {
+  pointer-events: auto;
+}
+.city-dialog-title {
+  grid-area: title;
+  min-width: 0;
 }
 .city-dialog-header h2 {
   margin: 0;
@@ -1149,6 +1164,10 @@ footer a:focus-visible {
   margin: 4px 0 0;
   font: 400 15px/1.4 var(--body);
   color: var(--muted);
+}
+#city-close {
+  grid-area: close;
+  justify-self: end;
 }
 .city-dialog button:where(:not(.ricochet-mirror, .ricochet-source)) {
   display: inline-flex;
@@ -1169,15 +1188,21 @@ footer a:focus-visible {
   cursor: not-allowed;
 }
 .city-destinations {
+  grid-area: dock;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  padding: 0 24px 12px;
+  grid-template-columns: repeat(4, auto);
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
 }
 .city-destinations button {
-  justify-content: flex-start;
   flex-wrap: wrap;
-  gap: 0 12px;
+  gap: 0 10px;
+  border-color: transparent;
+  background: transparent;
 }
 .city-destinations button span:last-child {
   font-weight: 400;
@@ -1195,19 +1220,14 @@ footer a:focus-visible {
   outline: 2px solid var(--teal);
   outline-offset: -3px;
 }
-.city-dialog-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  flex: 1;
-  min-height: 0;
-}
-.city-dialog-body:has(.city-panels:not([hidden])) {
-  grid-template-columns: minmax(0, 1fr) 340px;
-}
+.city-dialog-body,
 .city-dialog-stage {
-  position: relative;
+  position: absolute;
+  inset: 0;
   min-width: 0;
   min-height: 0;
+}
+.city-dialog-stage {
   overflow: hidden;
 }
 .city-dialog-stage canvas {
@@ -1217,6 +1237,9 @@ footer a:focus-visible {
   cursor: grabbing;
 }
 .city-dialog-stage .city-poster {
+  top: var(--city-top, 0);
+  bottom: var(--city-bottom, 0);
+  height: auto;
   object-fit: contain;
 }
 .city-dialog-stage canvas:focus-visible {
@@ -1235,12 +1258,24 @@ footer a:focus-visible {
   white-space: nowrap;
 }
 .city-panels {
+  position: absolute;
+  z-index: 4;
+  top: var(--city-top, 96px);
+  right: 16px;
+  bottom: 16px;
+  width: var(--city-drawer);
   display: flex;
   flex-direction: column;
   min-width: 0;
   min-height: 0;
   padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   background: var(--white);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 14%);
+}
+.city-dialog .city-sheet-handle {
+  display: none;
 }
 .city-panels[hidden],
 .city-label[hidden],
@@ -1347,14 +1382,33 @@ footer a:focus-visible {
   font-size: 16px;
 }
 .city-dialog-footer {
-  padding: 12px 24px 20px;
+  position: absolute;
+  z-index: 3;
+  inset: auto 0 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding: 24px var(--city-gutter) max(16px, env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, var(--paper) 40%);
+  pointer-events: none;
 }
-.city-dialog-footer > p:not(.sr-only) {
+.city-dialog:not([data-destination='overview']) .city-dialog-footer {
+  right: calc(var(--city-drawer) + 16px);
+  justify-content: flex-end;
+}
+.city-dialog:not([data-destination='overview']) .city-notes {
+  display: none;
+}
+.city-notes p {
   max-width: none;
-  margin: 0 0 12px;
-  text-align: center;
+  margin: 0;
   color: var(--muted);
   font: 400 15px/1.4 var(--body);
+}
+.city-notes .city-legend {
+  margin-top: 4px;
+  font-size: 13px;
 }
 .city-controls {
   display: flex;
@@ -1367,94 +1421,143 @@ footer a:focus-visible {
   text-align: center;
   font: 400 15px/1.4 var(--label);
 }
-.city-dialog-footer > .city-legend {
-  margin: 8px 0 0;
-  font-size: 13px;
-}
-@media (max-width: 1000px) {
-  .city-dialog-body:has(.city-panels:not([hidden])) {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(120px, 0.65fr) minmax(0, 1.35fr);
-  }
-  .city-panels {
-    padding: 16px 24px;
-  }
-  #city-back {
-    margin-top: 12px;
-  }
-}
-@media (max-width: 700px), (hover: none) and (pointer: coarse) {
-  .city-dialog {
-    width: 100%;
-    height: 100dvh;
-    border: 0;
-    border-radius: 0;
-  }
+@media (max-width: 1100px) {
   .city-dialog-header {
-    padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'title close'
+      'dock dock';
   }
   .city-destinations {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding: 0 16px 8px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .city-destinations button {
-    column-gap: 8px;
+    flex-direction: column;
+    gap: 0;
+    padding-inline: 4px;
   }
-  .city-panels {
-    padding: 12px 16px;
+  .city-destinations button span:last-child {
+    font-size: 13px;
+  }
+}
+@media (max-width: 760px) {
+  .city-dialog {
+    --city-gutter: 16px;
+    --sheet: 55%;
+  }
+  .city-dialog[data-sheet='expanded'] {
+    --sheet: calc(100% - var(--city-top, 120px));
+  }
+  .city-dialog-header {
+    row-gap: 8px;
+    padding-bottom: 16px;
+  }
+  .city-dialog-header p {
+    display: none;
+  }
+  .city-destinations {
+    gap: 2px;
+    padding: 3px;
+  }
+  .city-destinations button {
+    padding: 4px 2px;
+    font-size: 15px;
   }
   .city-dialog-footer {
-    padding: 12px 12px max(16px, env(safe-area-inset-bottom));
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .city-dialog:not([data-destination='overview']) .city-dialog-footer {
+    left: auto;
+    right: 0;
+    bottom: var(--sheet-drag, var(--sheet));
+    padding: 0 16px 8px;
+    background: none;
+    transition: bottom 240ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .city-dialog:not([data-destination='overview'])
+    .city-controls
+    > :not([data-city-action='reset']),
+  .city-dialog[data-sheet='expanded'] .city-controls {
+    display: none;
   }
   .city-controls {
-    flex-wrap: wrap;
     gap: 6px;
   }
   .city-controls button {
     padding: 8px;
     font-size: 15px;
   }
-}
-/* A tall phone leaves the whole-city overview in a band of empty space; size the scene to the model and centre it with its controls. */
-@media (max-width: 700px) and (orientation: portrait) {
-  .city-dialog-body:not(:has(.city-panels:not([hidden]))) {
-    flex: 0 1 auto;
-    margin-top: auto;
+  .city-panels {
+    top: auto;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: auto;
+    height: var(--sheet-drag, var(--sheet));
+    padding: 0 16px max(16px, env(safe-area-inset-bottom));
+    border-width: 1px 0 0;
+    border-radius: 16px 16px 0 0;
+    transition: height 240ms cubic-bezier(0.23, 1, 0.32, 1);
   }
-  .city-dialog-body:not(:has(.city-panels:not([hidden]))) .city-dialog-stage {
-    aspect-ratio: 4 / 3;
-    max-height: 100%;
+  .city-dialog[data-sheet-dragging] :is(.city-panels, .city-dialog-footer) {
+    transition: none;
   }
-  .city-dialog-body:not(:has(.city-panels:not([hidden])))
-    + .city-dialog-footer {
-    margin-bottom: auto;
+  .city-dialog .city-sheet-handle {
+    display: flex;
+    flex-shrink: 0;
+    width: calc(100% + 32px);
+    margin-inline: -16px;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 16px 16px 0 0;
+    background: transparent;
+    touch-action: none;
+    cursor: grab;
+  }
+  .city-sheet-handle::before {
+    content: '';
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--muted);
   }
 }
 @media (max-height: 500px) and (min-width: 600px) {
   .city-dialog-header {
-    padding-block: 8px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'dock close';
+    padding-block: max(8px, env(safe-area-inset-top)) 12px;
   }
-  .city-dialog-header p {
-    display: none;
-  }
-  .city-destinations {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    padding-bottom: 8px;
-  }
-  .city-dialog-body:has(.city-panels:not([hidden])) {
-    grid-template-columns: minmax(0, 1fr) min(42%, 340px);
-    grid-template-rows: minmax(0, 1fr);
-  }
-  .city-dialog-footer {
-    padding-block: 8px;
-  }
-  .city-dialog-footer > p:not(.sr-only) {
+  .city-dialog-title {
     position: absolute;
     width: 1px;
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
+    white-space: nowrap;
   }
+  .city-destinations {
+    justify-self: start;
+    width: min(100%, 560px);
+  }
+  .city-dialog-footer {
+    padding-block: 12px max(8px, env(safe-area-inset-bottom));
+  }
+  .city-notes {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .city-panels,
+  .city-dialog-footer {
+    transition: none;
+  }
+}
+.motion-paused :is(.city-panels, .city-dialog-footer) {
+  transition: none;
 }
 .city-fade {
   position: absolute;
@@ -1499,15 +1602,34 @@ footer a:focus-visible {
   background: var(--teal);
 }
 .city-dialog[data-destination='arcade'] .city-dialog-body {
+  top: var(--city-top, 0);
+  display: grid;
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(240px, 1fr) auto;
   overflow-y: auto;
 }
+.city-dialog[data-destination='arcade'] .city-dialog-stage {
+  position: relative;
+  inset: auto;
+}
+.city-dialog[data-destination='arcade'] .city-dialog-stage .city-poster {
+  top: 0;
+  bottom: 0;
+}
 .city-dialog[data-destination='arcade'] .city-panels {
-  padding-block: 16px;
+  position: static;
+  width: auto;
+  height: auto;
   flex-direction: row;
   align-items: flex-end;
   gap: 24px;
+  padding: 16px var(--city-gutter) max(16px, env(safe-area-inset-bottom));
+  border-width: 1px 0 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.city-dialog[data-destination='arcade'] .city-sheet-handle {
+  display: none;
 }
 .city-dialog[data-destination='arcade'] #city-back {
   margin-top: 0;
@@ -1521,10 +1643,10 @@ footer a:focus-visible {
 }
 .city-dialog[data-destination='arcade'] .city-dialog-footer {
   padding: 0;
+  background: none;
 }
 .city-dialog[data-destination='arcade'] .city-controls,
-.city-dialog[data-destination='arcade'] #city-hint,
-.city-dialog[data-destination='arcade'] .city-legend,
+.city-dialog[data-destination='arcade'] .city-notes,
 .city-dialog[data-destination='arcade'] .city-label {
   display: none;
 }
@@ -1540,22 +1662,14 @@ footer a:focus-visible {
 .city-dialog[data-destination='arcade'] .city-dialog-stage canvas {
   cursor: default;
 }
-@media (max-width: 700px) {
+@media (max-width: 760px) {
   .city-dialog[data-destination='arcade'] .city-panels {
     gap: 8px;
     flex-direction: column;
     align-items: stretch;
   }
-  .city-dialog[data-destination='arcade'] #city-back {
-    margin-top: 0;
-  }
 }
 @media (max-height: 500px) and (min-width: 600px) {
-  .city-dialog[data-destination='arcade'] {
-    width: 100%;
-    height: 100dvh;
-    border: 0;
-  }
   .city-dialog[data-destination='arcade'] .city-dialog-body {
     grid-template-columns: minmax(292px, 1fr) 308px;
     grid-template-rows: minmax(240px, 1fr);
@@ -1564,13 +1678,11 @@ footer a:focus-visible {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
-    padding: 8px 16px;
+    padding: 8px 16px max(8px, env(safe-area-inset-bottom));
+    border-width: 0 0 0 1px;
   }
   .city-dialog[data-destination='arcade'] .city-panels > section {
     overflow-y: auto;
-  }
-  .city-dialog[data-destination='arcade'] #city-back {
-    margin-top: 0;
   }
 }
 .project-collection {

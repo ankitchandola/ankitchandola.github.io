@@ -1,4 +1,4 @@
-import { createCityView, type CityPose } from './city-preview';
+import { createCityView, type CityInsets, type CityPose } from './city-preview';
 import { createArcadeActivity } from './city-scenes/arcade-activity';
 import type { ArcadeView } from './city-scenes/arcade';
 import {
@@ -19,6 +19,10 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
   const label = document.querySelector<HTMLElement>('#city-label');
   const panelContainer = document.querySelector<HTMLElement>('#city-panels');
   const back = document.querySelector<HTMLButtonElement>('#city-back');
+  const header = document.querySelector<HTMLElement>('.city-dialog-header');
+  const footer = document.querySelector<HTMLElement>('.city-dialog-footer');
+  const handle =
+    document.querySelector<HTMLButtonElement>('#city-sheet-handle');
   if (
     !preview ||
     !open ||
@@ -30,7 +34,10 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
     !zoomLabel ||
     !label ||
     !panelContainer ||
-    !back
+    !back ||
+    !header ||
+    !footer ||
+    !handle
   )
     throw new Error('City explorer markup is incomplete.');
   const actions =
@@ -89,6 +96,108 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
     label.style.top = `${position.y}px`;
   });
   available = view !== null;
+  // Bars spanning most of the width cover the top or bottom of the canvas; a tall, narrow panel
+  // covers one side. Anything smaller floats over empty scenery and is ignored.
+  const measure = (): CityInsets => {
+    const box = dialog.getBoundingClientRect();
+    const insets = { top: 0, right: 0, bottom: 0, left: 0 };
+    for (const element of [header, footer, panelContainer]) {
+      if (!element.getClientRects().length) continue;
+      const rect = element.getBoundingClientRect();
+      if (rect.width >= box.width / 2) {
+        if (rect.top + rect.height / 2 < box.top + box.height / 2)
+          insets.top = Math.max(insets.top, rect.bottom - box.top);
+        else insets.bottom = Math.max(insets.bottom, box.bottom - rect.top);
+      } else if (rect.height >= box.height / 2) {
+        if (rect.left + rect.width / 2 > box.left + box.width / 2)
+          insets.right = Math.max(insets.right, box.right - rect.left);
+        else insets.left = Math.max(insets.left, rect.right - box.left);
+      }
+    }
+    const headerRect = header.getBoundingClientRect();
+    const footerRect = footer.getBoundingClientRect();
+    dialog.style.setProperty(
+      '--city-top',
+      `${Math.round(headerRect.bottom - box.top)}px`,
+    );
+    dialog.style.setProperty(
+      '--city-bottom',
+      `${Math.round(box.bottom - footerRect.top)}px`,
+    );
+    return {
+      top: Math.round(insets.top),
+      right: Math.round(insets.right),
+      bottom: Math.round(insets.bottom),
+      left: Math.round(insets.left),
+    };
+  };
+  const reframe = () => {
+    if (dialog.open) view?.setInsets(measure());
+  };
+  const layout = new ResizeObserver(reframe);
+  for (const element of [dialog, header, footer, panelContainer])
+    layout.observe(element);
+  const setSheet = (expanded: boolean) => {
+    if (expanded) dialog.dataset.sheet = 'expanded';
+    else delete dialog.dataset.sheet;
+    handle.setAttribute('aria-expanded', String(expanded));
+    handle.setAttribute(
+      'aria-label',
+      expanded ? 'Collapse panel' : 'Expand panel',
+    );
+  };
+  let sheetDrag: {
+    pointer: number;
+    startY: number;
+    startHeight: number;
+    moved: boolean;
+  } | null = null;
+  let suppressHandleClick = false;
+  handle.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0) return;
+    sheetDrag = {
+      pointer: event.pointerId,
+      startY: event.clientY,
+      startHeight: panelContainer.getBoundingClientRect().height,
+      moved: false,
+    };
+    handle.setPointerCapture(event.pointerId);
+  });
+  handle.addEventListener('pointermove', (event) => {
+    if (!sheetDrag || event.pointerId !== sheetDrag.pointer) return;
+    const delta = sheetDrag.startY - event.clientY;
+    if (!sheetDrag.moved && Math.abs(delta) <= 6) return;
+    sheetDrag.moved = true;
+    dialog.dataset.sheetDragging = '';
+    const top = header.getBoundingClientRect().bottom;
+    const height = Math.min(
+      dialog.clientHeight - top,
+      Math.max(160, sheetDrag.startHeight + delta),
+    );
+    dialog.style.setProperty('--sheet-drag', `${height}px`);
+  });
+  const endSheetDrag = (event: PointerEvent) => {
+    if (!sheetDrag || event.pointerId !== sheetDrag.pointer) return;
+    if (sheetDrag.moved) {
+      const height = panelContainer.getBoundingClientRect().height;
+      const half = dialog.clientHeight * 0.55;
+      const full = dialog.clientHeight - header.getBoundingClientRect().bottom;
+      setSheet(height > (half + full) / 2);
+      suppressHandleClick = true;
+    }
+    dialog.style.removeProperty('--sheet-drag');
+    delete dialog.dataset.sheetDragging;
+    sheetDrag = null;
+  };
+  handle.addEventListener('pointerup', endSheetDrag);
+  handle.addEventListener('pointercancel', endSheetDrag);
+  handle.addEventListener('click', () => {
+    if (suppressHandleClick) {
+      suppressHandleClick = false;
+      return;
+    }
+    setSheet(dialog.dataset.sheet !== 'expanded');
+  });
   const activity = createArcadeActivity(
     dialog,
     (state, animate) => arcadeScene?.sync(state, animate),
@@ -213,6 +322,8 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
         String(button.dataset.cityDestination === id),
       ),
     );
+    if (id === null) setSheet(false);
+    if (dialog.open) view?.setInsets(measure(), true);
     if (id === 'arcade') {
       void loadArcade(animate);
     } else if (id === null && returnPose) {
@@ -432,20 +543,6 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
       open.focus({ preventScroll: true });
     }
     closing = false;
-  });
-  let backdropStart = false;
-  dialog.addEventListener('pointerdown', (event) => {
-    const rect = dialog.getBoundingClientRect();
-    backdropStart =
-      event.target === dialog &&
-      (event.clientX < rect.left ||
-        event.clientX > rect.right ||
-        event.clientY < rect.top ||
-        event.clientY > rect.bottom);
-  });
-  dialog.addEventListener('click', (event) => {
-    if (backdropStart && event.target === dialog) requestClose(true);
-    backdropStart = false;
   });
   dialog
     .querySelectorAll<HTMLAnchorElement>('a[data-city-section]')

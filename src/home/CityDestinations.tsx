@@ -38,6 +38,13 @@ export function CityDestinationPanels() {
       aria-label="Selected destination"
       hidden
     >
+      <button
+        id="city-sheet-handle"
+        className="city-sheet-handle"
+        type="button"
+        aria-expanded="false"
+        aria-label="Expand panel"
+      />
       <section
         id="city-panel-studio"
         data-city-panel="studio"

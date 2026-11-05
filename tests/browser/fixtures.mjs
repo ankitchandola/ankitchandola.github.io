@@ -18,3 +18,9 @@ export const test = base.extend({
   },
 });
 export { expect };
+
+// The explorer's bars and panel float over its full-screen canvas; hide them to compare only the rendered scene.
+export const sceneOnly = {
+  style:
+    '.city-dialog-header, .city-dialog-footer, .city-dialog-footer *, .city-panels, .city-label { visibility: hidden !important; }',
+};

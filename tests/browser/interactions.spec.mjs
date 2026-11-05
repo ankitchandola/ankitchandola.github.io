@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.mjs';
+import { test, expect, sceneOnly } from './fixtures.mjs';
 import projects from '../../src/content/projects.json' with { type: 'json' };
 import { OrthographicCamera, Vector3 } from 'three';
 
@@ -117,13 +117,13 @@ test('city modal contains focus, supports keyboard controls and restores the pre
   const canvas = page.locator('#hero-city');
   await canvas.scrollIntoViewIfNeeded();
   await expect(canvas).toHaveAttribute('data-ready', 'true');
-  const still = await canvas.screenshot();
+  const still = await canvas.screenshot(sceneOnly);
   const trigger = page.getByRole('button', {
     name: 'Explore the city',
     exact: true,
   });
   await trigger.hover();
-  expect((await canvas.screenshot()).equals(still)).toBe(true);
+  expect((await canvas.screenshot(sceneOnly)).equals(still)).toBe(true);
   await trigger.focus();
   const scroll = await page.evaluate(() => window.scrollY);
   await trigger.press('Enter');
@@ -141,10 +141,10 @@ test('city modal contains focus, supports keyboard controls and restores the pre
   await expect(page.locator('.city-stage .city-poster')).toBeVisible();
   await expect(page.locator('body')).toHaveClass(/city-is-open/);
   await canvas.focus();
-  const overview = await canvas.screenshot();
+  const overview = await canvas.screenshot(sceneOnly);
   const zoom = await page.locator('#city-zoom').textContent();
   await canvas.press('ArrowLeft');
-  expect((await canvas.screenshot()).equals(overview)).toBe(false);
+  expect((await canvas.screenshot(sceneOnly)).equals(overview)).toBe(false);
   await canvas.press('+');
   await expect(page.locator('#city-zoom')).not.toHaveText(zoom);
   await expect(page.locator('#city-hint')).toBeHidden();
@@ -157,7 +157,7 @@ test('city modal contains focus, supports keyboard controls and restores the pre
   expect(await page.evaluate(() => window.scrollY)).toBe(scroll);
   // Compare the scene without the keyboard focus ring that restoration adds to the trigger.
   await trigger.evaluate((button) => button.blur());
-  expect((await canvas.screenshot()).equals(still)).toBe(true);
+  expect((await canvas.screenshot(sceneOnly)).equals(still)).toBe(true);
 });
 
 test('unavailable WebGL keeps static hero artwork and navigation usable', async ({
@@ -247,7 +247,7 @@ test('city gestures rotate and zoom within limits; reset and Close remain availa
   expect(bounds).not.toBeNull();
   const x = bounds.x + bounds.width / 2;
   const y = bounds.y + bounds.height / 2;
-  const first = await canvas.screenshot();
+  const first = await canvas.screenshot(sceneOnly);
   if (testInfo.project.name === 'phone') {
     const cdp = await page.context().newCDPSession(page);
     await cdp.send('Input.dispatchTouchEvent', {
@@ -262,7 +262,7 @@ test('city gestures rotate and zoom within limits; reset and Close remain availa
       type: 'touchEnd',
       touchPoints: [],
     });
-    expect((await canvas.screenshot()).equals(first)).toBe(false);
+    expect((await canvas.screenshot(sceneOnly)).equals(first)).toBe(false);
     const zoom = await page.locator('#city-zoom').textContent();
     await cdp.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
@@ -289,7 +289,7 @@ test('city gestures rotate and zoom within limits; reset and Close remain availa
     await page.mouse.down();
     await page.mouse.move(x + 100, y, { steps: 8 });
     await page.mouse.up();
-    expect((await canvas.screenshot()).equals(first)).toBe(false);
+    expect((await canvas.screenshot(sceneOnly)).equals(first)).toBe(false);
     const zoom = await page.locator('#city-zoom').textContent();
     await page.mouse.wheel(0, -300);
     await expect(page.locator('#city-zoom')).not.toHaveText(zoom);
@@ -306,7 +306,7 @@ test('city gestures rotate and zoom within limits; reset and Close remain availa
     );
   }
   await page.getByRole('button', { name: 'Reset view' }).click();
-  expect((await canvas.screenshot()).equals(first)).toBe(true);
+  expect((await canvas.screenshot(sceneOnly)).equals(first)).toBe(true);
   if (testInfo.project.name === 'phone') {
     await page.setViewportSize({ width: 812, height: 375 });
     await expect
@@ -492,9 +492,8 @@ test('city selected panels survive graphics loss and keep focus trapped through 
   await expect(canvas).toHaveAttribute('data-ready', 'true');
   await expect(page.locator('#city-panel-contact')).toBeVisible();
   await expect(page.locator('#city-zoom')).toHaveText('170%');
-  await expect(
-    dialog.getByRole('button', { name: 'Zoom in', exact: true }),
-  ).toBeEnabled();
+  // Phones keep only Reset view beside an open panel; the zoom buttons stay enabled for when it closes.
+  await expect(dialog.locator('[data-city-action="in"]')).toBeEnabled();
 });
 
 test('city scenery, reserved plots and occluded landmarks do not act as destinations', async ({
@@ -510,19 +509,50 @@ test('city scenery, reserved plots and occluded landmarks do not act as destinat
   ).toHaveCount(0);
   const canvas = page.locator('#hero-city');
   const rect = await canvas.boundingBox();
-  const halfWidth = Math.max(8.7, (6.3 * rect.width) / rect.height);
+  // Mirror the overview framing: the city fits between the top and bottom bars.
+  const bars = await page.evaluate(() => {
+    const box = document.querySelector('#city-dialog').getBoundingClientRect();
+    return {
+      top: Math.round(
+        document.querySelector('.city-dialog-header').getBoundingClientRect()
+          .bottom - box.top,
+      ),
+      bottom: Math.round(
+        box.bottom -
+          document.querySelector('.city-dialog-footer').getBoundingClientRect()
+            .top,
+      ),
+    };
+  });
+  const free = {
+    width: rect.width,
+    height: rect.height - bars.top - bars.bottom,
+  };
+  const unit = Math.max((2 * 8.7) / free.width, (2 * 6.3) / free.height);
   const camera = new OrthographicCamera(
-    -halfWidth,
-    halfWidth,
-    (halfWidth * rect.height) / rect.width,
-    (-halfWidth * rect.height) / rect.width,
+    (-rect.width / 2) * unit,
+    (rect.width / 2) * unit,
+    (rect.height / 2) * unit,
+    (-rect.height / 2) * unit,
     0.1,
     80,
   );
   camera.position.set(12, 15, 17);
   camera.lookAt(0, 1, 0);
-  camera.zoom = 6.3 * rect.width > 8.7 * rect.height ? 1.12 : 1;
-  camera.updateProjectionMatrix();
+  camera.zoom =
+    free.height > free.width * 1.2
+      ? 1.3
+      : 6.3 * free.width > 8.7 * free.height
+        ? 1.12
+        : 1;
+  camera.setViewOffset(
+    rect.width,
+    rect.height,
+    0,
+    rect.height / 2 - (bars.top + free.height / 2),
+    rect.width,
+    rect.height,
+  );
   camera.updateMatrixWorld();
   for (const [x, y, z] of [
     [-3.45, 0.76, 2.2],
@@ -542,7 +572,10 @@ test('city scenery, reserved plots and occluded landmarks do not act as destinat
     await expect(page.locator('#city-label')).toBeHidden();
   }
   await page.locator('[data-city-destination="studio"]').click();
-  await canvas.click({ position: { x: 8, y: 8 } });
+  const header = await page.locator('.city-dialog-header').boundingBox();
+  await canvas.click({
+    position: { x: 8, y: header.y + header.height + 8 - rect.y },
+  });
   await expect(page.locator('#city-dialog')).toHaveAttribute(
     'data-destination',
     'studio',
@@ -591,16 +624,17 @@ test('city camera transitions interrupt, settle on pause and stop rendering', as
     .dispatchEvent('click', { detail: 1 });
   await page.clock.runFor(100);
   const bounds = await page.locator('#hero-city').boundingBox();
-  await page.mouse.move(
-    bounds.x + bounds.width / 2,
-    bounds.y + bounds.height / 2,
-  );
+  // Drag in the scene area the open panel leaves visible.
+  const panel = await page.locator('#city-panels').boundingBox();
+  const header = await page.locator('.city-dialog-header').boundingBox();
+  const sheet = panel.width > bounds.width / 2;
+  const startX = sheet ? bounds.x + bounds.width / 2 : (bounds.x + panel.x) / 2;
+  const startY = sheet
+    ? (header.y + header.height + panel.y) / 2
+    : bounds.y + bounds.height / 2;
+  await page.mouse.move(startX, startY);
   await page.mouse.down();
-  await page.mouse.move(
-    bounds.x + bounds.width / 2 + 40,
-    bounds.y + bounds.height / 2,
-    { steps: 4 },
-  );
+  await page.mouse.move(startX + 40, startY, { steps: 4 });
   await page.mouse.up();
   const interrupted = await page.locator('#city-zoom').textContent();
   await page.clock.runFor(800);

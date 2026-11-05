@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.mjs';
+import { test, expect, sceneOnly } from './fixtures.mjs';
 import { OrthographicCamera, Vector3 } from 'three';
 
 const enter = async (page) => {
@@ -68,7 +68,7 @@ test('Arcade and room switching restore the exact nondefault city view', async (
   await canvas.press('+');
   await canvas.evaluate((element) => element.blur());
   const zoom = await page.locator('#city-zoom').textContent();
-  const before = await canvas.screenshot();
+  const before = await canvas.screenshot(sceneOnly);
   await page.locator('#city-destination-arcade').click();
   await expect(page.locator('#city-dialog')).toHaveAttribute(
     'data-phase',
@@ -81,10 +81,10 @@ test('Arcade and room switching restore the exact nondefault city view', async (
     .locator('#city-destination-contact')
     .evaluate((element) => element.blur());
   await expect(page.locator('#city-zoom')).toHaveText(zoom);
-  expect((await canvas.screenshot()).equals(before)).toBe(true);
+  expect((await canvas.screenshot(sceneOnly)).equals(before)).toBe(true);
   const originalSize = page.viewportSize();
   await page.setViewportSize({ width: 1024, height: 768 });
-  const resized = await canvas.screenshot();
+  const resized = await canvas.screenshot(sceneOnly);
   await page.setViewportSize(originalSize);
   await page.locator('#city-destination-arcade').click();
   await expect(page.locator('#city-dialog')).toHaveAttribute(
@@ -96,7 +96,7 @@ test('Arcade and room switching restore the exact nondefault city view', async (
   await page
     .locator('#city-destination-arcade')
     .evaluate((element) => element.blur());
-  expect((await canvas.screenshot()).equals(resized)).toBe(true);
+  expect((await canvas.screenshot(sceneOnly)).equals(resized)).toBe(true);
 });
 
 test('Arcade projected mirror tap solves the table without orbit controls', async ({
