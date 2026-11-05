@@ -104,7 +104,7 @@ export default function Hero() {
               <img
                 className="city-poster"
                 src="/assets/city-neighbourhood.png"
-                alt="A miniature neighbourhood with a studio, office, arcade, café and two future construction plots."
+                alt="A miniature neighbourhood with a sawtooth-roofed studio, a clock-tower office, a vaulted arcade, a café and two future construction plots."
                 width="1236"
                 height="1030"
               />
