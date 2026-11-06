@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { ButtonHTMLAttributes, CSSProperties } from 'react';
+import type { ButtonHTMLAttributes, CSSProperties, PointerEvent } from 'react';
 import Board from './Board';
 import { place, pointing } from './board-path';
 import type { RicochetGame } from './game.ts';
@@ -27,6 +27,8 @@ const box = ({
   width,
   height,
 });
+const targetSelector = (key: string) =>
+  key === 'source' ? '[data-table-fire]' : `[data-table-mirror="${key}"]`;
 
 function CellTarget({
   rect,
@@ -77,6 +79,7 @@ export default function BoardView({
   const request = useRef(0);
   const mounted = useRef(false);
   const focusedKey = useRef<string | null>(null);
+  const hoveredTarget = useRef<HTMLButtonElement | null>(null);
   const [size, setSize] = useState<Size | null>(null);
   const [status, setStatus] = useState<Status>('idle');
   const [layout, setLayout] = useState<TableLayout | null>(null);
@@ -93,6 +96,47 @@ export default function BoardView({
         : null,
     );
   };
+  const pointerTarget = (x: number, y: number, fallback: EventTarget) => {
+    const bounds = canvas.current?.getBoundingClientRect();
+    const piece =
+      bounds && surface.current?.pickTarget(x - bounds.x, y - bounds.y);
+    if (piece) return piece;
+    const button =
+      fallback instanceof Element
+        ? fallback.closest<HTMLElement>(
+            '[data-table-mirror], [data-table-fire]',
+          )
+        : null;
+    return (
+      button?.dataset.tableMirror ??
+      (button?.hasAttribute('data-table-fire') ? 'source' : null)
+    );
+  };
+  const highlightPointer = (key: string | null) => {
+    const target = key
+      ? (wrapper.current?.querySelector<HTMLButtonElement>(
+          targetSelector(key),
+        ) ?? null)
+      : null;
+    if (hoveredTarget.current === target) return;
+    hoveredTarget.current?.removeAttribute('data-hovered');
+    target?.setAttribute('data-hovered', '');
+    hoveredTarget.current = target;
+    surface.current?.highlight(key);
+  };
+  const hoverTable = (event: PointerEvent<HTMLDivElement>) => {
+    if (
+      event.pointerType === 'touch' ||
+      !matchMedia('(hover: hover) and (pointer: fine)').matches
+    )
+      return;
+    highlightPointer(pointerTarget(event.clientX, event.clientY, event.target));
+  };
+
+  useEffect(() => {
+    hoveredTarget.current?.removeAttribute('data-hovered');
+    hoveredTarget.current = null;
+  }, [level, active, show3d]);
 
   useEffect(() => {
     const element = wrapper.current;
@@ -101,7 +145,7 @@ export default function BoardView({
       const width = element.clientWidth;
       const height = fill
         ? element.clientHeight
-        : Math.round(Math.min(width * 0.82, window.innerHeight * 0.75));
+        : Math.round(Math.min(width * 0.82, window.innerHeight * 0.7));
       setSize((current) =>
         current?.width === width && current.height === height
           ? current
@@ -282,19 +326,26 @@ export default function BoardView({
           className="ricochet-table"
           style={tableStyle}
           hidden={!show3d}
+          onPointerEnter={hoverTable}
+          onPointerMove={hoverTable}
+          onPointerLeave={() => {
+            highlightPointer(null);
+            highlightFocus();
+          }}
           onClickCapture={(event) => {
             if (event.detail === 0 || !canvas.current) return;
-            const bounds = canvas.current.getBoundingClientRect();
-            const key = surface.current?.pickMirror(
-              event.clientX - bounds.x,
-              event.clientY - bounds.y,
+            const key = pointerTarget(
+              event.clientX,
+              event.clientY,
+              event.target,
             );
             if (!key) return;
             event.stopPropagation();
             wrapper.current
-              ?.querySelector<HTMLButtonElement>(`[data-table-mirror="${key}"]`)
+              ?.querySelector<HTMLButtonElement>(targetSelector(key))
               ?.focus({ preventScroll: true });
-            game.rotate(key, true);
+            if (key === 'source') game.fire(true);
+            else game.rotate(key, true);
           }}
         >
           <canvas key={attempt} ref={canvas} aria-hidden="true" />
@@ -305,8 +356,6 @@ export default function BoardView({
                 className="ricochet-table-source"
                 data-table-fire
                 rect={layout.source}
-                onPointerEnter={() => surface.current?.highlight('source')}
-                onPointerLeave={highlightFocus}
                 onClick={(event) => game.fire(event.detail > 0)}
                 aria-label={`Fire the beam from ${place(level.source.x, level.source.y)}, pointing ${pointing[level.source.dir]}`}
               />
@@ -319,8 +368,6 @@ export default function BoardView({
                     className="ricochet-table-mirror"
                     data-table-mirror={key}
                     rect={rect}
-                    onPointerEnter={() => surface.current?.highlight(key)}
-                    onPointerLeave={highlightFocus}
                     onClick={(event) => game.rotate(key, event.detail > 0)}
                     aria-label={`Mirror, ${place(x, y)}, slanted ${mirrors[key] === '/' ? 'forward' : 'backward'}`}
                   />

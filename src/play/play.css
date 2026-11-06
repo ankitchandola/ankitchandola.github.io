@@ -32,14 +32,28 @@
 .ricochet-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
-  gap: 48px;
+  grid-template-areas: 'stage heading' 'stage panel';
+  column-gap: 48px;
   align-items: start;
   padding-bottom: 24px;
+}
+.ricochet-layout > .ricochet-level-heading {
+  grid-area: heading;
+}
+.ricochet-stage {
+  grid-area: stage;
+}
+.ricochet-panel {
+  grid-area: panel;
+}
+.ricochet-stage .ricochet-modes {
+  margin-bottom: 8px;
 }
 .ricochet .kicker {
   display: block;
   font: 700 14px/1.5 var(--label);
   letter-spacing: 0.7px;
+  text-transform: uppercase;
 }
 .ricochet-level-heading {
   margin-bottom: 24px;
@@ -389,6 +403,7 @@
 @media (max-width: 1000px) {
   .ricochet-layout {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'heading' 'stage' 'panel';
     gap: 32px;
   }
 }
@@ -504,7 +519,7 @@
   min-height: 0;
   height: 100%;
 }
-.ricochet-view.is-fill .ricochet-presentation {
+.ricochet-view:is(.is-fill, [data-presentation='3d']) .ricochet-presentation {
   position: absolute;
   z-index: 1;
   top: 12px;
@@ -516,11 +531,15 @@
   border-radius: 8px;
   background: var(--rc-surface);
 }
-.ricochet-view.is-fill .ricochet-presentation button {
+.ricochet-view:is(.is-fill, [data-presentation='3d'])
+  .ricochet-presentation
+  button {
   min-height: 44px;
   padding-inline: 12px;
 }
-.ricochet-view.is-fill .ricochet-presentation button[aria-pressed='true'] {
+.ricochet-view:is(.is-fill, [data-presentation='3d'])
+  .ricochet-presentation
+  button[aria-pressed='true'] {
   background: var(--rc-beam);
   border-color: var(--rc-beam);
   color: var(--rc-source-mark);
@@ -609,8 +628,8 @@
   font: 400 16px/1.5 var(--body);
   color: var(--muted);
 }
-@media (hover: hover) {
-  .ricochet-table-targets > button:hover svg {
+@media (hover: hover) and (pointer: fine) {
+  .ricochet-table-targets > button[data-hovered] svg {
     opacity: 1;
   }
 }

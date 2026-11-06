@@ -49,7 +49,7 @@ function CityArcadeGame({
             headingRef={heading}
             level="h3"
             id="city-heading-arcade"
-            prefix="ARCADE · "
+            prefix="Arcade · "
           />
           <Controls game={game} share={false} />
           <Status game={game} id="arcade-result" exit={null} />

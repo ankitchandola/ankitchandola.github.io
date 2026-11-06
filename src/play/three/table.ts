@@ -45,7 +45,7 @@ export interface RicochetTable {
   sync(mirrors: Mirrors, shot: Shot | null, animate: boolean): void;
   update(time: number): boolean;
   settle(): void;
-  pickMirror(x: number, y: number): string | null;
+  pickTarget(x: number, y: number): string | null;
   mirrorRects(): Map<string, CellRect>;
   setColors(colors: TableColors): void;
   highlight(key: string | null): void;
@@ -145,6 +145,8 @@ export function createRicochetTable(
   const mirrors = new Map<string, Mesh>();
   const tiles = new Map<string, Mesh>();
   const markers = new Map<string, Mesh>();
+  let source = new Group();
+  let arrow = new Group();
   let highlighted: string | null = null;
   let pieces: (Mesh | Group)[] = [];
   let target: Mesh<TorusGeometry, MeshBasicMaterial | MeshStandardMaterial> =
@@ -243,24 +245,24 @@ export function createRicochetTable(
     );
     board.add(target);
     pieces.push(socket, target);
-    const source = new Group();
+    source = new Group();
     source.position.copy(
       cell(level.source.x + 0.5, level.source.y + 0.5, 0.69),
     );
     source.rotation.y = FACING[level.source.dir];
-    block(source, [0.34, 0.3, 0.38], [-0.06, 0.15, 0], materials.teal);
-    block(source, [0.14, 0.12, 0.16], [0.13, 0.33, 0], materials.mirror);
+    block(source, [0.62, 0.34, 0.62], [-0.12, 0.17, 0], materials.teal);
+    block(source, [0.18, 0.12, 0.26], [0.11, 0.33, 0], materials.mirror);
     board.add(source);
     pieces.push(source);
-    const arrow = new Group();
+    arrow = new Group();
     arrow.position.copy(source.position).setY(1.07);
     arrow.rotation.y = FACING[level.source.dir];
-    block(arrow, [0.36, 0.035, 0.1], [-0.08, 0, 0], materials.sourceMark);
+    block(arrow, [0.44, 0.035, 0.12], [-0.12, 0, 0], materials.sourceMark);
     for (const side of [-1, 1])
       block(
         arrow,
-        [0.24, 0.035, 0.08],
-        [0.09, 0, side * 0.075],
+        [0.28, 0.035, 0.1],
+        [0.06, 0, side * 0.09],
         materials.sourceMark,
       ).rotation.y = (side * Math.PI) / 4;
     board.add(arrow);
@@ -435,7 +437,7 @@ export function createRicochetTable(
       return duration > 0 || entering.length > 0;
     },
     settle,
-    pickMirror(x, y) {
+    pickTarget(x, y) {
       if (!size.width) return null;
       ray.setFromCamera(
         new Vector2((x / size.width) * 2 - 1, 1 - (y / size.height) * 2),
@@ -444,6 +446,8 @@ export function createRicochetTable(
       scene.updateMatrixWorld(true);
       const hit = ray.intersectObjects(board.children, true)[0]?.object;
       for (const [key, mirror] of mirrors) if (mirror === hit) return key;
+      if (hit && (hit.parent === source || hit.parent === arrow))
+        return 'source';
       return null;
     },
     mirrorRects: () => mirrorRects(camera, level, size),

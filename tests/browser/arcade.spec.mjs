@@ -68,7 +68,8 @@ test('Arcade lesson picker is visible at tablet size and action icons use game s
   for (const button of await panel.locator('.ricochet-modes button').all())
     await expect(button).toBeInViewport({ ratio: 1 });
   const titleLabel = panel.locator('.ricochet-level-heading .kicker');
-  await expect(titleLabel).toHaveText('ARCADE · LESSON 1 OF 5');
+  await expect(titleLabel).toHaveText('Arcade · LESSON 1 OF 5');
+  await expect(titleLabel).toHaveCSS('text-transform', 'uppercase');
   expect(
     await titleLabel.evaluate((element) => getComputedStyle(element).font),
   ).toBe(

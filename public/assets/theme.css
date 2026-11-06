@@ -2662,6 +2662,41 @@ body.motion-paused .evidence-gallery figure:not([hidden]) {
   }
 }
 /* Project stories: an editorial rail, connected workflows and explicit decisions. */
+.ricochet.case-page {
+  padding-top: 0;
+}
+.ricochet > .case-page-heading {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 6px 32px;
+  padding: 8px 0 16px;
+}
+.ricochet > .case-page-heading .kicker {
+  grid-column: 1 / -1;
+}
+.ricochet > .case-page-heading h1 {
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0;
+  font-size: clamp(40px, 4vw, 48px);
+  line-height: 1.05;
+}
+.ricochet > .case-page-heading > p {
+  grid-column: 2;
+  grid-row: 2;
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.45;
+}
+@media (max-width: 700px) {
+  .ricochet > .case-page-heading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ricochet > .case-page-heading > p {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}
 .case-page-heading {
   display: grid;
   grid-template-columns: 1.15fr 1fr;

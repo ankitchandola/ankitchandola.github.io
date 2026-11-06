@@ -33,9 +33,9 @@ export default function Ricochet() {
         </p>
       </noscript>
       <div className="ricochet-layout">
+        <Heading game={game} headingRef={heading} />
         <div className="ricochet-stage">
           <Modes game={game} />
-          <Heading game={game} headingRef={heading} />
           <p className="sr-only">{describe(level)}</p>
           <BoardView game={game} />
         </div>
