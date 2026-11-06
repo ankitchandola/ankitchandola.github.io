@@ -58,8 +58,22 @@ endpoints.
 The full page and city Arcade use one controller implementation and the same
 `BoardView`. Both offer Learn, Random easy/medium/hard and Today, with Undo,
 Reset, Next lesson and New puzzle. Only `/play` reads or changes puzzle URLs
-and offers Copy link. Arcade keeps Play full Ricochet and Open full page links
-for that full-page experience.
+and offers Copy link. Arcade keeps one pinned Play full Ricochet link for that
+full-page experience, including after all five lessons are solved.
+
+Arcade composes one `h3#city-heading-arcade` title and existing hint, the
+Fire/Undo/Reset row, result and next/new action, modes, then the single-row
+scrollable picker. The phone controls sit below the sheet handle, outside the
+scrolling viewport, so neither the 6×8 board nor a scrolled panel hides Fire
+or lets text pass underneath it. Short landscape uses the side drawer and
+restores its footer inset, including after rotating a phone-sized viewport.
+Back and the full-page link stay pinned. `/play` keeps its existing composition;
+only optional `Heading` props vary the Arcade heading and `Status` gets no exit
+link there.
+
+The separate `#city-arcade-root` owns the per-open controller and both portals,
+independent of the prerendered destination markup. Close unmounts both portal
+contents without replacing either target or destroying the root used on reopen.
 
 The first `/play` render is the SVG/HTML board. When active and large enough,
 `BoardView` lazy-loads the Three.js surface and frames the level-driven table.
@@ -107,7 +121,7 @@ The browser suites cover projected buttons, result/path parity, keyboard
 focus, storage, import failures, stale loads, context loss and five reopen
 cycles. Existing flat-board visual goldens remain unchanged.
 
-At 1440×1000, lesson one warmed these live WebGL object counts, including
+Before the visual pass, at 1440×1000, lesson one warmed these live WebGL object counts, including
 the city's destination-hover geometry before entering Arcade:
 
 | Surface                     | Buffers | Textures | Idle behavior                                                         |
@@ -141,6 +155,36 @@ Safari, Firefox, physical phones, real screen-reader sessions, constrained
 hardware/network profiling and GPU memory bytes were not checked. Journey,
 Studio and Say hello's new scenes and the four-scene consistency review
 remain gated on owner approval of stage 3.
+
+### Arcade UI review and resource baseline
+
+The physical-table, polygon-selector, stage-card and play-loop pass is
+implemented for owner review. Chromium captures cover `/play` and Arcade in
+both themes at 320×812, 375×812, 768×1024, 1024×768, 1440×900 and 900×420:
+lessons 1 and 5, Random hard and Today, including the 6×8 board. Fitting 3D
+lessons also have hover and keyboard-focus captures. Regressions check the
+actual polygon, delayed-load fallback visibility, nonoverlapping stage cards,
+collapsed-sheet Fire and every short-landscape control through scrolling.
+Flat-board goldens and game rules are unchanged.
+
+At 1440×1000, lesson 1 warms 20 table buffers and 9 textures in either host,
+with no new draws over 1,000ms. The retained, paused city keeps 68 buffers and
+11 textures after warming destination hover. Arcade returns to 0 buffers and
+textures on Close; the browser suite checks five reopen cycles. These are
+allocation counts, not GPU memory bytes or performance claims.
+
+The cold requested JS/CSS graph totals 1,080,563 bytes raw / 297,742 bytes gzip
+for `/play` (9 files), and 1,045,923 / 281,984 bytes for homepage plus Arcade
+(11 files). This includes the shared site styles and runtime but excludes
+HTML, fonts, images and the résumé; gzip is calculated from built files rather
+than measured wire compression. The shared Three.js chunk is still 562,456
+bytes raw / 143,526 gzip and still triggers the existing 500kB build warning.
+The shared game chunk is 254,397 / 81,675, lazy surface 11,111 / 4,879, game CSS
+10,579 / 2,544, and city explorer 55,941 / 18,283.
+
+Safari, Firefox, physical phones, real screen-reader sessions, constrained
+hardware/network profiling and GPU memory bytes remain unverified. No later
+destination scene or four-scene consistency review was started.
 
 ## The grid
 

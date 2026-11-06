@@ -112,10 +112,7 @@ export function CityDestinationPanels() {
         aria-labelledby="city-heading-arcade"
         hidden
       >
-        <h3 id="city-heading-arcade" tabIndex={-1}>
-          Arcade
-        </h3>
-        <p>{ricochet.summary}</p>
+        <p className="sr-only">{ricochet.summary}</p>
         <div id="arcade-panel" className="ricochet" />
       </section>
       <section

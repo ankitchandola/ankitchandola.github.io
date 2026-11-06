@@ -99,11 +99,14 @@ fallback.
 
 `tests/browser/arcade.spec.mjs` covers full-game storage parity, URL isolation,
 room state, projected targets, fit/focus switching, import retry, context loss,
-stale loads, keyboard containment and GPU allocation/idle behavior.
+stale loads, keyboard containment and GPU allocation/idle behavior. Stage-card
+checks cover both themes from 320 to 1440px, tablet 3D fit, visible delayed-load
+fallback, collapsed-phone Fire and independently scrolling short-landscape controls.
 `tests/browser/table.spec.mjs` checks every campaign level and generated
 easy/medium/hard/Today puzzles in both presentations and both hosts, plus
-cancellation when Flat board is selected during loading.
-The [Ricochet resource baseline](docs/RICOCHET.md#stage-3-review-and-resource-baseline)
+cancellation when Flat board is selected during loading, cell-shaped hit areas
+and a single full-page link after completing the Arcade lessons.
+The [Arcade UI resource baseline](docs/RICOCHET.md#arcade-ui-review-and-resource-baseline)
 records the responsive review, download sizes, renderer counts and unavailable
 device/browser checks.
 

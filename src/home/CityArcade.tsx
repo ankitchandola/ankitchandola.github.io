@@ -29,6 +29,9 @@ function CityArcadeGame({
   const { state } = useGame(game);
   const heading = useHeadingFocus(game);
   useEffect(() => game.start(), [game]);
+  useEffect(() => {
+    if (active) heading.current?.focus({ preventScroll: true });
+  }, [active, heading]);
   return (
     <>
       {createPortal(
@@ -40,14 +43,16 @@ function CityArcadeGame({
       )}
       {createPortal(
         <>
-          <Modes game={game} />
-          <Heading game={game} headingRef={heading} level="h4" />
-          <Controls game={game} share={false} />
-          <Status
+          <Heading
             game={game}
-            id="arcade-result"
-            exit={<a href="/play">Open full page</a>}
+            headingRef={heading}
+            level="h3"
+            id="city-heading-arcade"
+            prefix="Arcade · "
           />
+          <Controls game={game} share={false} />
+          <Status game={game} id="arcade-result" exit={null} />
+          <Modes game={game} />
           <Pickers game={game} />
         </>,
         panel,

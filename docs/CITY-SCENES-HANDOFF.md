@@ -65,7 +65,7 @@ What it keeps from the old loader:
 - **Phases:** `loading`, then `active`, or `error`.
   - While loading: the shared status text "Opening {name}…".
   - On error: "Retry {name}" and a note that the panel content below still works.
-- **Entry fade:** keep the `#city-fade` fade (180ms ease-out). Skip it when the entry came from the keyboard or when motion is not allowed.
+- **Entry reveal:** the Arcade UI pass retired the covering `#city-fade` overlay. Keep loading/error text and useful HTML visible throughout entry; do not restore that overlay for later scenes.
 - **Activity state:** create it before the import, so the HTML works during loading, on error and without WebGL.
 - **On activation:** `view.showScene(scene)`. On leave: `scene.dispose()`, then `view.showCity()`.
 - **Return to the city:** `returnPose` capture/restore stays exactly as it is.

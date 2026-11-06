@@ -34,6 +34,107 @@ const ready = async (page) => {
 };
 const surfaceRoute = /\/assets\/surface-[^/]+\.js$/;
 
+test('Arcade phone Fire stays pinned without expanding the sheet, including the 6 by 8 board', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 812 });
+  await enter(page);
+  for (const width of [320, 375]) {
+    await page.setViewportSize({ width, height: 812 });
+    for (const lesson of [1, 3, 5]) {
+      await page
+        .getByRole('button', { name: new RegExp(`^Lesson ${lesson},`) })
+        .click();
+      await expect(page.locator('#city-sheet-handle')).toHaveAttribute(
+        'aria-expanded',
+        'false',
+      );
+      for (const button of await page
+        .locator('#arcade-panel .ricochet-controls button')
+        .all())
+        await expect(button).toBeInViewport({ ratio: 1 });
+      await page
+        .locator('#city-panel-arcade')
+        .evaluate((element) => (element.scrollTop = element.scrollHeight));
+      const scroller = await page.locator('#city-panel-arcade').boundingBox();
+      const controls = await page
+        .locator('#arcade-panel .ricochet-controls')
+        .boundingBox();
+      expect(scroller.y).toBeGreaterThanOrEqual(
+        controls.y + controls.height + 8,
+      );
+      await expect(fire(page)).toBeInViewport({ ratio: 1 });
+      expect(
+        await fire(page).evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          return element.contains(
+            document.elementFromPoint(
+              rect.x + rect.width / 2,
+              rect.y + rect.height / 2,
+            ),
+          );
+        }),
+      ).toBe(true);
+      await fire(page).click();
+      await expect(result(page)).not.toContainText(
+        'Turn the mirrors, then fire.',
+      );
+    }
+    await page.getByRole('button', { name: 'Random', exact: true }).click();
+    await page.getByRole('button', { name: 'Hard', exact: true }).click();
+    await expect(fire(page)).toBeInViewport({ ratio: 1 });
+    await page.getByRole('button', { name: 'Today', exact: true }).click();
+    await expect(fire(page)).toBeInViewport({ ratio: 1 });
+    await page.getByRole('button', { name: 'Learn', exact: true }).click();
+  }
+});
+
+test('Arcade short landscape controls scroll independently and navigation stays pinned', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await enter(page);
+  for (const width of [700, 900]) {
+    await page.setViewportSize({ width, height: 420 });
+    await page.getByRole('button', { name: 'Learn', exact: true }).click();
+    await page.getByRole('button', { name: /^Lesson 1,/ }).click();
+    const section = page.locator('#city-panel-arcade');
+    expect(
+      await section.evaluate(
+        (element) => element.scrollHeight > element.clientHeight,
+      ),
+    ).toBe(true);
+    for (const control of await page
+      .locator('#arcade-panel button, #arcade-result')
+      .all()) {
+      await control.scrollIntoViewIfNeeded();
+      await expect(control).toBeInViewport({ ratio: 1 });
+      expect(
+        await control.evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          return element.contains(
+            document.elementFromPoint(
+              rect.x + rect.width / 2,
+              rect.y + rect.height / 2,
+            ),
+          );
+        }),
+      ).toBe(true);
+      await expect(page.locator('#city-back')).toBeInViewport({ ratio: 1 });
+      await expect(page.locator('#arcade-full')).toBeInViewport({ ratio: 1 });
+    }
+    await page.getByRole('button', { name: 'Random', exact: true }).click();
+    await page.getByRole('button', { name: 'Hard', exact: true }).click();
+    await page
+      .getByRole('button', { name: 'New puzzle', exact: true })
+      .scrollIntoViewIfNeeded();
+    await expect(
+      page.getByRole('button', { name: 'New puzzle', exact: true }),
+    ).toBeInViewport({ ratio: 0.99 });
+    await page.getByRole('button', { name: 'New puzzle', exact: true }).click();
+  }
+});
+
 test('Arcade stage cards clear the bars and panel, and lesson 1 fits desktop and tablet', async ({
   page,
 }) => {
@@ -156,8 +257,8 @@ test('Arcade shares full-game progress with /play in both directions without cha
     ),
   ).toContain('first-bounce');
   await page.getByRole('button', { name: 'Next lesson' }).click();
-  await expect(page.locator('#arcade-panel h4')).toHaveText('Two turns');
-  await expect(page.locator('#arcade-panel h4')).toBeFocused();
+  await expect(page.locator('#city-heading-arcade')).toHaveText('Two turns');
+  await expect(page.locator('#city-heading-arcade')).toBeFocused();
   expect(page.url()).toBe(url);
   const full = await context.newPage();
   try {

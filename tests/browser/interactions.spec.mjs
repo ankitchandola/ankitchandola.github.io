@@ -345,9 +345,9 @@ for (const [id, title, content] of [
       'active',
     );
     await expect(panel).toContainText(content);
-    await expect(
-      panel.getByRole('heading', { name: title, exact: true }),
-    ).toBeFocused();
+    const heading = panel.locator(`h3#city-heading-${id}`);
+    await expect(heading).toHaveText(id === 'arcade' ? 'First bounce' : title);
+    await expect(heading).toBeFocused();
     const text = await panel.textContent();
     await page.locator('#city-back').click();
     await expect(button).toBeFocused();

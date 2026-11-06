@@ -106,6 +106,10 @@ for (const destination of ['play', 'arcade']) {
         await expect(panel.locator('[role="status"]')).toContainText(
           `Hit the target in ${trace(level, solved.mirrors).path.length} cells.`,
         );
+        if (destination === 'arcade' && name === 'lesson-5')
+          await expect(
+            page.locator('#city-dialog a[href="/play"]'),
+          ).toHaveCount(1);
       }
     }
   });

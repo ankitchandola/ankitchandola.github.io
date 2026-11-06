@@ -90,10 +90,14 @@ export function Heading({
   game,
   headingRef,
   level: Level = 'h2',
+  id,
+  prefix,
 }: {
   game: RicochetGame;
   headingRef: RefObject<HTMLHeadingElement | null>;
   level?: 'h2' | 'h3' | 'h4';
+  id?: string;
+  prefix?: string;
 }) {
   const { state, prefs } = useGame(game);
   const { mode, level, preset, seed } = state;
@@ -105,8 +109,11 @@ export function Heading({
   }[mode];
   return (
     <div className="ricochet-level-heading">
-      <span className="kicker">{kicker}</span>
-      <Level ref={headingRef} tabIndex={-1}>
+      <span className="kicker">
+        {prefix}
+        {kicker}
+      </span>
+      <Level id={id} ref={headingRef} tabIndex={-1}>
         {mode === 'campaign'
           ? level.title
           : mode === 'shared'

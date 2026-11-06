@@ -1174,14 +1174,8 @@ html[data-theme='dark'] .city-poster {
   justify-self: end;
 }
 .city-dialog
-  button:where(
-    :not(
-      .ricochet-mirror,
-      .ricochet-source,
-      .ricochet-table-mirror,
-      .ricochet-table-source
-    )
-  ) {
+  :where(.city-dialog-header, .city-dialog-footer, .city-panel-navigation)
+  button {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -1528,6 +1522,8 @@ html[data-theme='dark'] .city-dialog {
   }
   .city-dialog .city-sheet-handle {
     display: flex;
+    justify-content: center;
+    align-items: center;
     flex-shrink: 0;
     width: calc(100% + 32px);
     margin-inline: -16px;
@@ -1609,16 +1605,45 @@ html[data-theme='dark'] .city-dialog {
 }
 #arcade-panel {
   --accent: var(--teal);
-  margin-top: 24px;
+  min-width: 0;
 }
-.city-panels .ricochet-level-heading h4 {
-  font-size: 24px;
+#arcade-panel .ricochet-level-heading {
+  margin-bottom: 16px;
+}
+#arcade-panel .ricochet-level-heading .kicker {
+  font: 700 15px/1.4 var(--label);
+}
+#arcade-panel .ricochet-level-heading h3 {
+  margin: 4px 0 0;
+  font-size: 26px;
 }
 #arcade-panel .ricochet-level-heading p {
   margin-top: 8px;
+  color: var(--muted);
+}
+#arcade-panel .ricochet-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+#arcade-panel .ricochet-controls > button {
+  gap: 6px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px;
+  font: 700 16px/1.4 var(--label);
+}
+#arcade-panel .ricochet-controls svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 #arcade-panel .ricochet-result {
-  margin-top: 24px;
+  margin: 16px 0;
+  padding: 12px 0;
+  border: 0;
+  background: transparent;
+  font-size: 17px;
 }
 #arcade-panel .ricochet-result p {
   display: flex;
@@ -1629,13 +1654,56 @@ html[data-theme='dark'] .city-dialog {
   border-color: var(--teal);
   color: var(--paper);
 }
-.city-dialog
-  .ricochet
+#arcade-panel .ricochet-modes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--rc-surface);
+}
+#arcade-panel .ricochet-modes button {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 8px;
+  border-color: transparent;
+}
+#arcade-panel
   :is(.ricochet-modes, .ricochet-levels)
   button[aria-pressed='true'] {
-  color: var(--paper);
-  background: var(--ink);
-  border-color: var(--ink);
+  color: var(--rc-source-mark);
+  background: var(--rc-beam);
+  border-color: var(--rc-beam);
+}
+#arcade-panel .ricochet-levels {
+  margin-top: 16px;
+}
+#arcade-panel .ricochet-levels > div {
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 8px 4px 4px;
+  margin-top: 4px;
+  scrollbar-color: var(--line) transparent;
+}
+#arcade-panel .ricochet-levels button {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+}
+.city-dialog[data-destination='arcade'] .city-panel-navigation {
+  justify-content: space-between;
+  padding-top: 12px;
+}
+.city-dialog[data-destination='arcade'] #city-back {
+  margin-top: 0;
+  padding-inline: 10px;
+}
+.city-dialog[data-destination='arcade'] #arcade-full {
+  white-space: nowrap;
 }
 .city-dialog .ricochet .ricochet-solved-badge {
   box-shadow: 0 0 0 2px var(--white);
@@ -1668,6 +1736,17 @@ html[data-theme='dark'] .city-dialog {
   .city-dialog[data-destination='arcade'] .city-panels {
     right: 0;
     bottom: 0;
+  }
+  #city-panel-arcade {
+    margin-top: 56px;
+  }
+  #arcade-panel .ricochet-controls {
+    position: absolute;
+    z-index: 1;
+    top: 44px;
+    left: 16px;
+    right: 16px;
+    background: var(--white);
   }
   .city-dialog[data-sheet='expanded'] #arcade-stage {
     visibility: hidden;
@@ -1702,6 +1781,36 @@ html[data-theme='dark'] .city-dialog {
 @media (max-height: 500px) and (min-width: 600px) {
   .city-dialog[data-destination='arcade'] {
     --city-drawer: 308px;
+  }
+  .city-dialog[data-destination='arcade'] .city-dialog-footer {
+    inset: auto calc(var(--city-drawer) + 16px) 0 0;
+    padding: 12px var(--city-gutter) max(8px, env(safe-area-inset-bottom));
+  }
+  .city-dialog[data-destination='arcade'] .city-panels {
+    top: var(--city-top, 96px);
+    right: var(--city-gutter);
+    bottom: max(16px, calc(var(--city-bottom, 40px) + 8px));
+    left: auto;
+    width: var(--city-drawer);
+    height: auto;
+    padding: 16px;
+    border-width: 1px;
+    border-radius: 12px;
+  }
+  .city-dialog[data-destination='arcade'] .city-sheet-handle {
+    display: none;
+  }
+  #arcade-stage {
+    right: calc(var(--city-drawer) + var(--city-gutter) + 24px);
+    bottom: max(16px, calc(var(--city-bottom, 40px) + 8px));
+    visibility: visible;
+  }
+  #city-panel-arcade {
+    margin-top: -4px;
+    padding-top: 4px;
+  }
+  #arcade-panel .ricochet-controls {
+    position: static;
   }
 }
 .project-collection {
