@@ -34,6 +34,103 @@ const ready = async (page) => {
 };
 const surfaceRoute = /\/assets\/surface-[^/]+\.js$/;
 
+test('Arcade stage cards clear the bars and panel, and lesson 1 fits desktop and tablet', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await enter(page);
+  for (const theme of ['light', 'dark']) {
+    await page.evaluate(
+      (value) => (document.documentElement.dataset.theme = value),
+      theme,
+    );
+    for (const [width, height] of [
+      [320, 812],
+      [375, 812],
+      [768, 1024],
+      [1024, 768],
+      [1440, 900],
+      [900, 420],
+    ]) {
+      await page.setViewportSize({ width, height });
+      await expect
+        .poll(async () => {
+          const stage = await page.locator('#arcade-stage').boundingBox();
+          const others = await Promise.all(
+            ['.city-dialog-header', '.city-dialog-footer', '#city-panels'].map(
+              (selector) => page.locator(selector).boundingBox(),
+            ),
+          );
+          return others.every(
+            (rect) =>
+              !rect ||
+              stage.x + stage.width <= rect.x + 1 ||
+              rect.x + rect.width <= stage.x + 1 ||
+              stage.y + stage.height <= rect.y + 1 ||
+              rect.y + rect.height <= stage.y + 1,
+          );
+        })
+        .toBe(true);
+      if (width === 1024 || width === 1440)
+        await expect(view(page)).toHaveAttribute('data-presentation', '3d', {
+          timeout: 15_000,
+        });
+      await expect(page.locator('#city-back')).toBeInViewport({ ratio: 1 });
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > innerWidth,
+        ),
+      ).toBe(false);
+    }
+  }
+});
+
+test('Arcade loading never covers the playable fallback or loading note', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  let release;
+  await page.route(surfaceRoute, async (route) => {
+    await new Promise((resolve) => {
+      release = resolve;
+    });
+    await route.continue();
+  });
+  await enter(page);
+  await expect(view(page)).toHaveAttribute('data-table-status', 'loading');
+  await expect(view(page).getByRole('status')).toContainText(
+    'Opening the 3D table',
+  );
+  await expect(view(page).getByRole('status')).toBeInViewport({ ratio: 1 });
+  const target = mirror(page);
+  await expect(target).toBeInViewport({ ratio: 1 });
+  const toggle = await view(page)
+    .locator('.ricochet-presentation')
+    .boundingBox();
+  const board = await view(page).locator('.ricochet-board').boundingBox();
+  expect(toggle.y + toggle.height).toBeLessThanOrEqual(board.y + 1);
+  const bounds = await target.boundingBox();
+  expect(
+    await page.evaluate(
+      ({ x, y, width, height }) =>
+        !!document
+          .elementFromPoint(x + width / 2, y + height / 2)
+          ?.closest('[data-board-mirror]'),
+      bounds,
+    ),
+  ).toBe(true);
+  await target.click();
+  await fire(page).click();
+  await expect(result(page)).toContainText('Hit the target');
+  await expect.poll(() => typeof release).toBe('function');
+  const loaded = page.waitForResponse(surfaceRoute);
+  release();
+  await loaded;
+  await expect(view(page)).toHaveAttribute('data-presentation', '3d');
+  await expect(result(page)).toContainText('Hit the target');
+});
+
 test('Arcade shares full-game progress with /play in both directions without changing the URL', async ({
   page,
   context,

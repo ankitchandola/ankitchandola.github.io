@@ -29,13 +29,6 @@ function CityArcadeGame({
   const { state } = useGame(game);
   const heading = useHeadingFocus(game);
   useEffect(() => game.start(), [game]);
-  useEffect(() => {
-    const dialog = stage.closest('dialog');
-    dialog?.style.setProperty(
-      '--arcade-min-height',
-      `${state.level.h * 44 + 2}px`,
-    );
-  }, [stage, state.level.h]);
   return (
     <>
       {createPortal(

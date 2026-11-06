@@ -114,7 +114,6 @@ export default function Hero() {
                 hidden
               />
               <div id="arcade-stage" className="ricochet" hidden />
-              <div id="city-fade" className="city-fade" aria-hidden="true" />
             </div>
             <div id="city-arcade-root" hidden />
             <CityDestinationPanels />

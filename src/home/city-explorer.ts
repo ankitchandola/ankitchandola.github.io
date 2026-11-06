@@ -58,15 +58,13 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
     previousTop = '';
   let entrance: Animation | undefined;
   let exit: Animation | undefined;
-  let sceneTransition: Animation | undefined;
   const pointers = new Map<number, { x: number; y: number }>();
   let gesturing = false;
   let tapped: CityDestinationId | null = null;
   const arcadeStage = dialog.querySelector<HTMLElement>('#arcade-stage');
   const arcadeRoot = dialog.querySelector<HTMLElement>('#city-arcade-root');
-  const fade = dialog.querySelector<HTMLElement>('#city-fade');
   const fullGame = dialog.querySelector<HTMLElement>('#arcade-full');
-  if (!arcadeStage || !arcadeRoot || !fade || !fullGame)
+  if (!arcadeStage || !arcadeRoot || !fullGame)
     throw new Error('Arcade scene markup is incomplete.');
   mountCityArcade(arcadeRoot);
   const setPhase = (next: 'closed' | 'overview' | 'active') => {
@@ -203,7 +201,6 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
         canvas.releasePointerCapture(pointer);
     pointers.clear();
     tapped = null;
-    sceneTransition?.cancel();
     if (id && selected === null && returnPose === null)
       returnPose = view?.capture() ?? null;
     selected = id;
@@ -229,11 +226,6 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
     if (dialog.open) view?.setInsets(measure(), true);
     if (id === 'arcade') {
       setPhase('active');
-      if (animate && motionAllowed())
-        sceneTransition = fade.animate([{ opacity: 1 }, { opacity: 0 }], {
-          duration: 180,
-          easing: 'ease-out',
-        });
     } else if (id === null && returnPose) {
       view?.restore(returnPose);
       returnPose = null;
@@ -327,7 +319,6 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
   const requestClose = (animate: boolean) => {
     if (closing) return;
     cityArcade.setActive(false);
-    sceneTransition?.cancel();
     view?.settle();
     if (exit?.playState === 'running') {
       if (!animate) {
@@ -579,7 +570,6 @@ export function mountCityExplorer(canvas: HTMLCanvasElement) {
     if (motionAllowed()) return;
     view?.settle();
     entrance?.cancel();
-    sceneTransition?.cancel();
     if (exit?.playState === 'running') {
       exit.cancel();
       finishClose();

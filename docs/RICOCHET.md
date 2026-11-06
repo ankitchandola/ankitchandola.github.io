@@ -34,6 +34,19 @@ the side faces visible without sacrificing as much projected cell depth as
 the enclosing rectangle. Framing includes the shortened symmetric sign and
 legs with a 1.04 margin.
 
+The Arcade's 380px drawer reduces to 320px at 901–1024px; at 761–900px
+portrait sizes the stage spans the width above a sheet. The toggle overlays
+the 3D stage card instead of consuming a separate 64px row. Flat mode reserves
+a separate toggle row so no cell is covered. Measure the full candidate 3D
+area, not the temporary loading layout, to avoid a fit feedback loop.
+This keeps the approximately 38° camera: a 630×548 board area projects
+lesson-1 cell altitude to 45.17px, and 988×700 to 64.07px, both above 44px.
+`/play` stacks its own layout at 1100px and below; a 988×576 area gives 52.72px.
+Browser regressions require 3D at 1024×768 and 1440×900 in Arcade, and verify
+the card clears both bars and the panel across the review sizes. The shared
+table background is solid. Arcade has no scene-covering fade, and a blocked
+surface import must leave both the flat game and loading note visible.
+
 Every cell has a 0.94-unit tile, with unlit `--rc-table-grid` gaps for strong
 contrast in both themes. Walls are 0.48 units high in `--rc-table-wall`.
 Mirrors are 0.5-unit upright panes on turntables with beam-coloured marker

@@ -1581,24 +1581,31 @@ html[data-theme='dark'] .city-dialog {
 .motion-paused :is(.city-panels, .city-dialog-footer) {
   transition: none;
 }
-.city-fade {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0;
+.city-dialog[data-destination='arcade'] {
+  --city-drawer: 380px;
+}
+.city-dialog[data-destination='arcade'] .city-dialog-stage {
   background: var(--paper);
+}
+.city-dialog[data-destination='arcade'] .city-panels {
+  right: var(--city-gutter);
+  bottom: max(16px, calc(var(--city-bottom, 40px) + 8px));
 }
 #arcade-stage {
   --accent: var(--teal);
   position: absolute;
   top: var(--city-top, 96px);
   right: calc(var(--city-drawer) + 48px);
-  bottom: 16px;
+  bottom: max(16px, calc(var(--city-bottom, 40px) + 8px));
   left: var(--city-gutter);
   z-index: 1;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--rc-surface);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 14%);
 }
 #arcade-panel {
   --accent: var(--teal);
@@ -1624,7 +1631,7 @@ html[data-theme='dark'] .city-dialog {
 }
 .city-dialog
   .ricochet
-  :is(.ricochet-modes, .ricochet-levels, .ricochet-presentation)
+  :is(.ricochet-modes, .ricochet-levels)
   button[aria-pressed='true'] {
   color: var(--paper);
   background: var(--ink);
@@ -1651,20 +1658,45 @@ html[data-theme='dark'] .city-dialog {
   .city-dialog[data-destination='arcade']:not([data-sheet='expanded']) {
     --sheet: min(
       55%,
-      max(
-        240px,
-        calc(
-          100% - var(--city-top, 152px) - var(--arcade-min-height, 354px) - 24px
-        )
-      )
+      max(240px, calc(100% - var(--city-top, 152px) - 354px - 24px))
     );
   }
   #arcade-stage {
     right: var(--city-gutter);
-    bottom: calc(var(--sheet-drag, var(--sheet)) + 8px);
+    bottom: calc(var(--sheet-drag, var(--sheet)) + 16px);
+  }
+  .city-dialog[data-destination='arcade'] .city-panels {
+    right: 0;
+    bottom: 0;
   }
   .city-dialog[data-sheet='expanded'] #arcade-stage {
     visibility: hidden;
+  }
+}
+@media (min-width: 901px) and (max-width: 1024px) {
+  .city-dialog[data-destination='arcade'] {
+    --city-drawer: 320px;
+  }
+}
+@media (min-width: 761px) and (max-width: 900px) and (min-height: 501px) {
+  .city-dialog[data-destination='arcade'] {
+    --sheet: min(34%, 320px);
+  }
+  .city-dialog[data-destination='arcade'] .city-panels {
+    top: auto;
+    left: var(--city-gutter);
+    right: var(--city-gutter);
+    bottom: 16px;
+    width: auto;
+    height: var(--sheet);
+    padding: 16px;
+  }
+  #arcade-stage {
+    right: var(--city-gutter);
+    bottom: calc(var(--sheet) + 32px);
+  }
+  .city-dialog[data-destination='arcade'] .city-dialog-footer {
+    display: none;
   }
 }
 @media (max-height: 500px) and (min-width: 600px) {

@@ -100,7 +100,7 @@ export default function BoardView({
     const measure = () => {
       const width = element.clientWidth;
       const height = fill
-        ? Math.max(0, element.clientHeight - 64)
+        ? element.clientHeight
         : Math.round(Math.min(width * 0.82, window.innerHeight * 0.75));
       setSize((current) =>
         current?.width === width && current.height === height
