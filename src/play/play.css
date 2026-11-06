@@ -1,7 +1,9 @@
 .ricochet {
   --rc-surface: #fffdf7;
   --rc-grid: #bdc8be;
+  --rc-table-grid: #4b6260;
   --rc-wall: #4b6260;
+  --rc-table-wall: #657d74;
   --rc-mirror: #172f31;
   --rc-beam: #245e58;
   --rc-source-mark: #fffdf7;
@@ -14,7 +16,9 @@
 [data-theme='dark'] .ricochet {
   --rc-surface: #182a2d;
   --rc-grid: #4c6761;
+  --rc-table-grid: #8aa39c;
   --rc-wall: #8aa39c;
+  --rc-table-wall: #8aa39c;
   --rc-mirror: #f1f2e9;
   --rc-beam: #9ad9c7;
   --rc-source-mark: #102b27;

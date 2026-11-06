@@ -49,7 +49,8 @@ export function createTableSurface(
     const style = getComputedStyle(canvas);
     const colors: TableColors = {
       surface: style.getPropertyValue('--rc-surface').trim(),
-      wall: style.getPropertyValue('--rc-wall').trim(),
+      grid: style.getPropertyValue('--rc-table-grid').trim(),
+      wall: style.getPropertyValue('--rc-table-wall').trim(),
       mirror: style.getPropertyValue('--rc-mirror').trim(),
       beam: style.getPropertyValue('--rc-beam').trim(),
       sourceMark: style.getPropertyValue('--rc-source-mark').trim(),

@@ -12,13 +12,13 @@ export interface Size {
   height: number;
 }
 
-export const SURFACE = 0.76;
+export const SURFACE = 0.72;
 export const MIN_TARGET = 44;
 export const MIN_HEIGHT = 260;
 
 export function tableCamera(): OrthographicCamera {
   const camera = new OrthographicCamera(-5, 5, 4, -4, 0.1, 60);
-  camera.position.set(3.2, 10, 7);
+  camera.position.set(3.2, 6.5, 7);
   camera.lookAt(0, 0.5, 0);
   return camera;
 }
@@ -30,7 +30,7 @@ export const cellPoint = (
   height = SURFACE,
 ) => new Vector3(x - level.w / 2, height, y - level.h / 2);
 
-const MARGIN = 1.1;
+const MARGIN = 1.04;
 
 /** View-space bounds of the table, its legs and the sign arch behind it. */
 function bounds(camera: OrthographicCamera, level: Level) {
@@ -42,10 +42,10 @@ function bounds(camera: OrthographicCamera, level: Level) {
     top: -Infinity,
   };
   for (const side of [-1, 1])
-    for (const z of [-(level.h / 2 + 0.5), (level.h + 1.4) / 2])
-      for (const height of [-0.55, 2.15]) {
+    for (const z of [-(level.h + 0.9) / 2, (level.h + 0.9) / 2])
+      for (const height of [-0.55, 1.7]) {
         const p = new Vector3(
-          (side * (level.w + 1.3)) / 2,
+          (side * (level.w + 0.9)) / 2,
           height,
           z,
         ).applyMatrix4(camera.matrixWorldInverse);

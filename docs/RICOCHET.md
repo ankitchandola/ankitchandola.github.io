@@ -27,6 +27,21 @@ This document explains the logic behind the `/play` puzzle: how the beam is trac
 
 ## Presentations
 
+The physical table uses an orthographic camera at `(3.2, 6.5, 7)` looking at
+`(0, 0.5, 0)`: approximately 38° above the horizon, down from 52°. This keeps
+the side faces visible without sacrificing as much projected cell depth as
+35°. The fit check is unchanged; it still measures cell altitude, not just
+the enclosing rectangle. Framing includes the shortened symmetric sign and
+legs with a 1.04 margin.
+
+Every cell has a 0.94-unit tile, with unlit `--rc-table-grid` gaps for strong
+contrast in both themes. Walls are 0.48 units high in `--rc-table-wall`.
+Mirrors are 0.5-unit upright panes on turntables with beam-coloured marker
+rings. The emitter has a muzzle and direction arrow, and the target a raised
+socket. Beams and the target ring share a height of 1.02 units. The ring's
+outer radius is exactly `TARGET_RADIUS`, so both presentations keep matching
+endpoints.
+
 The full page and city Arcade use one controller implementation and the same
 `BoardView`. Both offer Learn, Random easy/medium/hard and Today, with Undo,
 Reset, Next lesson and New puzzle. Only `/play` reads or changes puzzle URLs
@@ -85,7 +100,7 @@ These are allocation counts, not GPU-byte measurements or FPS claims. Flat
 fallback does not render a hidden table. Reopened Arcade counts return to the
 same warmed baseline.
 
-The current build's cold requested JS/CSS graph, including shared site
+Before the visual pass, the full-game build's cold requested JS/CSS graph, including shared site
 assets, totals 1,073,788 bytes raw / 296,462 bytes gzip for `/play` (9 files)
 and 1,039,357 / 280,772 bytes for the homepage plus Arcade (11 files).
 Gzip is calculated from built files, not measured HTTP compression; HTML,

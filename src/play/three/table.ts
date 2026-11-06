@@ -8,6 +8,7 @@ import {
   BufferGeometry,
   HemisphereLight,
   Mesh,
+  MeshBasicMaterial,
   MeshStandardMaterial,
   type OrthographicCamera,
   PlaneGeometry,
@@ -51,6 +52,7 @@ export interface RicochetTable {
 
 export interface TableColors {
   surface: string;
+  grid: string;
   wall: string;
   mirror: string;
   beam: string;
@@ -83,6 +85,7 @@ export function createRicochetTable(
   scene.add(light, new HemisphereLight(0xfffaf0, 0x526d64, 2.2));
   const materials = {
     cream: new MeshStandardMaterial({ color: 0xf5eedb, roughness: 0.8 }),
+    grid: new MeshBasicMaterial({ color: 0x4b6260, toneMapped: false }),
     teal: new MeshStandardMaterial({ color: 0x245e58, roughness: 0.72 }),
     dark: new MeshStandardMaterial({ color: 0x172f31, roughness: 0.8 }),
     apricot: new MeshStandardMaterial({ color: 0xf4c7a4, roughness: 0.7 }),
@@ -108,7 +111,8 @@ export function createRicochetTable(
   let loop: Line<BufferGeometry, LineDashedMaterial> | null = null;
   const box = new RoundedBoxGeometry(1, 1, 1, 2, 0.07);
   const cylinder = new CylinderGeometry(1, 1, 1, 24);
-  const ring = new TorusGeometry(0.34, 0.06, 8, 32);
+  const ring = new TorusGeometry(0.29, 0.05, 8, 48);
+  const turntableRing = new TorusGeometry(0.425, 0.018, 6, 48);
   const plane = new PlaneGeometry(1, 1);
   const shadowMaterial = new ShadowMaterial({ opacity: 0.18 });
   const signCanvas = document.createElement('canvas');
@@ -146,7 +150,7 @@ export function createRicochetTable(
     parent: Group,
     size: [number, number, number],
     at: [number, number, number],
-    material = materials.cream,
+    material: MeshStandardMaterial | MeshBasicMaterial = materials.cream,
   ) => {
     const mesh = new Mesh(box, material);
     mesh.scale.set(...size);
@@ -168,8 +172,8 @@ export function createRicochetTable(
     ground.position.y = -0.6;
     ground.receiveShadow = true;
     board.add(ground);
-    block(board, [w + 1.3, 0.45, h + 1.4], [0, 0.25, 0], materials.teal);
-    block(board, [w + 0.4, 0.12, h + 0.4], [0, 0.54, 0]);
+    block(board, [w + 0.9, 0.45, h + 0.9], [0, 0.25, 0], materials.teal);
+    block(board, [w + 0.4, 0.12, h + 0.4], [0, 0.54, 0], materials.grid);
     for (const x of [-1, 1])
       for (const z of [-1, 1])
         block(
@@ -179,70 +183,86 @@ export function createRicochetTable(
           materials.dark,
         );
     for (const [y, row] of level.rows.entries())
-      for (const [x, char] of [...row].entries())
+      for (const [x, char] of [...row].entries()) {
+        const p = cell(x + 0.5, y + 0.5);
+        block(board, [0.94, 0.1, 0.94], [p.x, 0.64, p.z]);
         if (char === '#') {
-          const p = cell(x + 0.5, y + 0.5);
           pieces.push(
-            block(board, [0.88, 0.24, 0.88], [p.x, 0.72, p.z], materials.dark),
+            block(board, [0.82, 0.48, 0.82], [p.x, 0.93, p.z], materials.dark),
           );
         }
+      }
     for (const key of Object.keys(level.mirrors)) {
       const [x, y] = key.split(',').map(Number);
       if (x === undefined || y === undefined)
         throw new Error('Invalid Ricochet mirror.');
       const p = cell(x + 0.5, y + 0.5);
       const base = new Mesh(cylinder, materials.apricot);
-      base.scale.set(0.42, 0.08, 0.42);
-      base.position.copy(p).setY(0.66);
+      base.scale.set(0.4, 0.12, 0.4);
+      base.position.copy(p).setY(0.75);
+      base.castShadow = base.receiveShadow = true;
       board.add(base);
+      const marker = new Mesh(turntableRing, materials.beam);
+      marker.rotation.x = -Math.PI / 2;
+      marker.position.copy(p).setY(0.735);
+      board.add(marker);
       const mirror = block(
         board,
-        [0.82, 0.22, 0.12],
-        [p.x, p.y, p.z],
+        [0.8, 0.5, 0.08],
+        [p.x, 1.06, p.z],
         materials.mirror,
       );
       mirrors.set(key, mirror);
-      pieces.push(base, mirror);
+      pieces.push(base, mirror, marker);
     }
+    const socket = new Mesh(cylinder, materials.apricot);
+    socket.scale.set(0.39, 0.28, 0.39);
+    socket.position.copy(
+      cell(level.target.x + 0.5, level.target.y + 0.5, 0.83),
+    );
+    socket.castShadow = socket.receiveShadow = true;
+    board.add(socket);
     target = new Mesh(ring, materials.targetRing);
     target.rotation.x = -Math.PI / 2;
     target.position.copy(
-      cell(level.target.x + 0.5, level.target.y + 0.5, 0.65),
+      cell(level.target.x + 0.5, level.target.y + 0.5, 1.02),
     );
     board.add(target);
-    pieces.push(target);
-    const source = new Mesh(cylinder, materials.teal);
-    source.scale.set(0.3, 0.08, 0.3);
+    pieces.push(socket, target);
+    const source = new Group();
     source.position.copy(
-      cell(level.source.x + 0.5, level.source.y + 0.5, 0.65),
+      cell(level.source.x + 0.5, level.source.y + 0.5, 0.69),
     );
+    source.rotation.y = FACING[level.source.dir];
+    block(source, [0.34, 0.3, 0.38], [-0.06, 0.15, 0], materials.teal);
+    block(source, [0.14, 0.12, 0.16], [0.13, 0.33, 0], materials.mirror);
     board.add(source);
     pieces.push(source);
     const arrow = new Group();
-    arrow.position.copy(source.position).setY(0.72);
+    arrow.position.copy(source.position).setY(1.07);
     arrow.rotation.y = FACING[level.source.dir];
-    block(arrow, [0.25, 0.06, 0.07], [0, 0, 0], materials.sourceMark);
+    block(arrow, [0.26, 0.035, 0.07], [-0.02, 0, 0], materials.sourceMark);
     for (const side of [-1, 1])
       block(
         arrow,
-        [0.13, 0.06, 0.05],
-        [0.08, 0, side * 0.04],
+        [0.18, 0.035, 0.05],
+        [0.13, 0, side * 0.055],
         materials.sourceMark,
       ).rotation.y = (side * Math.PI) / 4;
     board.add(arrow);
     pieces.push(arrow);
-    const back = -(h / 2 + 0.4);
+    const back = -(h / 2 + 0.25);
     for (const x of [-1, 1])
       block(
         board,
-        [0.12, 1.3, 0.12],
-        [x * (w / 2 + 0.2), 1.15, back],
+        [0.1, 1, 0.1],
+        [x * (w / 2 + 0.12), 0.98, back],
         materials.teal,
       );
-    block(board, [w + 0.6, 0.68, 0.18], [0, 1.8, back], materials.teal);
+    block(board, [w + 0.4, 0.43, 0.16], [0, 1.47, back], materials.teal);
     const sign = new Mesh(plane, signMaterial);
-    sign.scale.set(Math.min(5.1, w - 0.9), 0.63, 1);
-    sign.position.set(0, 1.8, back + 0.11);
+    sign.scale.set(Math.min(3.2, w - 0.9), 0.4, 1);
+    sign.position.set(0, 1.47, back + 0.09);
     board.add(sign);
     const reach = Math.max(w + 1.3, h + 1.4) / 2 + 1;
     Object.assign(light.shadow.camera, {
@@ -346,8 +366,8 @@ export function createRicochetTable(
           const previous = points[i - 1],
             point = points[i];
           if (!previous || !point) continue;
-          const start = cell(...previous),
-            end = cell(...point);
+          const start = cell(...previous, 1.02),
+            end = cell(...point, 1.02);
           const direction = end.clone().sub(start).normalize();
           const length = start.distanceTo(end);
           const mesh = new Mesh(cylinder, materials.beam);
@@ -360,7 +380,7 @@ export function createRicochetTable(
         if (shot.outcome === 'loop' && shot.loopStart !== null) {
           const cycle = points
             .slice(shot.loopStart)
-            .map(([x, y]) => cell(x, y, 0.8));
+            .map(([x, y]) => cell(x, y, 1.06));
           loop = new Line(
             new BufferGeometry().setFromPoints(cycle),
             loopMaterial,
@@ -409,6 +429,7 @@ export function createRicochetTable(
     mirrorRects: () => mirrorRects(camera, level, size),
     setColors(colors) {
       materials.cream.color.set(colors.surface);
+      materials.grid.color.set(colors.grid);
       materials.teal.color.set(colors.beam);
       materials.dark.color.set(colors.wall);
       materials.apricot.color.set(colors.target);
@@ -427,6 +448,7 @@ export function createRicochetTable(
       box.dispose();
       cylinder.dispose();
       ring.dispose();
+      turntableRing.dispose();
       plane.dispose();
       Object.values(materials).forEach((material) => material.dispose());
       texture.dispose();

@@ -35,12 +35,12 @@ test('Ricochet table frames the whole table, sign and legs with a margin', () =>
       const camera = framed(level, size);
       const corners = [];
       for (const x of [-1, 1])
-        for (const z of [-(level.h / 2 + 0.5), (level.h + 1.4) / 2])
-          for (const y of [-0.55, 2.15])
+        for (const z of [-(level.h + 0.9) / 2, (level.h + 0.9) / 2])
+          for (const y of [-0.55, 1.7])
             corners.push(
               toScreen(
                 camera,
-                new Vector3((x * (level.w + 1.3)) / 2, y, z),
+                new Vector3((x * (level.w + 0.9)) / 2, y, z),
                 size,
               ),
             );
@@ -54,8 +54,8 @@ test('Ricochet table frames the whole table, sign and legs with a margin', () =>
       );
       assert.ok(gap > 0, `${level.id} ${size.width}`);
       assert.ok(
-        Math.min(...ys) > 0.03 * size.height ||
-          Math.min(...xs) > 0.03 * size.width,
+        Math.min(...ys) > 0.015 * size.height ||
+          Math.min(...xs) > 0.015 * size.width,
         level.id,
       );
     }
