@@ -780,5 +780,120 @@
       "result": "Lead delivery and publishing",
       "scope": "Forms, Strapi and staging limits"
     }
+  },
+  {
+    "slug": "purifier-rental-manager",
+    "name": "Purifier Rental Manager",
+    "kind": "Independent project · deployed beta",
+    "cover": {
+      "src": "/assets/projects/covers/purifier-rental-manager.svg",
+      "alt": "Illustration of a purifier rental linked to recurring rent, a separate refundable deposit, payment records and service visits. This is explanatory artwork, not a product screenshot."
+    },
+    "indexSummary": "A staff app for a water-purifier rental business, covering recurring rent, payments, deposits and service visits.",
+    "summary": "A staff application built for a friend’s water-purifier rental business: recurring billing, payment allocation, refundable deposits, service visits and reports. Deployed on Render with Neon PostgreSQL for owner testing; business use has not started.",
+    "contribution": "I built the rental, billing and staff workflows across the React frontend and Express backend.",
+    "demoLink": "Payment retry demo",
+    "tags": [
+      "React / TypeScript",
+      "Express",
+      "PostgreSQL / Neon",
+      "Background jobs",
+      "Render"
+    ],
+    "ownership": "I developed the application for a friend’s rental business, translating its rental and payment rules into staff workflows, backend services and database records.",
+    "context": [
+      "About one week of implementation, plus requirements gathering",
+      "Deployed beta · awaiting business use"
+    ],
+    "sections": [
+      [
+        "Rentals, collections and service",
+        "Built customer and purifier records, installations, returns, recurring rent, payment allocation, deposits and referrals, alongside service scheduling and complaint tracking. Staff can record cash or UPI payments; these are records of payments received, not an integrated payment gateway."
+      ],
+      [
+        "Billing and background work",
+        "Implemented integer-paise money calculations, installation-specific rate snapshots, month-end due dates and a PostgreSQL job queue. Billing catches up missing periods, and repeated payment requests return the original payment and receipt."
+      ],
+      [
+        "Moving the paper book into the app",
+        "Built opening-balance drafts and printable check sheets for entering existing rentals from the business’s paper book. Owner/admin sign-off checks the printed reference against current drafts before posting a customer’s opening position together. Historical balances remain separate from new cash collections."
+      ],
+      [
+        "Documents, languages and reports",
+        "Implemented English, Hindi and Telugu interfaces and invoice/receipt PDFs using issue-time snapshots. Staff language and customer document language are independent. Owner/admin reports share server functions across screen, Excel and PDF output; exports show generation time because later payments can change totals. Hindi and Telugu wording still needs native-speaker review."
+      ]
+    ],
+    "images": [],
+    "problem": "The business keeps rental records in a paper book. The app is being prepared to bring each customer’s units, monthly dues, payments, deposits and service history into one staff workflow, with opening balances checked against the book before billing starts.",
+    "challenges": [
+      [
+        "A retried payment must not become a second collection",
+        "A slow connection or repeated submission can send the same payment request again, while billing and payment changes may compete for a customer’s balance.",
+        "Lock the customer in a transaction, identify payment requests with a unique request key, and return the original payment and receipt on a retry. Keep posted financial entries immutable and correct them with reversals or adjustments.",
+        "Clients must keep the same key for retries. A new payment needs a new key, and staff correct posted mistakes through explicit accounting actions."
+      ],
+      [
+        "Monthly billing after short months or downtime",
+        "A rental starting on the 31st needs a valid February due date without moving every later bill to the 28th. A worker restart must catch up missing periods without raising them twice.",
+        "Calculate every period from the installation’s nominal due day, clamp only the short month, and enforce one instalment per installation and period. A billing run fills missing periods under the customer lock.",
+        "Billing follows the agreed calendar-month rules. Reliable live scheduling and an owner-approved start date are still required before business use."
+      ],
+      [
+        "Checking the paper book before it becomes live balances",
+        "Existing rent arrears, held deposits and advances must be entered without counting old money as new collections. A printed check sheet can become stale after an edit.",
+        "Keep entries as drafts, fix the cutover date, and derive a reference from the current draft content. Sign-off refuses an outdated reference and posts all of a customer’s opening entries in one transaction.",
+        "The owner still checks the source book and signs off each customer. This is reviewed manual entry, not automatic document extraction."
+      ],
+      [
+        "A timeout does not establish whether a reminder was sent",
+        "Blindly retrying an uncertain message can duplicate a reminder; sending after a payment or outside its window can also be wrong.",
+        "Separate definite failure from unknown delivery, check the provider before resending an uncertain attempt, and re-read amounts before dispatch. Missed windows remain visible for staff follow-up.",
+        "Only the simulated outbox provider is connected. The delivery-state handling is implemented, but WhatsApp, SMS and email delivery still need live integrations."
+      ]
+    ],
+    "decision": {
+      "label": "Rental billing",
+      "title": "Retry a payment without recording it twice.",
+      "implementation": "A client request key, a customer lock and a database transaction let repeated requests return the original payment and receipt. Posted financial entries retain their history.",
+      "boundary": "A new key represents a new payment. Corrections use reversals or adjustments; recorded cash and UPI payments are not payment-gateway processing."
+    },
+    "result": "The beta is deployed on Render with Neon PostgreSQL so the owner can test it away from the development machine. Rental, billing, service and reporting workflows are implemented. The business has not started using it, so there are no adoption figures or measured business outcomes yet.",
+    "limits": "This is a private staff application, not a customer self-service portal. Live messaging providers, owner acceptance, the paper-book cutover and the first live billing cycle remain pending. Hindi and Telugu translations await native-speaker review; report headings are English. AWS is a planned hosting move, not the current deployment.",
+    "detailHeadings": {
+      "problem": "From a paper book to a rental workflow",
+      "contribution": "Rentals, billing and staff operations",
+      "engineering": "Retries, billing dates and opening balances",
+      "result": "Deployed for owner testing",
+      "scope": "What remains before business use"
+    },
+    "demonstration": {
+      "title": "Retry the same payment",
+      "intro": "Two sample rentals owe Rs. 450 together. Record a part payment, then retry that request to see why the balance must stay the same.",
+      "boundary": "Browser-only explanation with synthetic amounts. It does not call the rental app, process a payment or execute its database transactions. The source application uses request keys and customer locks; this example illustrates the result.",
+      "labels": {
+        "sample": "SAMPLE · Two rentals, one customer",
+        "reset": "Reset example",
+        "actions": "Payment requests",
+        "ledger": "Customer position",
+        "record": "Record Rs. 200 payment",
+        "retry": "Retry the same request",
+        "settle": "Record remaining Rs. 250",
+        "initial": "Record the sample part payment, then retry it. In the application, the retry uses the same request key.",
+        "posted": "Rs. 200 is recorded once. Rs. 250 remains due, with one payment and one receipt.",
+        "replayed": "The same request returns the original payment and receipt. Rs. 250 still remains due; no second payment is recorded.",
+        "settled": "A new request records the remaining Rs. 250. Two payments settle Rs. 450; the balance is zero.",
+        "due": "Rent due · Rs. 450",
+        "paid0": "Recorded payments · Rs. 0",
+        "paid1": "Recorded payments · Rs. 200",
+        "paid2": "Recorded payments · Rs. 450",
+        "balance0": "Remaining · Rs. 450",
+        "balance1": "Remaining · Rs. 250",
+        "balance2": "Remaining · Rs. 0",
+        "receipts0": "Receipts · 0",
+        "receipts1": "Receipts · 1",
+        "receipts2": "Receipts · 2",
+        "rules": "The sample covers rent only. Refundable deposits and customer advances are separate balances in the application."
+      }
+    }
   }
 ]

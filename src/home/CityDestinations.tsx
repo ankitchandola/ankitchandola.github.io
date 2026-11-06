@@ -54,7 +54,8 @@ export function CityDestinationPanels() {
           Studio
         </h3>
         <p>
-          My browser tool and four projects from Green Fortune Technologies.
+          Projects from my current role and independent work, including the
+          rental app built for a friend’s business.
         </p>
         <ul className="city-projects">
           {projects.map(({ slug, name, indexSummary, summary }) => (

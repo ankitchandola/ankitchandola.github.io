@@ -24,7 +24,7 @@ test('city Studio uses shared projects, building taps and accessible panel links
   await expect(panel.getByRole('heading')).toBeFocused();
   await expect(studio).toHaveAttribute('aria-pressed', 'true');
   const links = panel.getByRole('link');
-  await expect(links).toHaveCount(5);
+  await expect(links).toHaveCount(projects.length);
   for (const [i, project] of projects.entries()) {
     await expect(links.nth(i)).toHaveText(project.name);
     await expect(links.nth(i)).toHaveAttribute('href', `/work/${project.slug}`);
@@ -65,7 +65,7 @@ for (const route of ['/', '/work/operations']) {
     await expect(results).toHaveCount(0);
     await expect(search.locator('.search-empty')).toBeVisible();
     await input.fill('');
-    await expect(results).toHaveCount(5);
+    await expect(results).toHaveCount(projects.length);
     await input.press('Escape');
     await expect(trigger).toBeFocused();
     await expect(input).toBeHidden();
@@ -84,7 +84,7 @@ test('compact project index keeps complete narratives on detail pages', async ({
   page,
 }) => {
   await page.goto('/');
-  await expect(page.locator('.project-card')).toHaveCount(5);
+  await expect(page.locator('.project-card')).toHaveCount(projects.length);
   for (const project of projects) {
     const cover = page.locator(
       `#${project.home?.anchor ?? project.slug} .project-index-image img`,
@@ -185,7 +185,9 @@ test('unavailable WebGL keeps static hero artwork and navigation usable', async 
   await expect(page.locator('#city-hint')).toContainText('3D unavailable');
   await page.locator('[data-city-destination="studio"]').click();
   await expect(page.locator('#city-panel-studio')).toBeVisible();
-  await expect(page.locator('#city-panel-studio a')).toHaveCount(5);
+  await expect(page.locator('#city-panel-studio a')).toHaveCount(
+    projects.length,
+  );
   await page.getByRole('button', { name: 'Reset view' }).click();
   await expect(page.locator('#city-panels')).toBeHidden();
   await page.getByRole('button', { name: 'Close', exact: true }).click();

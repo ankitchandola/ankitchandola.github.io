@@ -159,3 +159,43 @@ for (const theme of ['light', 'dark']) {
     }
   });
 }
+
+test('Purifier payment retries retain one collection and receipt, with reset and accessible outcomes', async ({
+  page,
+}) => {
+  await page.goto('/work/purifier-rental-manager');
+  const demo = page.locator('.demo-purifier-rental-manager');
+  const position = demo.locator('.response-branches');
+  const status = demo.getByRole('status');
+  await expect(position).toContainText('Remaining · Rs. 450');
+  await expect(
+    demo.getByRole('button', { name: 'Retry the same request' }),
+  ).toBeDisabled();
+  const record = demo.getByRole('button', { name: 'Record Rs. 200 payment' });
+  await record.focus();
+  await record.press('Enter');
+  await expect(record).toBeDisabled();
+  await expect(position).toContainText('Remaining · Rs. 250');
+  await expect(position).toContainText('Receipts · 1');
+  const retry = demo.getByRole('button', { name: 'Retry the same request' });
+  await retry.click();
+  await retry.click();
+  await expect(status).toContainText('no second payment');
+  await expect(position).toContainText('Recorded payments · Rs. 200');
+  await expect(position).toContainText('Receipts · 1');
+  await demo.getByRole('button', { name: 'Record remaining Rs. 250' }).click();
+  await expect(position).toContainText('Remaining · Rs. 0');
+  await expect(position).toContainText('Receipts · 2');
+  await expect(retry).toBeDisabled();
+  await demo.getByRole('button', { name: 'Reset example' }).click();
+  await expect(position).toContainText('Recorded payments · Rs. 0');
+  await expect(position).toContainText('Receipts · 0');
+  await expect(record).toBeEnabled();
+  await expect(demo.locator('.demonstration-boundary')).toContainText(
+    'synthetic amounts',
+  );
+  const results = await new AxeBuilder({ page })
+    .include('.demo-purifier-rental-manager')
+    .analyze();
+  expect(results.violations).toEqual([]);
+});

@@ -637,12 +637,84 @@ function Website({ l }: { l: Labels }) {
     </>
   );
 }
+function RentalPayments({ l }: { l: Labels }) {
+  const [payments, setPayments] = useState(0);
+  const [replayed, setReplayed] = useState(false);
+  return (
+    <>
+      <div className="demo-toolbar">
+        <span>{l('sample')}</span>
+        <Reset
+          l={l}
+          onClick={() => {
+            setPayments(0);
+            setReplayed(false);
+          }}
+        />
+      </div>
+      <div className="enquiry-layout">
+        <div>
+          <span className="demo-label">
+            <FileText size={22} aria-hidden="true" />
+            {l('actions')}
+          </span>
+          <div className="demo-actions">
+            <Action
+              primary
+              disabled={payments !== 0}
+              onClick={() => setPayments(1)}
+            >
+              {l('record')}
+            </Action>
+            <Action disabled={payments !== 1} onClick={() => setReplayed(true)}>
+              {l('retry')}
+            </Action>
+            <Action
+              disabled={payments !== 1}
+              onClick={() => {
+                setPayments(2);
+                setReplayed(false);
+              }}
+            >
+              {l('settle')}
+            </Action>
+          </div>
+        </div>
+        <div>
+          <span className="demo-label">
+            <Database size={22} aria-hidden="true" />
+            {l('ledger')}
+          </span>
+          <div className="response-branches">
+            <div>{l('due')}</div>
+            <div>{l('paid' + payments)}</div>
+            <div data-active="true">{l('balance' + payments)}</div>
+            <div>{l('receipts' + payments)}</div>
+          </div>
+        </div>
+      </div>
+      <Status>
+        {l(
+          payments === 0
+            ? 'initial'
+            : payments === 2
+              ? 'settled'
+              : replayed
+                ? 'replayed'
+                : 'posted',
+        )}
+      </Status>
+      <p className="demo-footnote">{l('rules')}</p>
+    </>
+  );
+}
 const views: Record<string, (props: { l: Labels }) => ReactNode> = {
   'recon-desk': Recon,
   operations: Operations,
   'sales-crm': Calls,
   visualization: Library,
   'website-cms': Website,
+  'purifier-rental-manager': RentalPayments,
 };
 function Demonstration({ slug, content }: { slug: string; content: Content }) {
   const View = views[slug];

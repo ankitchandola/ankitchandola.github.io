@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" role="img" aria-labelledby="title desc">
+<title id="title">A rental, its dues and its service history</title>
+<desc id="desc">Explanatory artwork linking a purifier to recurring rent, a separate deposit, payment records and service visits. Not a product screenshot.</desc>
+<rect width="960" height="600" fill="#C6DFD4"/>
+<path d="M0 450H960V600H0Z" fill="#245E58"/>
+<g font-family="Arial, sans-serif" fill="#172F31">
+<text x="56" y="65" font-size="18" font-weight="700" letter-spacing="2">RENTAL → COLLECTION → SERVICE</text>
+<rect x="68" y="114" width="226" height="310" rx="32" fill="#FFFDF7" stroke="#172F31" stroke-width="3"/>
+<rect x="90" y="140" width="182" height="106" rx="16" fill="#E8E9DA"/>
+<path d="M181 158C181 158 156 187 156 204A25 25 0 0 0 206 204C206 187 181 158 181 158Z" fill="#245E58"/>
+<path d="M158 280H199V305H185V326" fill="none" stroke="#245E58" stroke-width="12" stroke-linejoin="round"/>
+<rect x="114" y="356" width="134" height="9" rx="4" fill="#BDC8BE"/>
+<text x="112" y="399" font-size="18" font-weight="700">RENTED UNIT</text>
+<path d="M294 276H349M349 173V380M349 173H386M349 380H386" fill="none" stroke="#245E58" stroke-width="4"/>
+<rect x="386" y="115" width="240" height="126" rx="10" fill="#245E58"/>
+<text x="410" y="151" font-size="16" fill="#FFFDF7">RECURRING RENT</text>
+<text x="410" y="190" font-size="28" font-weight="700" fill="#FFFDF7">Monthly dues</text>
+<text x="410" y="218" font-size="16" fill="#C6DFD4">One charge per period</text>
+<rect x="386" y="302" width="240" height="126" rx="10" fill="#F4C7A4"/>
+<text x="410" y="338" font-size="16">REFUNDABLE DEPOSIT</text>
+<text x="410" y="377" font-size="28" font-weight="700">Held separately</text>
+<text x="410" y="405" font-size="16">Settle when the rental ends</text>
+<path d="M626 174H673M626 365H673" fill="none" stroke="#245E58" stroke-width="4"/>
+<rect x="673" y="115" width="230" height="126" rx="10" fill="#FFFDF7"/>
+<text x="696" y="151" font-size="16">PAYMENT RECORD</text>
+<text x="696" y="190" font-size="26" font-weight="700">Retry safely</text>
+<text x="696" y="218" font-size="16">Keep the original receipt</text>
+<rect x="673" y="302" width="230" height="126" rx="10" fill="#E8E9DA"/>
+<text x="696" y="338" font-size="16">SERVICE HISTORY</text>
+<text x="696" y="377" font-size="26" font-weight="700">Visit by visit</text>
+<text x="696" y="405" font-size="16">Due · scheduled · completed</text>
+<text x="56" y="511" font-size="28" font-weight="700" fill="#FFFDF7">Purifier Rental Manager</text>
+<text x="56" y="549" font-size="18" fill="#FFFDF7">Rentals, billing and the work that follows a collection.</text>
+</g></svg>
