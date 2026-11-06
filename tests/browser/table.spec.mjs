@@ -5,10 +5,44 @@ import { generatePuzzle, PRESETS } from '../../src/play/generate.ts';
 import { solve } from '../../src/play/solve.ts';
 import {
   cellQuad,
+  cellPoint,
+  cellSpan,
   frameTable,
   tableCamera,
+  toScreen,
 } from '../../src/play/three/projection.ts';
-import { Vector2 } from 'three';
+import { Vector2, Vector3 } from 'three';
+
+test('/play cold loads and resizes retain lesson 1 in 3D at desktop heights', async ({
+  page,
+}) => {
+  for (const theme of ['light', 'dark']) {
+    await page.emulateMedia({ colorScheme: theme });
+    for (const height of [768, 900, 1000]) {
+      await page.setViewportSize({ width: 1440, height });
+      await page.goto('/play');
+      await page.evaluate(() => document.fonts.ready);
+      const view = page.locator('.ricochet-view');
+      await expect(view).toHaveAttribute('data-presentation', '3d', {
+        timeout: 15_000,
+      });
+      const canvas = view.locator('canvas');
+      await expect(canvas).toHaveAttribute('data-ready', 'true');
+      await page.setViewportSize({ width: 1280, height });
+      await expect(view).toHaveAttribute('data-presentation', '3d');
+      await expect
+        .poll(async () => {
+          const bounds = await canvas.boundingBox();
+          const size = { width: bounds.width, height: bounds.height };
+          const level = parseLevel(raw[0]);
+          const camera = tableCamera();
+          frameTable(camera, level, size);
+          return cellSpan(camera, level, size);
+        })
+        .toBeGreaterThanOrEqual(44);
+    }
+  }
+});
 
 for (const destination of ['play', 'arcade']) {
   test(`${destination} 3D and flat boards agree for every lesson and seeded difficulty`, async ({
@@ -187,6 +221,80 @@ for (const destination of ['play', 'arcade']) {
         Math.abs(u.cross(v)) / Math.max(u.length(), v.length()),
       ).toBeGreaterThanOrEqual(43.99);
     }
+  });
+
+  test.describe(`${destination} visible mirror taps`, () => {
+    test.use({ hasTouch: true });
+    test('tapping the raised pane above its floor cell turns only that mirror in either slant', async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.goto(destination === 'play' ? '/play' : '/');
+      if (destination === 'arcade') {
+        await page.locator('#city-open').click();
+        await page.locator('#city-destination-arcade').click();
+      }
+      const view = page.locator(
+        destination === 'play'
+          ? '.ricochet-view'
+          : '#arcade-stage .ricochet-view',
+      );
+      for (const index of [0, 4]) {
+        await page
+          .getByRole('button', { name: new RegExp(`^Lesson ${index + 1},`) })
+          .click();
+        await expect(view).toHaveAttribute('data-presentation', '3d');
+        const canvas = view.locator('canvas');
+        await expect(canvas).toHaveAttribute('data-ready', 'true');
+        await canvas.scrollIntoViewIfNeeded();
+        const bounds = await canvas.boundingBox();
+        const size = { width: bounds.width, height: bounds.height };
+        const level = parseLevel(raw[index]);
+        const camera = tableCamera();
+        frameTable(camera, level, size);
+        for (const key of Object.keys(level.mirrors)) {
+          const button = view.locator(`[data-table-mirror="${key}"]`);
+          for (let turn = 0; turn < 2; turn++) {
+            const before = await button.getAttribute('aria-label');
+            const others = await view
+              .locator(`[data-table-mirror]:not([data-table-mirror="${key}"])`)
+              .evaluateAll((elements) =>
+                elements.map((element) => element.getAttribute('aria-label')),
+              );
+            const [x, y] = key.split(',').map(Number);
+            const point = new Vector3(0, 0.19, 0.041)
+              .applyAxisAngle(
+                new Vector3(0, 1, 0),
+                before.includes('forward') ? Math.PI / 4 : -Math.PI / 4,
+              )
+              .add(cellPoint(level, x + 0.5, y + 0.5, 1.06));
+            const tap = toScreen(camera, point, size).add(
+              new Vector2(bounds.x, bounds.y),
+            );
+            expect(
+              await page.evaluate(
+                ({ x, y }) =>
+                  document.elementFromPoint(x, y)?.closest('button')?.dataset
+                    .tableMirror,
+                { x: tap.x, y: tap.y },
+              ),
+            ).not.toBe(key);
+            await page.touchscreen.tap(tap.x, tap.y);
+            await expect(button).not.toHaveAttribute('aria-label', before);
+            await expect(button).toBeFocused();
+            expect(
+              await view
+                .locator(
+                  `[data-table-mirror]:not([data-table-mirror="${key}"])`,
+                )
+                .evaluateAll((elements) =>
+                  elements.map((element) => element.getAttribute('aria-label')),
+                ),
+            ).toEqual(others);
+          }
+        }
+      }
+    });
   });
 }
 

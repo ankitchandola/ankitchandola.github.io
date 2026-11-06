@@ -30,7 +30,8 @@ function CityArcadeGame({
   const heading = useHeadingFocus(game);
   useEffect(() => game.start(), [game]);
   useEffect(() => {
-    if (active) heading.current?.focus({ preventScroll: true });
+    if (active && document.activeElement !== heading.current)
+      heading.current?.focus({ preventScroll: true });
   }, [active, heading]);
   return (
     <>
@@ -48,12 +49,12 @@ function CityArcadeGame({
             headingRef={heading}
             level="h3"
             id="city-heading-arcade"
-            prefix="Arcade · "
+            prefix="ARCADE · "
           />
           <Controls game={game} share={false} />
           <Status game={game} id="arcade-result" exit={null} />
-          <Modes game={game} />
           <Pickers game={game} />
+          <Modes game={game} />
         </>,
         panel,
       )}

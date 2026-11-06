@@ -41,16 +41,19 @@ a separate toggle row so no cell is covered. Measure the full candidate 3D
 area, not the temporary loading layout, to avoid a fit feedback loop.
 This keeps the approximately 38° camera: a 630×548 board area projects
 lesson-1 cell altitude to 45.17px, and 988×700 to 64.07px, both above 44px.
-`/play` stacks its own layout at 1100px and below; a 988×576 area gives 52.72px.
+`/play` retains its original 1000px stacking breakpoint. Cold-load and resize
+regressions require lesson 1 in 3D at 1280–1440px with 768–1000px viewport
+heights; intermediate side-by-side layouts may correctly fall back.
 Browser regressions require 3D at 1024×768 and 1440×900 in Arcade, and verify
 the card clears both bars and the panel across the review sizes. The shared
 table background is solid. Arcade has no scene-covering fade, and a blocked
 surface import must leave both the flat game and loading note visible.
 
 Every cell has a 0.94-unit tile, with unlit `--rc-table-grid` gaps for strong
-contrast in both themes. Walls are 0.48 units high in `--rc-table-wall`.
+contrast in both themes. Walls have a smaller 0.72-unit footprint and are
+0.36 units high in `--rc-table-wall`, still reaching above the beam.
 Mirrors are 0.5-unit upright panes on turntables with beam-coloured marker
-rings. The emitter has a muzzle and direction arrow, and the target a raised
+rings. The emitter has a muzzle and a wider direction arrow, and the target a raised
 socket. Beams and the target ring share a height of 1.02 units. The ring's
 outer radius is exactly `TARGET_RADIUS`, so both presentations keep matching
 endpoints.
@@ -62,8 +65,11 @@ and offers Copy link. Arcade keeps one pinned Play full Ricochet link for that
 full-page experience, including after all five lessons are solved.
 
 Arcade composes one `h3#city-heading-arcade` title and existing hint, the
-Fire/Undo/Reset row, result and next/new action, modes, then the single-row
-scrollable picker. The phone controls sit below the sheet handle, outside the
+Fire/Undo/Reset row, result and next/new action, the single-row scrollable picker,
+then modes. Tablet drawer padding is 16px so both selector rows fit at 1024×768.
+Metadata and picker labels share uppercase label typography. Primary buttons
+get their layout, icon spacing and 1px solid border from shared game CSS,
+not full-page-only styles. The phone controls sit below the sheet handle, outside the
 scrolling viewport, so neither the 6×8 board nor a scrolled panel hides Fire
 or lets text pass underneath it. Short landscape uses the side drawer and
 restores its footer inset, including after rotating a phone-sized viewport.
@@ -74,6 +80,9 @@ link there.
 The separate `#city-arcade-root` owns the per-open controller and both portals,
 independent of the prerendered destination markup. Close unmounts both portal
 contents without replacing either target or destroying the root used on reopen.
+It remains necessary, not an unused stage-3 host. The explorer focuses an existing
+heading on activation; Arcade's mounted component fills the async-mount gap
+only when the heading is not already focused, avoiding duplicate focus.
 
 The first `/play` render is the SVG/HTML board. When active and large enough,
 `BoardView` lazy-loads the Three.js surface and frames the level-driven table.
@@ -85,9 +94,16 @@ inset SVG polygon draws hover and keyboard focus without clipping an external
 outline. The same state lifts the cell slightly and enlarges its quiet
 turntable ring. Browser tests check projection within 2px, polygon altitude
 at least 44px, centre-click/Enter rotation and rejection of the old box corner.
-Canvas pixels are decorative, not the keyboard controls. The beam consumes
+Pointer-click capture also raycasts the visible geometry for pane taps above the floor
+cell, routing the click to that mirror before any underlying button fires.
+Other pieces occlude that pick; the browser tests tap every lesson-5 pane in
+both slants and verify neighbouring mirrors do not turn. Canvas remains hidden
+from accessibility; the HTML buttons own names and keyboard controls. The beam consumes
 `beamPoints`, including loop dashes, and theme changes update materials from
 the `--rc-*` tokens.
+The target's unhit ring and dot contrast at least 3:1 against the apricot fill
+in both themes. The 3D ring uses the same token unlit, so lighting cannot wash
+it into the socket.
 
 `mayFitTable` provides a cheap DOM-free upper-bound check before importing
 Three.js. The real check frames the table, then measures the shortest projected
@@ -165,7 +181,9 @@ lessons 1 and 5, Random hard and Today, including the 6×8 board. Fitting 3D
 lessons also have hover and keyboard-focus captures. Regressions check the
 actual polygon, delayed-load fallback visibility, nonoverlapping stage cards,
 collapsed-sheet Fire and every short-landscape control through scrolling.
-Flat-board goldens and game rules are unchanged.
+Owner-review refinements add pane-top touch picking, shared action/label styles,
+fully visible tablet selectors, a contrasting unhit target and quieter walls.
+Existing solved flat-board goldens and game rules are unchanged.
 
 At 1440×1000, lesson 1 warms 20 table buffers and 9 textures in either host,
 with no new draws over 1,000ms. The retained, paused city keeps 68 buffers and
@@ -173,14 +191,14 @@ with no new draws over 1,000ms. The retained, paused city keeps 68 buffers and
 textures on Close; the browser suite checks five reopen cycles. These are
 allocation counts, not GPU memory bytes or performance claims.
 
-The cold requested JS/CSS graph totals 1,080,563 bytes raw / 297,742 bytes gzip
-for `/play` (9 files), and 1,045,923 / 281,984 bytes for homepage plus Arcade
+The cold requested JS/CSS graph totals 1,081,077 bytes raw / 297,880 bytes gzip
+for `/play` (9 files), and 1,046,473 / 282,143 bytes for homepage plus Arcade
 (11 files). This includes the shared site styles and runtime but excludes
 HTML, fonts, images and the résumé; gzip is calculated from built files rather
 than measured wire compression. The shared Three.js chunk is still 562,456
-bytes raw / 143,526 gzip and still triggers the existing 500kB build warning.
-The shared game chunk is 254,397 / 81,675, lazy surface 11,111 / 4,879, game CSS
-10,579 / 2,544, and city explorer 55,941 / 18,283.
+bytes raw / 143,525 gzip and still triggers the existing 500kB build warning.
+The shared game chunk is 254,669 / 81,793, lazy surface 11,022 / 4,845, game CSS
+10,793 / 2,580, and city explorer 55,977 / 18,304.
 
 Safari, Firefox, physical phones, real screen-reader sessions, constrained
 hardware/network profiling and GPU memory bytes remain unverified. No later

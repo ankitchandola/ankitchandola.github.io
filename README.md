@@ -105,7 +105,9 @@ fallback, collapsed-phone Fire and independently scrolling short-landscape contr
 `tests/browser/table.spec.mjs` checks every campaign level and generated
 easy/medium/hard/Today puzzles in both presentations and both hosts, plus
 cancellation when Flat board is selected during loading, cell-shaped hit areas
-and a single full-page link after completing the Arcade lessons.
+and a single full-page link after completing the Arcade lessons. Owner-review
+regressions cover cold desktop fit, raised-pane touch picking in either slant,
+tablet selector visibility, action-icon spacing and unhit target contrast.
 The [Arcade UI resource baseline](docs/RICOCHET.md#arcade-ui-review-and-resource-baseline)
 records the responsive review, download sizes, renderer counts and unavailable
 device/browser checks.

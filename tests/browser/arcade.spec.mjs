@@ -34,6 +34,78 @@ const ready = async (page) => {
 };
 const surfaceRoute = /\/assets\/surface-[^/]+\.js$/;
 
+test('Arcade lesson picker is visible at tablet size and action icons use game styles', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const focus = HTMLElement.prototype.focus;
+    window.arcadeHeadingFocuses = 0;
+    HTMLElement.prototype.focus = function (...args) {
+      if (this.id === 'city-heading-arcade') window.arcadeHeadingFocuses++;
+      return focus.apply(this, args);
+    };
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await enter(page);
+  await expect
+    .poll(() => page.evaluate(() => window.arcadeHeadingFocuses))
+    .toBe(1);
+  await page.locator('#city-destination-arcade').click();
+  await expect(page.locator('#city-heading-arcade')).toBeFocused();
+  await expect
+    .poll(() => page.evaluate(() => window.arcadeHeadingFocuses))
+    .toBe(2);
+  await page.locator('#city-destination-journey').click();
+  await page.locator('#city-destination-arcade').click();
+  await expect(page.locator('#city-heading-arcade')).toBeFocused();
+  await expect
+    .poll(() => page.evaluate(() => window.arcadeHeadingFocuses))
+    .toBe(3);
+  await page.setViewportSize({ width: 1024, height: 768 });
+  const panel = page.locator('#arcade-panel');
+  for (const button of await panel.locator('.ricochet-levels button').all())
+    await expect(button).toBeInViewport({ ratio: 1 });
+  for (const button of await panel.locator('.ricochet-modes button').all())
+    await expect(button).toBeInViewport({ ratio: 1 });
+  const titleLabel = panel.locator('.ricochet-level-heading .kicker');
+  await expect(titleLabel).toHaveText('ARCADE · LESSON 1 OF 5');
+  expect(
+    await titleLabel.evaluate((element) => getComputedStyle(element).font),
+  ).toBe(
+    await panel
+      .locator('.ricochet-levels .kicker')
+      .evaluate((element) => getComputedStyle(element).font),
+  );
+  await mirror(page).click();
+  await fire(page).click();
+  await expect(result(page)).toContainText('Hit the target');
+  for (const button of [
+    fire(page),
+    panel.getByRole('button', { name: 'Next lesson', exact: true }),
+  ]) {
+    await button.scrollIntoViewIfNeeded();
+    const spacing = await button.evaluate((element) => {
+      const icon = element.querySelector('svg').getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNode(
+        [...element.childNodes].find(
+          (node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim(),
+        ),
+      );
+      const text = range.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return {
+        gap: Math.max(text.left - icon.right, icon.left - text.right),
+        borderStyle: style.borderStyle,
+        borderWidth: style.borderWidth,
+      };
+    });
+    expect(spacing.gap).toBeGreaterThanOrEqual(5);
+    expect(spacing.borderStyle).toBe('solid');
+    expect(spacing.borderWidth).toBe('1px');
+  }
+});
+
 test('Arcade phone Fire stays pinned without expanding the sheet, including the 6 by 8 board', async ({
   page,
 }) => {

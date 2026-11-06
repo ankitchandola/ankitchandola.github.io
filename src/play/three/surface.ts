@@ -22,6 +22,7 @@ export interface TableSurface {
   settle(): void;
   setActive(active: boolean): void;
   highlight(key: string | null): void;
+  pickMirror(x: number, y: number): string | null;
   dispose(): void;
 }
 
@@ -163,6 +164,7 @@ export function createTableSurface(
       table.highlight(key);
       invalidate();
     },
+    pickMirror: (x, y) => table.pickMirror(x, y),
     dispose() {
       stop();
       document.removeEventListener('visibilitychange', visibility);

@@ -278,7 +278,25 @@ export default function BoardView({
         </div>
       )}
       <div className="ricochet-surface">
-        <div className="ricochet-table" style={tableStyle} hidden={!show3d}>
+        <div
+          className="ricochet-table"
+          style={tableStyle}
+          hidden={!show3d}
+          onClickCapture={(event) => {
+            if (event.detail === 0 || !canvas.current) return;
+            const bounds = canvas.current.getBoundingClientRect();
+            const key = surface.current?.pickMirror(
+              event.clientX - bounds.x,
+              event.clientY - bounds.y,
+            );
+            if (!key) return;
+            event.stopPropagation();
+            wrapper.current
+              ?.querySelector<HTMLButtonElement>(`[data-table-mirror="${key}"]`)
+              ?.focus({ preventScroll: true });
+            game.rotate(key, true);
+          }}
+        >
           <canvas key={attempt} ref={canvas} aria-hidden="true" />
           {show3d && layout && (
             <div className="ricochet-table-targets">

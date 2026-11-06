@@ -1610,7 +1610,7 @@ html[data-theme='dark'] .city-dialog {
 #arcade-panel .ricochet-level-heading {
   margin-bottom: 16px;
 }
-#arcade-panel .ricochet-level-heading .kicker {
+#arcade-panel .kicker {
   font: 700 15px/1.4 var(--label);
 }
 #arcade-panel .ricochet-level-heading h3 {
@@ -1654,11 +1654,14 @@ html[data-theme='dark'] .city-dialog {
   border-color: var(--teal);
   color: var(--paper);
 }
+#arcade-panel .solid-button svg {
+  flex-shrink: 0;
+}
 #arcade-panel .ricochet-modes {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
-  margin: 0;
+  margin: 16px 0 0;
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1755,6 +1758,9 @@ html[data-theme='dark'] .city-dialog {
 @media (min-width: 901px) and (max-width: 1024px) {
   .city-dialog[data-destination='arcade'] {
     --city-drawer: 320px;
+  }
+  .city-dialog[data-destination='arcade'] .city-panels {
+    padding: 16px;
   }
 }
 @media (min-width: 761px) and (max-width: 900px) and (min-height: 501px) {

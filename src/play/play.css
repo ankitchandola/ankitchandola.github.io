@@ -23,7 +23,7 @@
   --rc-beam: #9ad9c7;
   --rc-source-mark: #102b27;
   --rc-target: #efb98e;
-  --rc-target-ring: #efb98e;
+  --rc-target-ring: #653d20;
   --rc-loop: #efb98e;
   --rc-shadow: #365d51;
   --rc-hover: #294a43;
@@ -35,6 +35,11 @@
   gap: 48px;
   align-items: start;
   padding-bottom: 24px;
+}
+.ricochet .kicker {
+  display: block;
+  font: 700 14px/1.5 var(--label);
+  letter-spacing: 0.7px;
 }
 .ricochet-level-heading {
   margin-bottom: 24px;
@@ -177,9 +182,18 @@
   flex-wrap: wrap;
   gap: 12px;
 }
-.ricochet-controls .solid-button,
-.ricochet-result .solid-button {
+.ricochet .solid-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
+  min-height: 54px;
+  padding: 15px 22px;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  background: var(--accent);
+  color: var(--rc-source-mark);
+  font: 700 16px var(--body);
 }
 .ricochet-button {
   display: inline-flex;
@@ -372,7 +386,7 @@
   transform: scale(0.97);
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1000px) {
   .ricochet-layout {
     grid-template-columns: minmax(0, 1fr);
     gap: 32px;
@@ -596,9 +610,6 @@
   color: var(--muted);
 }
 @media (hover: hover) {
-  .ricochet-table-targets > button:hover {
-    box-shadow: none;
-  }
   .ricochet-table-targets > button:hover svg {
     opacity: 1;
   }
