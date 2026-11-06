@@ -21,6 +21,7 @@ export interface TableSurface {
   sync(mirrors: Mirrors, shot: Shot | null, animate: boolean): void;
   settle(): void;
   setActive(active: boolean): void;
+  highlight(key: string | null): void;
   dispose(): void;
 }
 
@@ -157,6 +158,10 @@ export function createTableSurface(
       active = next;
       if (active) invalidate();
       else stop();
+    },
+    highlight(key) {
+      table.highlight(key);
+      invalidate();
     },
     dispose() {
       stop();

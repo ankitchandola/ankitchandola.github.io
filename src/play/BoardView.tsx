@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
+import type { ButtonHTMLAttributes, CSSProperties } from 'react';
 import Board from './Board';
 import { place, pointing } from './board-path';
 import type { RicochetGame } from './game.ts';
@@ -27,6 +27,32 @@ const box = ({
   width,
   height,
 });
+
+function CellTarget({
+  rect,
+  ...props
+}: { rect: TableLayout['source'] } & ButtonHTMLAttributes<HTMLButtonElement>) {
+  const corners = rect.quad.map(({ x, y }) => [x - rect.x, y - rect.y]);
+  const points = corners
+    .map(
+      ([x = 0, y = 0]) =>
+        `${rect.width / 2 + (x - rect.width / 2) * 0.9},${rect.height / 2 + (y - rect.height / 2) * 0.9}`,
+    )
+    .join(' ');
+  return (
+    <button
+      {...props}
+      style={{
+        ...box(rect),
+        clipPath: `polygon(${corners.map(([x = 0, y = 0]) => `${x}px ${y}px`).join(', ')})`,
+      }}
+    >
+      <svg viewBox={`0 0 ${rect.width} ${rect.height}`} aria-hidden="true">
+        <polygon points={points} vectorEffect="non-scaling-stroke" />
+      </svg>
+    </button>
+  );
+}
 
 /**
  * Shows the puzzle as the 3D table when there is room and WebGL, otherwise the
@@ -58,6 +84,15 @@ export default function BoardView({
   const wants3d = prefs.presentation !== 'flat';
   const room = size !== null && mayFitTable(size.width, size.height);
   const show3d = wants3d && room && status === 'ready' && !!layout?.fits;
+  const highlightFocus = () => {
+    const focused = document.activeElement;
+    surface.current?.highlight(
+      focused instanceof HTMLElement && wrapper.current?.contains(focused)
+        ? (focused.dataset.tableMirror ??
+            (focused.hasAttribute('data-table-fire') ? 'source' : null))
+        : null,
+    );
+  };
 
   useEffect(() => {
     const element = wrapper.current;
@@ -216,7 +251,9 @@ export default function BoardView({
           target.hasAttribute('data-board-fire')
             ? 'source'
             : null);
+        surface.current?.highlight(focusedKey.current);
       }}
+      onBlurCapture={() => surface.current?.highlight(null)}
     >
       {room && (
         <div
@@ -245,23 +282,27 @@ export default function BoardView({
           <canvas key={attempt} ref={canvas} aria-hidden="true" />
           {show3d && layout && (
             <div className="ricochet-table-targets">
-              <button
+              <CellTarget
                 type="button"
                 className="ricochet-table-source"
                 data-table-fire
-                style={box(layout.source)}
+                rect={layout.source}
+                onPointerEnter={() => surface.current?.highlight('source')}
+                onPointerLeave={highlightFocus}
                 onClick={(event) => game.fire(event.detail > 0)}
                 aria-label={`Fire the beam from ${place(level.source.x, level.source.y)}, pointing ${pointing[level.source.dir]}`}
               />
               {[...layout.mirrors].map(([key, rect]) => {
                 const [x = 0, y = 0] = key.split(',').map(Number);
                 return (
-                  <button
+                  <CellTarget
                     key={key}
                     type="button"
                     className="ricochet-table-mirror"
                     data-table-mirror={key}
-                    style={box(rect)}
+                    rect={rect}
+                    onPointerEnter={() => surface.current?.highlight(key)}
+                    onPointerLeave={highlightFocus}
                     onClick={(event) => game.rotate(key, event.detail > 0)}
                     aria-label={`Mirror, ${place(x, y)}, slanted ${mirrors[key] === '/' ? 'forward' : 'backward'}`}
                   />

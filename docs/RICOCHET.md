@@ -51,9 +51,16 @@ for that full-page experience.
 The first `/play` render is the SVG/HTML board. When active and large enough,
 `BoardView` lazy-loads the Three.js surface and frames the level-driven table.
 Transparent HTML buttons sit over the projected source and mirror cells; they
-use the flat board's names and reducer actions. Canvas pixels are decorative,
-not the keyboard controls. The beam consumes `beamPoints`, including loop
-dashes, and theme changes update materials from the `--rc-*` tokens.
+use the flat board's names and reducer actions. `cellQuad` exports the four
+projected cell corners in perimeter order, and `cellRect` retains the enclosing
+box plus that quad. CSS `clip-path` makes the quad the actual hit area; an
+inset SVG polygon draws hover and keyboard focus without clipping an external
+outline. The same state lifts the cell slightly and enlarges its quiet
+turntable ring. Browser tests check projection within 2px, polygon altitude
+at least 44px, centre-click/Enter rotation and rejection of the old box corner.
+Canvas pixels are decorative, not the keyboard controls. The beam consumes
+`beamPoints`, including loop dashes, and theme changes update materials from
+the `--rc-*` tokens.
 
 `mayFitTable` provides a cheap DOM-free upper-bound check before importing
 Three.js. The real check frames the table, then measures the shortest projected

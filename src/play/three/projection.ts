@@ -6,7 +6,9 @@ export interface CellRect {
   y: number;
   width: number;
   height: number;
+  quad: CellQuad;
 }
+export type CellQuad = readonly [Vector2, Vector2, Vector2, Vector2];
 export interface Size {
   width: number;
   height: number;
@@ -106,6 +108,21 @@ export const tableFits = (
 ): boolean =>
   cellSpan(camera, level, size) >= MIN_TARGET && size.height >= MIN_HEIGHT;
 
+export function cellQuad(
+  camera: OrthographicCamera,
+  level: Level,
+  size: Size,
+  x: number,
+  y: number,
+): CellQuad {
+  return [
+    toScreen(camera, cellPoint(level, x, y), size),
+    toScreen(camera, cellPoint(level, x + 1, y), size),
+    toScreen(camera, cellPoint(level, x + 1, y + 1), size),
+    toScreen(camera, cellPoint(level, x, y + 1), size),
+  ];
+}
+
 export function cellRect(
   camera: OrthographicCamera,
   level: Level,
@@ -113,12 +130,7 @@ export function cellRect(
   x: number,
   y: number,
 ): CellRect {
-  const corners = [
-    cellPoint(level, x, y),
-    cellPoint(level, x + 1, y),
-    cellPoint(level, x, y + 1),
-    cellPoint(level, x + 1, y + 1),
-  ].map((point) => toScreen(camera, point, size));
+  const corners = cellQuad(camera, level, size, x, y);
   const xs = corners.map((c) => c.x),
     ys = corners.map((c) => c.y);
   const left = Math.min(...xs),
@@ -128,6 +140,7 @@ export function cellRect(
     y: top,
     width: Math.max(...xs) - left,
     height: Math.max(...ys) - top,
+    quad: corners,
   };
 }
 

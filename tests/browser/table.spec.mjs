@@ -3,6 +3,12 @@ import raw from '../../src/content/levels.json' with { type: 'json' };
 import { parseLevel, trace } from '../../src/play/model.ts';
 import { generatePuzzle, PRESETS } from '../../src/play/generate.ts';
 import { solve } from '../../src/play/solve.ts';
+import {
+  cellQuad,
+  frameTable,
+  tableCamera,
+} from '../../src/play/three/projection.ts';
+import { Vector2 } from 'three';
 
 for (const destination of ['play', 'arcade']) {
   test(`${destination} 3D and flat boards agree for every lesson and seeded difficulty`, async ({
@@ -101,6 +107,81 @@ for (const destination of ['play', 'arcade']) {
           `Hit the target in ${trace(level, solved.mirrors).path.length} cells.`,
         );
       }
+    }
+  });
+
+  test(`${destination} cell polygons match projection and reject the old rectangular corners`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(destination === 'play' ? '/play' : '/');
+    if (destination === 'arcade') {
+      await page.locator('#city-open').click();
+      await page.locator('#city-destination-arcade').click();
+    }
+    const view = page.locator(
+      destination === 'play'
+        ? '.ricochet-view'
+        : '#arcade-stage .ricochet-view',
+    );
+    await expect(view).toHaveAttribute('data-presentation', '3d', {
+      timeout: 15_000,
+    });
+    await expect(view.locator('canvas')).toHaveAttribute('data-ready', 'true');
+    const target = view.locator('[data-table-mirror]');
+    await target.scrollIntoViewIfNeeded();
+    const bounds = await target.boundingBox();
+    const before = await target.getAttribute('aria-label');
+    const outside = { x: bounds.x + 1, y: bounds.y + 1 };
+    expect(
+      await page.evaluate(
+        ({ x, y }) =>
+          !!document.elementFromPoint(x, y)?.closest('[data-table-mirror]'),
+        outside,
+      ),
+    ).toBe(false);
+    await page.mouse.click(outside.x, outside.y);
+    await expect(target).toHaveAttribute('aria-label', before);
+    await page.mouse.click(
+      bounds.x + bounds.width / 2,
+      bounds.y + bounds.height / 2,
+    );
+    await expect(target).toHaveAttribute('aria-label', /backward/);
+    await target.press('Enter');
+    await expect(target).toHaveAttribute('aria-label', before);
+    await expect(target.locator('svg')).toHaveCSS('opacity', '1');
+    await page.getByRole('button', { name: /^Lesson 5,/ }).click();
+    await expect(view).toHaveAttribute('data-presentation', '3d');
+    const canvas = await view.locator('canvas').boundingBox();
+    const size = { width: canvas.width, height: canvas.height };
+    const level = parseLevel(raw[4]);
+    const camera = tableCamera();
+    frameTable(camera, level, size);
+    for (const [key] of Object.entries(level.mirrors)) {
+      const button = view.locator(`[data-table-mirror="${key}"]`);
+      const rect = await button.boundingBox();
+      const values = await button.evaluate((element) =>
+        getComputedStyle(element)
+          .clipPath.match(/-?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi)
+          .map(Number),
+      );
+      const polygon = Array.from(
+        { length: 4 },
+        (_, index) =>
+          new Vector2(
+            rect.x - canvas.x + values[index * 2],
+            rect.y - canvas.y + values[index * 2 + 1],
+          ),
+      );
+      const [x, y] = key.split(',').map(Number);
+      const expected = cellQuad(camera, level, size, x, y);
+      for (let index = 0; index < 4; index++)
+        expect(polygon[index].distanceTo(expected[index])).toBeLessThan(2);
+      const u = polygon[1].clone().sub(polygon[0]);
+      const v = polygon[3].clone().sub(polygon[0]);
+      expect(
+        Math.abs(u.cross(v)) / Math.max(u.length(), v.length()),
+      ).toBeGreaterThanOrEqual(43.99);
     }
   });
 }

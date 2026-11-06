@@ -47,6 +47,7 @@ export interface RicochetTable {
   pickMirror(x: number, y: number): string | null;
   mirrorRects(): Map<string, CellRect>;
   setColors(colors: TableColors): void;
+  highlight(key: string | null): void;
   dispose(): void;
 }
 
@@ -140,6 +141,9 @@ export function createRicochetTable(
   let level = initial;
   let board = new Group();
   const mirrors = new Map<string, Mesh>();
+  const tiles = new Map<string, Mesh>();
+  const markers = new Map<string, Mesh>();
+  let highlighted: string | null = null;
   let pieces: (Mesh | Group)[] = [];
   let target = new Mesh(ring, materials.targetRing);
   const beam = new Group();
@@ -164,6 +168,9 @@ export function createRicochetTable(
     scene.remove(board);
     board = new Group();
     mirrors.clear();
+    tiles.clear();
+    markers.clear();
+    highlighted = null;
     pieces = [];
     const { w, h } = level;
     const ground = new Mesh(plane, shadowMaterial);
@@ -185,7 +192,10 @@ export function createRicochetTable(
     for (const [y, row] of level.rows.entries())
       for (const [x, char] of [...row].entries()) {
         const p = cell(x + 0.5, y + 0.5);
-        block(board, [0.94, 0.1, 0.94], [p.x, 0.64, p.z]);
+        tiles.set(
+          `${x},${y}`,
+          block(board, [0.94, 0.1, 0.94], [p.x, 0.64, p.z]),
+        );
         if (char === '#') {
           pieces.push(
             block(board, [0.82, 0.48, 0.82], [p.x, 0.93, p.z], materials.dark),
@@ -206,6 +216,7 @@ export function createRicochetTable(
       marker.rotation.x = -Math.PI / 2;
       marker.position.copy(p).setY(0.735);
       board.add(marker);
+      markers.set(key, marker);
       const mirror = block(
         board,
         [0.8, 0.5, 0.08],
@@ -427,6 +438,23 @@ export function createRicochetTable(
       return key && mirrors.has(key) ? key : null;
     },
     mirrorRects: () => mirrorRects(camera, level, size),
+    highlight(key) {
+      const next =
+        key === 'source' ? `${level.source.x},${level.source.y}` : key;
+      if (highlighted === next) return;
+      if (highlighted) {
+        const tile = tiles.get(highlighted);
+        if (tile) tile.position.y = 0.64;
+        const marker = markers.get(highlighted);
+        marker?.scale.setScalar(1);
+      }
+      highlighted = next;
+      if (next) {
+        const tile = tiles.get(next);
+        if (tile) tile.position.y = 0.675;
+        markers.get(next)?.scale.setScalar(1.08);
+      }
+    },
     setColors(colors) {
       materials.cream.color.set(colors.surface);
       materials.grid.color.set(colors.grid);
