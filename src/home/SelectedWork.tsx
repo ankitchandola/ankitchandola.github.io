@@ -12,8 +12,8 @@ export default function SelectedWork() {
           <span>worked on.</span>
         </h2>
         <p className="section-description">
-          A personal browser tool, four projects from my current role and a
-          rental app built for a friend’s business. Each page shows what I
+          Two independent web projects, four projects from my current role and
+          a rental app built for a friend’s business. Each page shows what I
           built, how it works and where my contribution stops.
         </p>
       </div>
