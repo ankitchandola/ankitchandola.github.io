@@ -29,14 +29,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: |
-          npx prettier --write src/content/projects.json src/home/SelectedWork.tsx
-          echo '===FORMAT_PROJECTS_BEGIN===' 
-          cat src/content/projects.json
-          echo '===FORMAT_PROJECTS_END===' 
-          echo '===FORMAT_SELECTED_BEGIN===' 
-          cat src/home/SelectedWork.tsx
-          echo '===FORMAT_SELECTED_END===' 
       - run: npm run check
       - uses: actions/upload-artifact@v7
         if: failure()
