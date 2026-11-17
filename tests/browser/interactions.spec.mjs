@@ -976,7 +976,7 @@ test('header navigation and phone menu close on Escape, outside click and select
     .locator('.project-nav')
     .getByRole('link', { name: /Next/ })
     .click();
-  await expect(page).toHaveURL(/\/work\/operations\/?$/);
+  await expect(page).toHaveURL(/\/work\/pokehackzone\/?$/);
   await page.getByRole('link', { name: 'Back to selected work' }).click();
   await expect(page).toHaveURL('/#work');
 });
