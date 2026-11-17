@@ -10,12 +10,7 @@
     "summary": "Compare CSV and Excel exports, then review bank-to-books matches. File processing stays in the browser.",
     "contribution": "Designed and built alone, end to end.",
     "demoLink": "Try the comparison demo",
-    "tags": [
-      "React",
-      "TypeScript",
-      "Web Workers",
-      "IndexedDB"
-    ],
+    "tags": ["React", "TypeScript", "Web Workers", "IndexedDB"],
     "ownership": "I built the application end to end.",
     "sections": [
       [
@@ -58,7 +53,7 @@
     "url": "https://ankitchandola.github.io/csvDiffTool/",
     "home": {
       "anchor": "playground",
-      "label": "Independent project · browser tool",
+      "label": "Independent project \u00b7 browser tool",
       "tagline": "Compare exports and review bank-to-books matches in your browser.",
       "highlights": [
         [
@@ -110,7 +105,7 @@
         "Avoiding misleading matches",
         "Same-amount transactions compete, and debit and credit labels mean different things in bank and books exports.",
         "Normalise to explicit money in and out, require exact signed amounts within a declared date window, group competing candidates and leave confirmation to the reviewer.",
-        "More manual review when candidates compete. A candidate budget bounds the search and reports it as incomplete rather than as “no match”."
+        "More manual review when candidates compete. A candidate budget bounds the search and reports it as incomplete rather than as \u201cno match\u201d."
       ],
       [
         "Recoverable work without a server",
@@ -132,7 +127,7 @@
       ],
       [
         "2M",
-        "candidate pairs suggested in 0.8–1.0 s",
+        "candidate pairs suggested in 0.8\u20131.0 s",
         "Approximate count, three historical runs in desktop Chrome. Excludes reading files and checking the mapping."
       ],
       [
@@ -142,10 +137,7 @@
       ]
     ],
     "limits": "No application server, accounts, bank feeds or accounting-system writes. Suggestions are never confirmed automatically, and reconciliation is labelled experimental in the tool.",
-    "context": [
-      "Personal project",
-      "Designed and built alone"
-    ],
+    "context": ["Personal project", "Designed and built alone"],
     "result": "A publicly hosted tool with two local-file workflows: comparing exports and reconciling a bank statement against books. Review decisions survive reloads, unresolved items carry into the next month, and reports download in several formats.",
     "demonstration": {
       "title": "Review a suggested match",
@@ -154,7 +146,7 @@
       "labels": {
         "bank": "Bank entry",
         "amount": "125.00",
-        "sample": "Synthetic sample · same amount, competing candidates",
+        "sample": "Synthetic sample \u00b7 same amount, competing candidates",
         "candidateA": "Books entry A",
         "candidateB": "Books entry B",
         "review": "Choose a candidate to inspect",
@@ -163,8 +155,8 @@
         "reset": "Start over",
         "pending": "Needs review",
         "matched": "Match confirmed by reviewer",
-        "unmatched": "Unmatched · investigate or classify",
-        "picked": "Candidate selected · still unconfirmed",
+        "unmatched": "Unmatched \u00b7 investigate or classify",
+        "picked": "Candidate selected \u00b7 still unconfirmed",
         "decision": "Reviewer decision",
         "output": "Reconciliation record",
         "idleNote": "Equal amounts alone cannot decide which record belongs to this bank entry.",
@@ -199,12 +191,7 @@
     "indexSummary": "A Pokémon ROM-hack directory with a resilient forum scraper, AI-assisted moderation and a private, in-browser patcher.",
     "summary": "Built a Pokémon ROM-hack discovery and patching platform, with a manually operated scraping pipeline, guarded AI moderation and browser-side binary patching.",
     "contribution": "Designed and built from scratch; now maintaining and rebuilding the production site.",
-    "tags": [
-      "Next.js",
-      "MongoDB",
-      "WebAssembly",
-      "AI moderation"
-    ],
+    "tags": ["Next.js", "MongoDB", "WebAssembly", "AI moderation"],
     "ownership": "I built the site from scratch and operate the scraping, review and publishing workflows. Scraping, moderation and publishing are manually triggered, not scheduled background jobs.",
     "sections": [
       [
@@ -289,7 +276,7 @@
       "scope": "Operating limits and verification"
     }
   },
-  {
+ {
     "slug": "operations",
     "name": "Internal Operations Platform",
     "indexSummary": "Order tracking and offline survey work in one platform for orders, surveys, production, dispatch and installation.",
@@ -384,17 +371,14 @@
       ],
       [
         "Preparing work for offline use",
-        "Preparing grids and each unit’s details produced many separate requests.",
+        "Preparing grids and each unit\u2019s details produced many separate requests.",
         "Bulk grid reads and cursor-paginated unit-detail preparation, supported by matching backend changes.",
         "Bulk payloads still grow with the size of the project hierarchy."
       ]
     ],
     "limits": "Offline support covers prepared survey and installation work, not the whole application. The server remains authoritative for permissions, workflow eligibility and confirmed records.",
     "result": "Surveyors keep recording measurements, photos and installation progress without a connection, and queued work syncs in order on reconnect. Reconnect traffic is bounded, offline preparation uses batched reads instead of per-unit requests, and invalid scans are rejected on the device before a batch is sent. No before-and-after measurement of timeouts or lost saves has been taken yet.",
-    "context": [
-      "One of 4 developers",
-      "4 months, ongoing"
-    ],
+    "context": ["One of 4 developers", "4 months, ongoing"],
     "facts": [
       [
         "About 1,000",
@@ -402,7 +386,7 @@
         "Approximate total, supplied by me. Each project holds several units."
       ],
       [
-        "10–20",
+        "10\u201320",
         "surveyors recording site work",
         "Approximate, supplied by me."
       ]
@@ -412,7 +396,7 @@
       "intro": "Save a sample edit while offline, then reconnect. Accept or reject it to see the difference between saving on the device and saving on the server.",
       "boundary": "Local simulation with four sample queue slots, not an application capacity limit. It does not persist or contact a backend. The real implementation batches saves, uploads local photos first and sequences dependent edits per unit.",
       "labels": {
-        "device": "Surveyor’s device",
+        "device": "Surveyor\u2019s device",
         "server": "Server",
         "queue": "Local save queue",
         "save": "Save a sample edit",
@@ -425,10 +409,10 @@
         "offline": "Offline",
         "online": "Connected",
         "empty": "No queued edits",
-        "queued": "Saved on device · awaiting server",
-        "syncing": "Ready to sync · awaiting server response",
+        "queued": "Saved on device \u00b7 awaiting server",
+        "syncing": "Ready to sync \u00b7 awaiting server response",
         "accepted": "Confirmed by server",
-        "rejected": "Rejected · rollback and refetch",
+        "rejected": "Rejected \u00b7 rollback and refetch",
         "done": "Survey marked complete",
         "measurements": "Required measurements complete",
         "incomplete": "Server confirmation and complete measurements are both required.",
@@ -467,12 +451,7 @@
       "alt": "Illustration of a browser-call headset linking an agent and customer, beside a quotation and contact card."
     },
     "summary": "Company-specific development on an existing Frappe CRM: browser calling, lead qualification, quotation reviews, permissions and a controlled handoff into operations.",
-    "tags": [
-      "Vue 3",
-      "Python / Frappe",
-      "MariaDB / Redis",
-      "Exotel"
-    ],
+    "tags": ["Vue 3", "Python / Frappe", "MariaDB / Redis", "Exotel"],
     "ownership": "I owned most of the custom frontend and Python backend development. The Frappe CRM platform was already installed when I joined.",
     "images": [
       [
@@ -528,8 +507,8 @@
     "challenges": [
       [
         "Two call legs, events out of order",
-        "The staff member’s browser can connect even when the customer never answers, and the incoming call signal can arrive before the outbound API response.",
-        "Correlate the provider’s call identifier, buffer early invitations, separate uncertain dial results from failures and treat provider webhooks and scheduled reconciliation as the outcome authority.",
+        "The staff member\u2019s browser can connect even when the customer never answers, and the incoming call signal can arrive before the outbound API response.",
+        "Correlate the provider\u2019s call identifier, buffer early invitations, separate uncertain dial results from failures and treat provider webhooks and scheduled reconciliation as the outcome authority.",
         "More state-machine logic and provider-specific testing."
       ],
       [
@@ -547,10 +526,7 @@
     ],
     "limits": "Built on Frappe CRM: the platform, administration, standard lists and framework services predate my work. Browser calling targets Chrome and Edge.",
     "result": "Enquiries, calls, quotations and the operations handoff live in linked records with enforced stage rules. A confirmed lead creates its operations project and draft order from the CRM, and a failed handoff stays retryable instead of looking complete.",
-    "context": [
-      "One of 2 developers",
-      "3 months of build, now in maintenance"
-    ],
+    "context": ["One of 2 developers", "3 months of build, now in maintenance"],
     "facts": [
       [
         "10,000+",
@@ -610,7 +586,7 @@
     "indexSummary": "A shared React package for project navigation and unit selection across two applications.",
     "contribution": "I created and primarily maintain the package, and implemented its use in both applications.",
     "demoLink": "Host views demo",
-    "kind": "Professional work · shared package",
+    "kind": "Professional work \u00b7 shared package",
     "cover": {
       "src": "/assets/projects/covers/visualization.svg",
       "alt": "Illustration of a shared floor-and-unit grid connected to operations and customer views, with one unit selected."
@@ -638,7 +614,7 @@
       ],
       [
         "Late host data overrides restored selections",
-        "The selection panel filters restored selections against disabled units and repeats that pruning whenever the host’s disabled set changes. A unit selected before an availability request finishes is removed if the later response makes it ineligible."
+        "The selection panel filters restored selections against disabled units and repeats that pruning whenever the host\u2019s disabled set changes. A unit selected before an availability request finishes is removed if the later response makes it ineligible."
       ]
     ],
     "images": [
@@ -652,7 +628,7 @@
       [
         "customer-unit-detail",
         "Unit details",
-        "Component statuses, specifications and the selected unit’s location.",
+        "Component statuses, specifications and the selected unit\u2019s location.",
         2048,
         1280
       ],
@@ -676,7 +652,7 @@
         "Reliable photo uploads",
         "A cancelled upload could resolve later and reappear, concurrent completions could drop images, and a form could submit before photo URLs existed.",
         "Track local upload identities, ignore cancelled results, read current state on each completion and hold submission while uploads run.",
-        "Cancelling hides the result but cannot abort the request, because the host’s upload callback exposes no abort."
+        "Cancelling hides the result but cannot abort the request, because the host\u2019s upload callback exposes no abort."
       ],
       [
         "One interface, two hosts",
@@ -765,12 +741,7 @@
       "alt": "Illustration of editable article blocks becoming a published page, with a separate enquiry sent to the CRM."
     },
     "summary": "A public-facing SSR website, structured enquiry flows and a Strapi publishing platform, with staging deployment on AWS EC2.",
-    "tags": [
-      "React Router SSR",
-      "Strapi",
-      "Frappe CRM",
-      "AWS EC2"
-    ],
+    "tags": ["React Router SSR", "Strapi", "Frappe CRM", "AWS EC2"],
     "ownership": "I implemented the website and CMS together and set up their shared staging environment.",
     "sections": [
       [
@@ -808,7 +779,7 @@
       [
         "strapi-entry-editor",
         "CMS editor",
-        "Strapi’s entry editor showing the configured article fields, featured image and rich-text content block.",
+        "Strapi\u2019s entry editor showing the configured article fields, featured image and rich-text content block.",
         2048,
         1280
       ],
@@ -822,7 +793,7 @@
       [
         "strapi-blog-list",
         "CMS collection",
-        "The configured blog collection in Strapi’s content manager, using sample entries.",
+        "The configured blog collection in Strapi\u2019s content manager, using sample entries.",
         2048,
         1280
       ]
@@ -834,7 +805,7 @@
         "Different CRM responses",
         "A submission can create a lead, match an existing one, reactivate it, reach a closed record or fail.",
         "One server-side lead request recognises created, existing and reactivated leads as success, routes closed matches to a follow-up state, and maps validation, rate limits and service errors to failure states. Credentials stay on the server.",
-        "The website stays coupled to the CRM’s response contract."
+        "The website stays coupled to the CRM\u2019s response contract."
       ],
       [
         "Flexible articles, consistent pages",
@@ -846,7 +817,7 @@
         "One small staging server",
         "Run an SSR website and a CMS without mixing their origins or process configuration.",
         "Separate hostnames and managed processes behind one Nginx, HTTPS on both, a database reachable only on localhost and S3 access through an instance role instead of stored keys.",
-        "Both applications share one instance’s memory, CPU and failure domain. It is not a highly available setup."
+        "Both applications share one instance\u2019s memory, CPU and failure domain. It is not a highly available setup."
       ]
     ],
     "limits": "Enquiry forms submit a lead; they do not book a calendar slot. Strapi provides the administration interface and publishing; I configured and extended it. The infrastructure described is shared staging.",
