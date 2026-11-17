@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" fill="none">
+  <rect width="960" height="600" fill="#E8E9DA"/>
+  <path d="M0 487H960" stroke="#C8CFC4" stroke-width="2"/>
+  <rect x="113" y="105" width="734" height="376" rx="24" fill="#20473F"/>
+  <rect x="131" y="124" width="698" height="338" rx="15" fill="#FFFDF7"/>
+  <path d="M131 140Q131 124 147 124H813Q829 124 829 140V181H131V140Z" fill="#C6DFD4"/>
+  <circle cx="162" cy="151" r="8" fill="#245E58"/>
+  <circle cx="188" cy="151" r="8" fill="#EFB98E"/>
+  <circle cx="214" cy="151" r="8" fill="#9DB1A5"/>
+  <rect x="273" y="137" width="410" height="27" rx="13" fill="#FFFDF7"/>
+  <text x="478" y="157" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" fill="#245E58" font-weight="700">POKEHACKZONE / PATCH WORKFLOW</text>
+  <rect x="164" y="213" width="178" height="160" rx="13" fill="#EDF2E9" stroke="#C0CEC3" stroke-width="2"/>
+  <rect x="391" y="213" width="178" height="160" rx="13" fill="#F9E2CB" stroke="#D8B797" stroke-width="2"/>
+  <rect x="618" y="213" width="178" height="160" rx="13" fill="#D6E8DF" stroke="#B0CDBE" stroke-width="2"/>
+  <g fill="#245E58" font-family="Arial,sans-serif" text-anchor="middle">
+    <text x="253" y="246" font-size="17" font-weight="700">SOURCE FILE</text>
+    <text x="480" y="246" font-size="17" font-weight="700">PATCH</text>
+    <text x="707" y="246" font-size="17" font-weight="700">RESULT</text>
+  </g>
+  <g stroke="#245E58" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M225 273H267L280 286V336H225Z" fill="#FFFDF7"/>
+    <path d="M267 273V286H280" fill="none"/>
+    <path d="M451 275L475 275L463 299L486 299L457 335L464 310L442 310Z" fill="#EFB98E"/>
+    <path d="M675 300L697 322L738 278" fill="none" stroke-width="10"/>
+  </g>
+  <path d="M346 292H383M373 282L383 292L373 302M573 292H610M600 282L610 292L600 302" stroke="#245E58" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <g font-family="Arial,sans-serif" font-size="15" fill="#4B6260" text-anchor="middle">
+    <text x="253" y="353">Local ROM</text>
+    <text x="480" y="353">Verified patch</text>
+    <text x="707" y="353">Saved on device</text>
+  </g>
+  <rect x="297" y="401" width="365" height="37" rx="18" fill="#245E58"/>
+  <text x="480" y="426" font-family="Arial,sans-serif" font-size="18" font-weight="700" text-anchor="middle" fill="#FFFDF7">LOCAL FILES · NO UPLOAD</text>
+  <g fill="#245E58">
+    <circle cx="81" cy="178" r="13"/>
+    <circle cx="882" cy="414" r="17"/>
+    <rect x="72" y="389" width="24" height="24" rx="4" transform="rotate(-20 72 389)"/>
+  </g>
+</svg>
