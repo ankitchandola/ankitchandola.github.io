@@ -11,6 +11,7 @@ text in `src/content/projects.json`. Real screenshots remain in project-detail
 galleries; cover artwork is not a representation of the shipped interface.
 
 - Recon Desk: documented comparison demo, actual comparison and reconciliation screenshots.
+- PokeHackZone: independently built ROM-hack platform with a manually operated scraper, guarded AI moderation, artifact storage and browser-side patching.
 - Internal Operations Platform: frontend/backend combined; offline ownership described explicitly.
 - Project Visualization Library: shared package used by operations and customer applications.
 - Public Brand Website & CMS: SSR website, Frappe integration, Strapi configuration and shared EC2 staging setup.
